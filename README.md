@@ -7,7 +7,7 @@
 #### *Step 1:* Download
 ---
 - Download Docker Desktop for Windows (The download might take some minutes depending on your Internet Speed)
-![alt text](https://github.com/h0nt3d/SWE4103-Project/blob/docker_setup/images/wsl.png?raw=true)
+
 
 https://docs.docker.com/desktop/setup/install/windows-install/
 *(x86_64)
@@ -17,7 +17,7 @@ https://docs.docker.com/desktop/setup/install/windows-install/
 - On the Command Line / Powershell, run
 `wsl –-version` 
 to verify if wsl is installed.
-
+![alt text](https://github.com/h0nt3d/SWE4103-Project/blob/docker_setup/images/wsl.png?raw=true)
 - If not installed:
 Run:
 `wsl –-install`
