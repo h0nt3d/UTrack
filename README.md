@@ -3,6 +3,10 @@
 - prompt-sync
 - bcrypt
 
+### Frontend:
+- cypress
+- jest
+
 ## Backend:
 Inside the backend Directory, run <br>
 `npm install prompt-sync` to install prompt-sync
@@ -17,3 +21,4 @@ Inside the frontend Directory, run
 
 ## For installing new dependencies
 `npm install`
+
