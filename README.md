@@ -9,7 +9,7 @@
 
 ## Backend:
 Inside the backend Directory, run <br>
-`npm install prompt-sync` to install prompt-sync
+`npm install prompt-sync` to install prompt-sync <br>
 `npm install bcrypt` to install bycrpyt
 
 ## Frontend
@@ -21,4 +21,5 @@ Inside the frontend Directory, run
 
 ## For installing new dependencies
 `npm install`
+
 
