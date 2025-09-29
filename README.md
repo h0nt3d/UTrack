@@ -13,7 +13,7 @@ Inside the backend Directory, run <br>
 `npm install bcrypt` to install bycrpyt
 
 ## Frontend
-Inside the frontend Directory, run
+Inside the frontend Directory, run <br>
 `npm install react-scripts` to install the react scripts
 
 ## Launching React on port 3000
@@ -21,5 +21,6 @@ Inside the frontend Directory, run
 
 ## For installing new dependencies
 `npm install`
+
 
 
