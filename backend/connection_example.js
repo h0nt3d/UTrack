@@ -3,6 +3,11 @@ const bcrypt = require("bcrypt");
 const cors = require("cors");
 const express = require("express");
 
+const port = 5000;
+const app = express();
+app.use(express.json());
+app.use(cors());
+
 //Connecting to MongoDB
 mongoose.connect("mongodb://admin:password@localhost:27017/school?authSource=admin", {
 	useNewUrlParser: true,
@@ -40,4 +45,18 @@ async function createUser(username, password) {
 	}
 }
 
-createUser("Michael", "super-secret-password");
+//Express Route
+app.post("/signup", async(req, res) => {
+	const {username, password} = req.body;
+
+	try {
+		const user = await createUser(username, password);
+		res.json({message: "User created successfully", user});
+	}
+	catch(err) {
+		res.status(500).json({message: "Error creating user with express"});
+	}
+});
+
+//createUser("Michael", "super-secret-password");
+app.listen(port, () => console.log(`Backend runiing on http:localhost:${port}`));
