@@ -9,10 +9,7 @@ app.use(express.json());
 app.use(cors());
 
 //Connecting to MongoDB
-mongoose.connect("mongodb://admin:password@localhost:27017/school?authSource=admin", {
-	useNewUrlParser: true,
-	useUnifiedTopology: true,
-});
+mongoose.connect("mongodb://admin:password@localhost:27017/school?authSource=admin", {});
 
 //Schema Definition
 const instructorSchema = new mongoose.Schema ({
