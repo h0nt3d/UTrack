@@ -12,7 +12,7 @@
 
 ## Backend:
 Inside the backend Directory, run <br>
-`npm install prompt-sync bycrpyt mongoose cors express`
+`npm install prompt-sync bcrypt mongoose cors express`
 
 ## Frontend
 Inside the frontend Directory, run <br>
@@ -23,6 +23,7 @@ Inside the frontend Directory, run <br>
 
 ## For installing new dependencies
 `npm install`
+
 
 
 
