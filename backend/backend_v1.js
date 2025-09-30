@@ -10,6 +10,7 @@ app.use(cors());
 
 const connectToMongo = require("./db.js");
 const Instructor = require("./models/Instructor.js");
+const {hashPassword} = require("./routes/hash");
 
 const startApp = async () => {
     await connectToMongo();
@@ -17,10 +18,9 @@ const startApp = async () => {
 startApp();
 
 //Creating User
-const saltRounds = 10;
 async function createUser(username, password) {
 	try {
-		const hash = await bcrypt.hash(password, saltRounds);
+		const hash = await hashPassword(password);
 
 		const newInstructor = new Instructor({
 			username,
