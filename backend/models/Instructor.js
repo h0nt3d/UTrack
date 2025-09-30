@@ -6,14 +6,15 @@ const instructorSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      trim: true,
-      minlength: 3,
+      //trim: true,
+      //minlength: 3,
     },
     password: {
       type: String,
       required: true,
-      minlength: 8,
+      //minlength: 8,
     },
+	  /*
     email: {
       type: String,
       required: false,
@@ -26,9 +27,9 @@ const instructorSchema = new mongoose.Schema(
       enum: ["instructor", "admin"],
       default: "instructor",
     },
-  },
   { timestamps: true }
-);
+  */
+  });
 
-const Instructor = mongoose.model("Instructor", instructorSchema);
-module.exports = Instructor;
+module.exports = mongoose.model("Instructor", instructorSchema);
+
