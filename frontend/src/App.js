@@ -1,25 +1,48 @@
-import logo from './logo.svg';
+import {useState} from "react";
 import './App.css';
 
-function App() {
+export default function MyForm() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [value, setValue] = useState("");
+  
+  async function handleSubmit() {
+	try {
+		const response = await fetch("http://localhost:5000/signup", {
+			method: "POST",
+			headers: {"Content-Type": "application/json"},
+			body: JSON.stringify({username, password}),
+		});
+
+		const data = await response.json();
+		console.log(data);
+	}
+	catch(err) {
+		console.error("Error submitting data: ", err);
+	}
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <label>
+        Username: <input
+	  name="usernameInput"
+	  value={username}
+	  onChange={(e) => setUsername(e.target.value)}/>
+      </label>
+      <hr />
+      <label>
+        Password: <input 
+	  type="password"
+	  name="passwordInput"
+	  value={password}
+	  onChange={(e) => setPassword(e.target.value)}/>
+      </label>
+      <hr /> 
+	<button type="button" onClick={handleSubmit}>
+	  Sign Up
+	  </button>
+    </>
   );
 }
 
-export default App;
