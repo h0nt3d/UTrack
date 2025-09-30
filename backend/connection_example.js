@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const cors = require("cors");
+const express = require("express");
 
 //Connecting to MongoDB
 mongoose.connect("mongodb://admin:password@localhost:27017/school?authSource=admin", {
