@@ -3,6 +3,8 @@
 - prompt-sync
 - bcrypt
 - mongoose
+- cors
+- express
 
 ### Frontend:
 - cypress
@@ -10,9 +12,7 @@
 
 ## Backend:
 Inside the backend Directory, run <br>
-`npm install prompt-sync` to install prompt-sync <br>
-`npm install bcrypt` to install bycrpyt <br>
-`npm install mongoose` to install mongoose
+`npm install prompt-sync bycrpyt mongoose cors express`
 
 ## Frontend
 Inside the frontend Directory, run <br>
