@@ -1,26 +1,44 @@
-import {useState} from "react";
-import './App.css';
+import React from "react";
+//import {useState} from "react";
+import Signup from "./components/signup";
 
 export default function MyForm() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [value, setValue] = useState("");
-  
-  async function handleSubmit() {
-	try {
-		const response = await fetch("http://localhost:5000/signup", {
-			method: "POST",
-			headers: {"Content-Type": "application/json"},
-			body: JSON.stringify({username, password}),
-		});
+	return (
+		<div>
+			<Signup />
+		</div>
+	);
+}
 
-		const data = await response.json();
-		console.log(data);
+/*
+export default function MyForm() {
+	const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
+	const [value, setValue] = useState("");
+  
+	async function handleSubmit() {
+		try {
+			const response = await fetch("http://localhost:5000/signup", {
+				method: "POST",
+				headers: {"Content-Type": "application/json"},
+				body: JSON.stringify({username, password}),
+			});
+
+			const data = await response.json();
+			console.log(data);
+		}
+		catch(err) {
+			console.error("Error submitting data: ", err);
+		}
+		
 	}
-	catch(err) {
-		console.error("Error submitting data: ", err);
-	}
-  }
+	return (
+		<div>
+			<box />
+		</div>
+	)
+}
+
 
   return (
     <>
@@ -44,5 +62,4 @@ export default function MyForm() {
 	  </button>
     </>
   );
-}
-
+  */
