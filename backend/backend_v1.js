@@ -18,12 +18,12 @@ const startApp = async () => {
 startApp();
 
 //Creating User
-async function createUser(username, password) {
+async function createUser(email, password) {
 	try {
 		const hash = await hashPassword(password);
 
 		const newInstructor = new Instructor({
-			username,
+			email,
 			password: hash,
 		});
 		
@@ -42,10 +42,10 @@ async function createUser(username, password) {
 
 //Express Route
 app.post("/signup", async(req, res) => {
-	const {username, password} = req.body;
+	const {email, password} = req.body;
 
 	try {
-		const user = await createUser(username, password);
+		const user = await createUser(email, password);
 		res.json({message: "User created successfully", user});
 	}
 	catch(err) {
