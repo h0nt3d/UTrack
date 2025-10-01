@@ -53,6 +53,7 @@ app.post("/signup", async(req, res) => {
 	}
 });
 
+
 app.listen(port, () => console.log(`EServer Running on port http://localhost:${port}`));
 
-
+app.use('/api/auth', require('./routes/authnticatn'));

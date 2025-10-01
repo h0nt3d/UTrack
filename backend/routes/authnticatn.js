@@ -2,15 +2,25 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const Instructor = require("../models/Instructor"); // adjust path if needed
+const jwt = require('jsonwebtoken');
+const secretKeyForjwt = "SWE4103";
+
+const { generateFourDigitKey, hashKey , verifyKey} = require("../utils/key");
 
 const router = express.Router();
+const SALT_ROUNDS = 10;
 
-// ---------- VALIDATION RULES ----------
-const usernameValidator = body("username")
-  .exists({ checkFalsy: true }).withMessage("Username is required.")
-  .isString().withMessage("Username must be a string.")
-  .isLength({ min: 3 }).withMessage("Username must be at least 3 characters long.");
+// --- Helpers ---
+
+
+// --- Validators ---
+const emailValidator = body("email")
+  .exists({ checkFalsy: true }).withMessage("Email is required.")
+  .isString().withMessage("Email must be a string.")
+  .isEmail().withMessage("Email must be valid.")
+  .normalizeEmail();
 
 const passwordValidator = body("password")
   .exists({ checkFalsy: true }).withMessage("Password is required.")
@@ -20,72 +30,108 @@ const passwordValidator = body("password")
   .matches(/[a-z]/).withMessage("Password must include at least one lowercase letter.")
   .matches(/[0-9]/).withMessage("Password must include at least one digit.");
 
-// ---------- REGISTER ----------
-router.post("/register", [usernameValidator, passwordValidator], async (req, res) => {
+const keyValidator = body("key")
+  .exists({ checkFalsy: true }).withMessage("Special key is required.")
+  .isString().withMessage("Special key must be a string.")
+  .isLength({ min: 8 }).withMessage("Special key must be at least 8 characters long.");
+
+// ---------- REGISTER (DEMO) ----------
+// In a real app, only admins create instructors and share the key out-of-band.
+
+
+router.post("/register", [emailValidator, passwordValidator], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      errors: e.array().map(e => e.msg),
-    });
+    return res.status(400).json({ success: false, errors: errors.array().map(e => e.msg) });
   }
 
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    // Check if username already exists
-    const existing = await Instructor.findOne({ username });
+    const existing = await Instructor.findOne({ email });
     if (existing) {
-      return res.status(400).json({ success: false, message: "Username already taken." });
+      return res.status(400).json({ success: false, message: "Email already registered." });
     }
 
-    // Hash password
-    const hash = await bcrypt.hash(password, 10);
+    
 
-    // Create new user
-    const newInstructor = new Instructor({ username, password: hash });
-    await newInstructor.save();
+    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+
+    const plainKey = generateFourDigitKey();
+    const loginKeyHash = await hashKey(plainKey);
+
+    const newInstructor = new Instructor({
+      email,
+      passwordHash,
+      loginKeyHash,
+    });
+
+
+
+    const doc = await newInstructor.save();
+     const user = { 
+      
+      id: doc._id,
+        email: doc.email,
+        specialKey: plainKey
+      }
+
+      const authToken = jwt.sign(user, secretKeyForjwt);
+    
 
     return res.status(201).json({
       success: true,
-      message: "User registered successfully.",
-      user: { id: newInstructor._id, username: newInstructor.username },
+      message: "Instructor registered successfully.",
+      authToken: authToken,
+      specialKey: plainKey,
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: "Error registering user." });
+    return res.status(500).json({ success: false, message: "Error registering user."+ err.message });
   }
 });
 
 // ---------- LOGIN ----------
-router.post("/login", [usernameValidator, passwordValidator], async (req, res) => {
+router.post("/login", [emailValidator, passwordValidator], async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      errors: errors.array().map(e => e.msg),
-    });
+    return res.status(400).json({ success: false, errors: errors.array().map(e => e.msg) });
   }
 
-  const { username, password } = req.body;
+  const { email, password, key } = req.body;
 
   try {
-    const user = await Instructor.findOne({ username });
-    if (!user) {
+    const user = await Instructor.findOne({ email });
+    if (!user || !user.isActive) {
       return res.status(401).json({ success: false, message: "Invalid credentials." });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
+    const pwOk = await bcrypt.compare(password, user.passwordHash);
+    const keyOk = await verifyKey(key, user.loginKeyHash);
+
+
+    if (!pwOk || !keyOk) {
       return res.status(401).json({ success: false, message: "Invalid credentials." });
     }
+
+    // Update last login
+    user.lastLoginAt = new Date();
+    await user.save();
+
+    const data ={
+      id: user._id,
+      email: user.email,
+      role: user.role
+    }
+    const authToken = jwt.sign(data, secretKeyForjwt);
+    
 
     return res.json({
       success: true,
       message: "Login successful.",
-      user: { id: user._id, username: user.username, role: user.role },
+      authToken: authToken
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: "Login error." });
+    return res.status(500).json({ success: false, message: "Login error."+ err.message});
   }
 });
 
