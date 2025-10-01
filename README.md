@@ -9,6 +9,9 @@
 ### Frontend:
 - cypress
 - jest
+- tailwind
+- postcss
+- autoprefixer
 
 ## Backend:
 Inside the backend Directory, run <br>
@@ -16,13 +19,12 @@ Inside the backend Directory, run <br>
 
 ## Frontend
 Inside the frontend Directory, run <br>
-`npm install react-scripts` to install the react scripts
+`npm install`
 
 ## Launching React on port 3000
 `npm start`
 
-## For installing new dependencies
-`npm install`
+
 
 
 
