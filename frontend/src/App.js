@@ -1,11 +1,36 @@
 import React from "react";
 //import {useState} from "react";
 import Signup from "./components/signup";
+import Mycourses from "./components/Mycourses";
+import Coursepage from "./components/Coursepage";
 
-export default function MyForm() {
+export default function App() {
+
+	const [ nnew, setNnew] = React.useState(true);
+
+	const [specificCourse, setSpecificCourse] = React.useState(true);
+
+	const [selectedCourse, setSelectedCourse] = React.useState(null);
+
+	function newPage() {
+		setNnew(prev => !prev);
+	}
+
+	function handleCourseSelect(courseData) {
+		setSelectedCourse(courseData);
+		setSpecificCourse(false);
+    }
+
 	return (
 		<div>
-			<Signup />
+			{nnew 
+				? <Signup/> 
+				: (specificCourse 
+					? <Mycourses spec={handleCourseSelect}/>
+					: <Coursepage course={selectedCourse}/>)
+			}
+
+			{nnew && <button className="test" onClick={newPage}>New stuff yay!</button>}
 		</div>
 	);
 }

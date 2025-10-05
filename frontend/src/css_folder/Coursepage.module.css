@@ -1,0 +1,127 @@
+.course_1{
+    background: linear-gradient(to bottom, #BCEEFF, #FFFFFF);
+}
+
+.ti{
+  background-color: black;
+  color: white;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  margin-bottom: 50px;
+}
+
+.coursDesc{
+    width: 800px;
+    height: 100px;
+    background-color: #F5F5F5;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 40px;
+    padding: 10px;
+}
+
+.bod{
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.button{
+  background-color: black;
+  color: white;
+  height: 50px;
+  width: 310px;
+  display: flex;
+  align-items: center;
+  gap: 70px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  margin-left: auto;
+  margin-bottom: 25px;
+}
+
+.button:hover{
+  border: 2px solid rgb(128, 198, 222);
+  color: rgb(128, 198, 222);
+}
+
+.plus{
+  height: 30px;
+  width: 30px;
+  margin-left: 10px;
+}
+
+.pro{
+    background-color: black;
+    color: white;
+    width: 310px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid transparent;
+}
+
+.pro:hover{
+  border: 2px solid rgb(128, 198, 222);
+  color: rgb(128, 198, 222);
+}
+
+.studimg{
+    width: 100px;
+    height: 70px;
+    margin: 0;
+    /* position: absolute; */
+}
+
+.studimgs{
+    display: flex;
+    position: relative;
+}
+
+.studbutton{
+    background-color: black;
+    color: white;
+    width: 310px;
+    height: 200px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+    border: 2px solid transparent;
+}
+
+.studbutton:hover{
+  border: 2px solid rgb(128, 198, 222);
+  color: rgb(128, 198, 222);
+}
+
+.studentsText{
+    margin-top: 20px;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 40px;
+    
+}
+
+.bottom{
+  display: flex;
+  width: 800px;
+}
+
+.project{
+  margin-right: auto;
+}
+
+.all_projs{
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
