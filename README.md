@@ -12,6 +12,7 @@
 - tailwind
 - postcss
 - autoprefixer
+- react-router-dom
 
 ## Backend:
 Inside the backend Directory, run <br>
