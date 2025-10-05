@@ -20,10 +20,12 @@ Inside the backend Directory, run <br>
 
 ## Frontend
 Inside the frontend Directory, run <br>
-`npm install`
+`npm install` <br>
+`npm install react-router-dom`
 
 ## Launching React on port 3000
 `npm start`
+
 
 
 
