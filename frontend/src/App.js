@@ -1,8 +1,8 @@
 import React from "react";
-//import {useState} from "react";
 import Signup from "./components/signup";
 import Mycourses from "./components/Mycourses";
 import Coursepage from "./components/Coursepage";
+import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 export default function App() {
 
@@ -21,10 +21,14 @@ export default function App() {
 		setSpecificCourse(false);
     }
 	return(
-		<div>
-			<Signup />
-		</div>
+		<Router>
+			<Routes>
+				<Route path = "/" element={<Signup />} />
+				<Route path = "/profile" element={<Mycourses />} />
+			</Routes>
+		</Router>
 	);
+}
 /*
 	return (
 		<div>
@@ -39,7 +43,7 @@ export default function App() {
 		</div>
 	);
 	*/
-}
+
 
 /*
 export default function MyForm() {

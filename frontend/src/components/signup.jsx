@@ -1,10 +1,12 @@
 import React, {useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 export default function Signup() {
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const navigate = useNavigate();
 	  
 	async function handleSubmit() {
 		try {
@@ -16,6 +18,7 @@ export default function Signup() {
 
 			const data = await response.json();
 			console.log(data);
+			navigate("/profile");
 		}
 		catch(err) {
 			console.error("Error submitting data: ", err);
@@ -57,7 +60,7 @@ export default function Signup() {
 	  onChange={(e) => setPassword(e.target.value)}
         />
 	<input
-          type="password"
+          type="text"
           placeholder="Retype Password"
           className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 	  //onChange={(e) => setEmail(e.target.value)}
