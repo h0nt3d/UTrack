@@ -18,11 +18,13 @@ const startApp = async () => {
 startApp();
 
 //Creating User
-async function createUser(email, password) {
+async function createUser(firstName, lastName, email, password) {
 	try {
 		const hash = await hashPassword(password);
 
 		const newInstructor = new Instructor({
+			firstName,
+			lastName,
 			email,
 			password: hash,
 		});
@@ -39,10 +41,10 @@ async function createUser(email, password) {
 
 //Express Route
 app.post("/signup", async(req, res) => {
-	const {email, password} = req.body;
+	const {firstName, lastName, email, password} = req.body;
 
 	try {
-		const user = await createUser(email, password);
+		const user = await createUser(firstName, lastName, email, password);
 		res.json({message: "User created successfully", user});
 	}
 	catch(err) {
@@ -53,4 +55,4 @@ app.post("/signup", async(req, res) => {
 
 app.listen(port, () => console.log(`EServer Running on port http://localhost:${port}`));
 
-app.use('/api/auth', require('./routes/authnticatn'));
+//app.use('/api/auth', require('./routes/authnticatn'));

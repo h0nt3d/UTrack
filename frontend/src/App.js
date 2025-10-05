@@ -20,7 +20,12 @@ export default function App() {
 		setSelectedCourse(courseData);
 		setSpecificCourse(false);
     }
-
+	return(
+		<div>
+			<Signup />
+		</div>
+	);
+/*
 	return (
 		<div>
 			{nnew 
@@ -33,6 +38,7 @@ export default function App() {
 			{nnew && <button className="test" onClick={newPage}>New stuff yay!</button>}
 		</div>
 	);
+	*/
 }
 
 /*
