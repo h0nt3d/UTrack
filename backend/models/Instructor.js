@@ -3,6 +3,14 @@ const mongoose = require("mongoose");
 
 const instructorSchema = new mongoose.Schema(
   {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
@@ -11,29 +19,10 @@ const instructorSchema = new mongoose.Schema(
       trim: true,
     },
     // bcrypt hash of password
-    passwordHash: {
+    password: {
       type: String,
       required: true,
     },
-    // bcrypt hash of the special login key
-    loginKeyHash: {
-      type: String,
-      required: true,
-    },
-    role: {
-      type: String,
-      enum: ["instructor", "admin"],
-      default: "instructor",
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    lastLoginAt: {
-      type: Date,
-    },
-  },
-  { timestamps: true }
-);
+});
 
 module.exports = mongoose.model("Instructor", instructorSchema);
