@@ -35,9 +35,6 @@ async function createUser(email, password) {
 	catch(err) {
 		console.error("Error saving user: ", err);
 	}
-	finally {
-		mongoose.connection.close();
-	}
 }
 
 //Express Route
