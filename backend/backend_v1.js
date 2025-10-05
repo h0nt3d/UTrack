@@ -53,7 +53,7 @@ app.post("/signup", async(req, res) => {
 	}
 });
 
-
+//Getting User Name
 app.get("/user/:email", async(req, res) => {
 	try {
 		const user = await Instructor.findOne({email: req.params.email});
@@ -63,6 +63,26 @@ app.get("/user/:email", async(req, res) => {
 	catch(err) {
 		console.error("Error fetching user", err);
 		res.status(500).json({message: "Error fetch user"});
+	}
+});
+
+//Adding Courses
+app.post("/add-course/:email", async (req, res) => {
+	const { email } = req.params;
+	const { courseNumber, courseName, description } = req.body;
+
+	try {
+		const instructor = await Instructor.findOne({ email });
+		if (!instructor) return res.status(404).json({ message: "Instructor not found" });
+
+		instructor.courses.push({ courseNumber, courseName, description });
+		await instructor.save();
+
+		res.json({ message: "Course added", courses: instructor.courses });
+	} 
+	catch (err) {
+		console.error("Error adding course:", err);
+		res.status(500).json({ message: "Error adding course" });
 	}
 });
 

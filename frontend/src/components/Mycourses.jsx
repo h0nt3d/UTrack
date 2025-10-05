@@ -5,50 +5,66 @@ import plus from "../imagez/add-icon-plus-icon-cross-white-text-symmetry-symbol-
 import imgg from "../imagez/minimalist-white-abstract-background_1272857-194151.jpg"
 import styles from "../css_folder/Mycourses.module.css"
 import { useLocation } from "react-router-dom";
+import CourseModal from "../subcomponents/CourseModal.jsx"
 
-export function Mycourses (props) {
+export function Mycourses ({user}) {
   const loc = useLocation();
-  const { email } = loc.state || {};
-  const [user, setUser] = useState(null);
+  const {email} = loc.state || {};
+  const [showModal, setShowModal] = useState(false);
   const [course, setCourse] = useState([]);
 
-  function addCourse() {
-    setCourse(prev => [...prev, 
-                     {code: "SWE4103-2025-S1", 
-                      img: imgg, 
-                      titl: "Introduction to Project Management", 
-                      desc: "Overview: This is a course about many things, you will learn stuff about various peculiar things regarding projects and no doubt will this be one of the most learning experiences you will ever have."
-                    }]
-              )
+
+  async function addCourse(newCourse)  {
+	try {
+	      const response = await fetch(`http://localhost:5000/add-course/${email}`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(newCourse),
+	      });
+	      const data = await response.json();
+	      if (response.ok) setCourse(data.courses);
+	      setShowModal(false);
+	    }
+	 catch (err) {
+	      console.error("Error adding course:", err);
+	    }	
   }
 
   function handle (course) {
-    props.spec(course)
+    user.spec(course)
   }
 
   return (
-    <div className={styles.my_courses}>
-      <Logout styl={styles}/>
+  <div className={styles.my_courses}>
+    <Logout styl={styles}/>
 
-      <div className={styles.bod}>
-
-        <div className = {styles.text_button_beg}>
+   <div className={styles.bod}>
+        <div className={styles.text_button_beg}>
           <h1 className={styles.my_c}>My Courses</h1>
-          <button className={styles.button} onClick={addCourse}>
-            <img className={styles.plus} src={plus}/>
-            <p className={styles.add_text}>Add course</p>       
+          <button
+            className={styles.button}
+            onClick={() => setShowModal(true)}
+          >
+            <img className={styles.plus} src={plus} />
+            <p className={styles.add_text}>Add course</p>
           </button>
         </div>
 
         <div className={styles.all_courses}>
-          {course.map(c => (
+          {course.map((c) => (
             <Course styl={styles} course={c} handle={handle} />
           ))}
         </div>
-
       </div>
+
+      {showModal && (
+        <CourseModal
+          onClose={() => setShowModal(false)}
+          onSave={addCourse}
+        />
+      )}
     </div>
-  )
+  );
 }
 
 export default Mycourses
