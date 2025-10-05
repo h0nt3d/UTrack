@@ -12,31 +12,6 @@ export function Mycourses (props) {
   const [user, setUser] = useState(null);
   const [course, setCourse] = useState([]);
 
-  useEffect(() => {
-	async function fetchUser() {
-		try {
-			const response = await fetch(`http://localhost:5000/user/${email}`);
-			const data = await response.json();
-			setUser(data);
-		}
-		catch(err) {
-			console.error("Error fetching user data", err);
-		}
-	}
-	  if (email) fetchUser();
-  }, [email]);  
-
-  //if (!user) return <p>Loading your profile...</p>
-
-		/*
-  return (
-	<div>
-	  <h1>Welcome, {user.firstName} {user.lastName}</h1>
-	  </div>
-  );
-  */
-
-
   function addCourse() {
     setCourse(prev => [...prev, 
                      {code: "SWE4103-2025-S1", 
