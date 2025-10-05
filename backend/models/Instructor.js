@@ -23,6 +23,24 @@ const instructorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-});
+    courses: [
+       {
+          courseNumber: {
+		  type: String,
+		  required: true,
+	  },
+	  courseName: {
+		  type: String,
+		  required: true,
+	  },
+	  description: {
+		  type: String,
+		  default: "",
+	  },
+       },
+    ],
+  },
+    {timestamps: true}
+);
 
 module.exports = mongoose.model("Instructor", instructorSchema);

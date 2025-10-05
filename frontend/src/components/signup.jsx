@@ -18,7 +18,12 @@ export default function Signup() {
 
 			const data = await response.json();
 			console.log(data);
-			navigate("/profile");
+			if (response.ok) {
+				navigate("/profile", {state: {email: data.user.email}});
+			}
+			else {
+				alert(data.message);
+			}
 		}
 		catch(err) {
 			console.error("Error submitting data: ", err);

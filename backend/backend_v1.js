@@ -39,6 +39,7 @@ async function createUser(firstName, lastName, email, password) {
 	}
 }
 
+
 //Express Route
 app.post("/signup", async(req, res) => {
 	const {firstName, lastName, email, password} = req.body;
@@ -51,6 +52,21 @@ app.post("/signup", async(req, res) => {
 		res.status(500).json({message: "Error creating user with express"});
 	}
 });
+
+
+app.get("/user/:email", async(req, res) => {
+	try {
+		const user = await Instructor.findOne({email: req.params.email});
+		if (!user) return res.status(404).json({message: "User not found"});
+		res.json(user);
+	}
+	catch(err) {
+		console.error("Error fetching user", err);
+		res.status(500).json({message: "Error fetch user"});
+	}
+});
+
+
 
 
 app.listen(port, () => console.log(`EServer Running on port http://localhost:${port}`));

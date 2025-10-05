@@ -1,15 +1,41 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Course from "../subcomponents/Course.jsx"
 import Logout from "../subcomponents/Logout.jsx"
 import plus from "../imagez/add-icon-plus-icon-cross-white-text-symmetry-symbol-light-logo-png-clipart-removebg-preview.png"
 import imgg from "../imagez/minimalist-white-abstract-background_1272857-194151.jpg"
 import styles from "../css_folder/Mycourses.module.css"
+import { useLocation } from "react-router-dom";
 
 export function Mycourses (props) {
-
+  const loc = useLocation();
+  const { email } = loc.state || {};
+  const [user, setUser] = useState(null);
   const [course, setCourse] = useState([]);
 
-  
+  useEffect(() => {
+	async function fetchUser() {
+		try {
+			const response = await fetch(`http://localhost:5000/user/${email}`);
+			const data = await response.json();
+			setUser(data);
+		}
+		catch(err) {
+			console.error("Error fetching user data", err);
+		}
+	}
+	  if (email) fetchUser();
+  }, [email]);  
+
+  //if (!user) return <p>Loading your profile...</p>
+
+		/*
+  return (
+	<div>
+	  <h1>Welcome, {user.firstName} {user.lastName}</h1>
+	  </div>
+  );
+  */
+
 
   function addCourse() {
     setCourse(prev => [...prev, 
