@@ -60,7 +60,7 @@ export default function Signup() {
 	  onChange={(e) => setPassword(e.target.value)}
         />
 	<input
-          type="text"
+          type="password"
           placeholder="Retype Password"
           className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 	  //onChange={(e) => setEmail(e.target.value)}
