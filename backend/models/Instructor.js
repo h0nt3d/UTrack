@@ -28,6 +28,7 @@ const instructorSchema = new mongoose.Schema(
           courseNumber: {
 		  type: String,
 		  required: true,
+		  unique: true,
 	  },
 	  courseName: {
 		  type: String,
