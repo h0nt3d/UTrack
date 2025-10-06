@@ -10,7 +10,7 @@ app.use(cors());
 
 const connectToMongo = require("./db.js");
 const Instructor = require("./models/Instructor.js");
-const {hashPassword} = require("./routes/hash");
+//const {hashPassword} = require("./routes/hash");
 
 const startApp = async () => {
     await connectToMongo();
@@ -31,12 +31,8 @@ app.get("/user/:email", async(req, res) => {
 	}
 });
 
-
-
-
-
+const {router: authRouter, createUser} = require("./routes/authnticatn");
+app.use('/api/auth',authRouter);
 
 app.listen(port, () => console.log(`EServer Running on port http://localhost:${port}`));
 
-app.use('/api/auth', require('./routes/authnticatn'));
-app.use('/api/course', require('./routes/InstructorCourse'));

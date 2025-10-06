@@ -39,7 +39,7 @@ const instructorSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true, // ✅ unique only for email, not courses
+      unique: true,
       lowercase: true,
       trim: true,
     },
@@ -60,7 +60,10 @@ instructorSchema.path("courses").validate(function (courses) {
   const seen = new Set();
   for (const c of courses) {
     const key = (c.courseNumber || "").toLowerCase().trim();
-    if (seen.has(key)) return false; // found duplicate
+    if (seen.has(key)) {
+	    this.invalidate("courses", `Duplicate courseNumber: ${c.courseNumber}`);
+	    return false;
+    }
     seen.add(key);
   }
   return true;

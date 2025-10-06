@@ -89,7 +89,7 @@ router.post("/login", loginValidators, async (req, res) => {
     const userDoc = await Instructor.findOne({ email });
     if (!userDoc) return res.status(401).json({ message: "Invalid credentials" });
 
-    const ok = await bcrypt.compare(password, userDoc.passwordHash);
+    const ok = await bcrypt.compare(password, userDoc.password);
     if (!ok) return res.status(401).json({ message: "Invalid credentials" });
 
     const user = sanitizeUser(userDoc);
@@ -101,5 +101,4 @@ router.post("/login", loginValidators, async (req, res) => {
   }
 });
 
-module.exports = router;
-module.exports.createUser = createUser; // if your top-level /signup calls it directly
+module.exports = {router, createUser};
