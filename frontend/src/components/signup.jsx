@@ -6,9 +6,14 @@ export default function Signup() {
 	const [lastName, setLastName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
 	const navigate = useNavigate();
 	  
 	async function handleSubmit() {
+		if (password != confirmPassword) {
+			alert("Passwords do not match. Please retype.");
+			return;
+		}
 		try {
 			const response = await fetch("http://localhost:5000/signup", {
 				method: "POST",
@@ -68,7 +73,7 @@ export default function Signup() {
           type="password"
           placeholder="Retype Password"
           className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-	  //onChange={(e) => setEmail(e.target.value)}
+	  onChange={(e) => setConfirmPassword(e.target.value)}
         />
         <button className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
 	  type="button"
