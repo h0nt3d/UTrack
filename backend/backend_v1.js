@@ -17,41 +17,6 @@ const startApp = async () => {
 }
 startApp();
 
-//Creating User
-async function createUser(firstName, lastName, email, password) {
-	try {
-		const hash = await hashPassword(password);
-
-		const newInstructor = new Instructor({
-			firstName,
-			lastName,
-			email,
-			password: hash,
-		});
-		
-		//save to MongoDB
-		await newInstructor.save();
-		console.log("User saved: ", newInstructor);
-		return newInstructor;
-	}
-	catch(err) {
-		console.error("Error saving user: ", err);
-	}
-}
-
-
-//Express Route
-app.post("/signup", async(req, res) => {
-	const {firstName, lastName, email, password} = req.body;
-
-	try {
-		const user = await createUser(firstName, lastName, email, password);
-		res.json({message: "User created successfully", user});
-	}
-	catch(err) {
-		res.status(500).json({message: "Error creating user with express"});
-	}
-});
 
 //Getting User Name
 app.get("/user/:email", async(req, res) => {
@@ -66,42 +31,12 @@ app.get("/user/:email", async(req, res) => {
 	}
 });
 
-//Adding Courses
-app.post("/add-course/:email", async (req, res) => {
-	const { email } = req.params;
-	const { courseNumber, courseName, description } = req.body;
 
-	try {
-		const instructor = await Instructor.findOne({ email });
-		if (!instructor) return res.status(404).json({ message: "Instructor not found" });
 
-		instructor.courses.push({ courseNumber, courseName, description });
-		await instructor.save();
 
-		res.json({ message: "Course added", courses: instructor.courses });
-	} 
-	catch (err) {
-		console.error("Error adding course:", err);
-		res.status(500).json({ message: "Error adding course" });
-	}
-});
-
-//Fetch Courses
-app.get("/get-courses/:email", async (req, res) => {
-	const { email } = req.params;
-
-	try {
-		const instructor = await Instructor.findOne({ email });
-		if (!instructor) return res.status(404).json({ message: "Instructor not found" });
-		res.json({ courses: instructor.courses });
-	} 
-	catch (err) {
-		console.error("Error fetching courses:", err);
-		res.status(500).json({ message: "Error fetching courses" });
-	}
-});
 
 
 app.listen(port, () => console.log(`EServer Running on port http://localhost:${port}`));
 
-//app.use('/api/auth', require('./routes/authnticatn'));
+app.use('/api/auth', require('./routes/authnticatn'));
+app.use('/api/course', require('./routes/InstructorCourse'));

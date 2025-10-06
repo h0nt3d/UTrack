@@ -2,137 +2,104 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
-const Instructor = require("../models/Instructor"); // adjust path if needed
-const jwt = require('jsonwebtoken');
-const secretKeyForjwt = "SWE4103";
-
-const { generateFourDigitKey, hashKey , verifyKey} = require("../utils/key");
+const jwt = require("jsonwebtoken");
+const Instructor = require("../models/Instructor");
 
 const router = express.Router();
 const SALT_ROUNDS = 10;
 
-// --- Helpers ---
+//  Use env in production
+const JWT_SECRET = process.env.JWT_SECRET || "SWE4103_DEV_ONLY";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
+// ---------- Validators ----------
+const signupValidators = [
+  body("firstName").exists({ checkFalsy: true }).withMessage("firstName is required.").isString().trim(),
+  body("lastName").exists({ checkFalsy: true }).withMessage("lastName is required.").isString().trim(),
+  body("email").exists({ checkFalsy: true }).withMessage("email is required.").isEmail().normalizeEmail(),
+  body("password").exists({ checkFalsy: true }).withMessage("password is required.").isLength({ min: 8 }),
+];
 
-// --- Validators ---
-const emailValidator = body("email")
-  .exists({ checkFalsy: true }).withMessage("Email is required.")
-  .isString().withMessage("Email must be a string.")
-  .isEmail().withMessage("Email must be valid.")
-  .normalizeEmail();
+const loginValidators = [
+  body("email").exists({ checkFalsy: true }).isEmail().normalizeEmail(),
+  body("password").exists({ checkFalsy: true }).isString(),
+];
 
-const passwordValidator = body("password")
-  .exists({ checkFalsy: true }).withMessage("Password is required.")
-  .isString().withMessage("Password must be a string.")
-  .isLength({ min: 8 }).withMessage("Password must be at least 8 characters long.")
-  .matches(/[A-Z]/).withMessage("Password must include at least one uppercase letter.")
-  .matches(/[a-z]/).withMessage("Password must include at least one lowercase letter.")
-  .matches(/[0-9]/).withMessage("Password must include at least one digit.");
+// ---------- Helpers ----------
+function sanitizeUser(doc) {
+  return {
+    id: doc._id.toString(),
+    firstName: doc.firstName,
+    lastName: doc.lastName,
+    email: doc.email,
+    createdAt: doc.createdAt,
+    updatedAt: doc.updatedAt,
+  };
+}
 
-const keyValidator = body("key")
-  .exists({ checkFalsy: true }).withMessage("Special key is required.")
-  .isString().withMessage("Special key must be a string.")
-  .isLength({ min: 8 }).withMessage("Special key must be at least 8 characters long.");
+function signToken(userPayload) {
+  return jwt.sign(userPayload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+}
 
-// ---------- REGISTER (DEMO) ----------
-// In a real app, only admins create instructors and share the key out-of-band.
-
-
-router.post("/register", [emailValidator, passwordValidator], async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array().map(e => e.msg) });
+// Same signature as your original code expects
+async function createUser(firstName, lastName, email, password) {
+  const existing = await Instructor.findOne({ email });
+  if (existing) {
+    const err = new Error("Email already registered");
+    err.status = 400;
+    throw err;
   }
+  
+  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+  const doc = await Instructor.create({ firstName, lastName, email, password : passwordHash });
+  console.log("Hashing password for", email);
+  return sanitizeUser(doc);
+}
 
-  const { email, password } = req.body;
+// ---------- SIGNUP ----------
+router.post("/signup", signupValidators, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty())
+    return res.status(400).json({ message: errors.array().map(e => e.msg).join(", ") });
 
+  const { firstName, lastName, email, password } = req.body;
+  
   try {
-    const existing = await Instructor.findOne({ email });
-    if (existing) {
-      return res.status(400).json({ success: false, message: "Email already registered." });
-    }
-
     
-
-    const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-
-    const plainKey = generateFourDigitKey();
-    const loginKeyHash = await hashKey(plainKey);
-
-    const newInstructor = new Instructor({
-      email,
-      passwordHash,
-      loginKeyHash,
-    });
-
-
-
-    const doc = await newInstructor.save();
-     const user = { 
-      
-      id: doc._id,
-        email: doc.email,
-        specialKey: plainKey
-      }
-
-      const authToken = jwt.sign(user, secretKeyForjwt);
+    const user = await createUser(firstName, lastName, email, password);
+    // Add JWT (keeps your original response shape, just adds token)
+    const token = signToken({ id: user.id, email: user.email });
     
-
-    return res.status(201).json({
-      success: true,
-      message: "Instructor registered successfully.",
-      authToken: authToken,
-      specialKey: plainKey,
-    });
+    return res.json({ message: "User created successfully", user, token });
   } catch (err) {
-    return res.status(500).json({ success: false, message: "Error registering user."+ err.message });
+    const code = err.status || 500;
+    return res.status(code).json({ message: code === 400 ? err.message : "Error creating user with express"+err.message });
   }
 });
 
 // ---------- LOGIN ----------
-router.post("/login", [emailValidator, passwordValidator], async (req, res) => {
+router.post("/login", loginValidators, async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ success: false, errors: errors.array().map(e => e.msg) });
-  }
+  if (!errors.isEmpty())
+    return res.status(400).json({ message: errors.array().map(e => e.msg).join(", ") });
 
-  const { email, password, key } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await Instructor.findOne({ email });
-    if (!user || !user.isActive) {
-      return res.status(401).json({ success: false, message: "Invalid credentials." });
-    }
+    const userDoc = await Instructor.findOne({ email });
+    if (!userDoc) return res.status(401).json({ message: "Invalid credentials" });
 
-    const pwOk = await bcrypt.compare(password, user.passwordHash);
-    const keyOk = await verifyKey(key, user.loginKeyHash);
+    const ok = await bcrypt.compare(password, userDoc.passwordHash);
+    if (!ok) return res.status(401).json({ message: "Invalid credentials" });
 
+    const user = sanitizeUser(userDoc);
+    const token = signToken({ id: user.id, email: user.email });
 
-    if (!pwOk || !keyOk) {
-      return res.status(401).json({ success: false, message: "Invalid credentials." });
-    }
-
-    // Update last login
-    user.lastLoginAt = new Date();
-    await user.save();
-
-    const data ={
-      id: user._id,
-      email: user.email,
-      role: user.role
-    }
-    const authToken = jwt.sign(data, secretKeyForjwt);
-    
-
-    return res.json({
-      success: true,
-      message: "Login successful.",
-      authToken: authToken
-    });
+    return res.json({ message: "Login successful", user, token });
   } catch (err) {
-    return res.status(500).json({ success: false, message: "Login error."+ err.message});
+    return res.status(500).json({ message: "Login error"+err.message });
   }
 });
 
 module.exports = router;
+module.exports.createUser = createUser; // if your top-level /signup calls it directly
