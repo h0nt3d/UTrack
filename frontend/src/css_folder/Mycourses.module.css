@@ -76,11 +76,10 @@ body {
 }
 
 .course{
-  display: flex;
-  flex-direction: column;
+  display: flex; 
   background-color: black;
   color: white;
-  height: 200px;
+  height: 150px;
   width: 200px;
   align-items: center;
   border-radius: 10px;

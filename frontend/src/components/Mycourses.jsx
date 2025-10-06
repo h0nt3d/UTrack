@@ -13,6 +13,26 @@ export function Mycourses ({user}) {
   const [showModal, setShowModal] = useState(false);
   const [course, setCourse] = useState([]);
 
+  useEffect(() => {
+	    if (!email) return;
+
+	    async function fetchCourses() {
+	      try {
+		const response = await fetch(`http://localhost:5000/get-courses/${email}`);
+		const data = await response.json();
+		if (response.ok) {
+		  setCourse(data.courses);
+		}
+	      } catch (err) {
+		console.error("Error fetching courses:", err);
+	      }
+	    }
+
+	    fetchCourses();
+	  }, [email]);
+
+
+
 
   async function addCourse(newCourse)  {
 	try {

@@ -86,7 +86,20 @@ app.post("/add-course/:email", async (req, res) => {
 	}
 });
 
+//Fetch Courses
+app.get("/get-courses/:email", async (req, res) => {
+	const { email } = req.params;
 
+	try {
+		const instructor = await Instructor.findOne({ email });
+		if (!instructor) return res.status(404).json({ message: "Instructor not found" });
+		res.json({ courses: instructor.courses });
+	} 
+	catch (err) {
+		console.error("Error fetching courses:", err);
+		res.status(500).json({ message: "Error fetching courses" });
+	}
+});
 
 
 app.listen(port, () => console.log(`EServer Running on port http://localhost:${port}`));
