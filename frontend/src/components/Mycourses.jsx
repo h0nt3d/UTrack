@@ -9,16 +9,20 @@ import CourseModal from "../subcomponents/CourseModal.jsx"
 
 export function Mycourses ({user}) {
   const loc = useLocation();
-  const {email} = loc.state || {};
+  const {email, token} = loc.state || {};
   const [showModal, setShowModal] = useState(false);
   const [course, setCourse] = useState([]);
 
   useEffect(() => {
 	    if (!email) return;
 
-	    async function fetchCourses() {
+	    async function fetchCourses(newCourse) {
 	      try {
-		const response = await fetch(`http://localhost:5000/get-courses/${email}`);
+		const response = await fetch("http://localhost:5000/api/auth/get-courses", {
+			method: "GET",
+			headers: {"Content-Type": "application/json", "authtoken": token},
+			body: JSON.stringify(newCourse),
+		});
 		const data = await response.json();
 		if (response.ok) {
 		  setCourse(data.courses);
@@ -36,9 +40,9 @@ export function Mycourses ({user}) {
 
   async function addCourse(newCourse)  {
 	try {
-	      const response = await fetch(`http://localhost:5000/add-course/${email}`, {
+	      const response = await fetch("http://localhost:5000/api/auth/createCourses", {
 		method: "POST",
-		headers: { "Content-Type": "application/json" },
+		headers: { "Content-Type": "application/json", "authtoken": token },
 		body: JSON.stringify(newCourse),
 	      });
 	      const data = await response.json();

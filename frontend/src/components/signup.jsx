@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 export default function Signup() {
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [email, setEmail] = useState("");
+	const [email, setEmail, token] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const navigate = useNavigate();
@@ -24,7 +24,7 @@ export default function Signup() {
 			const data = await response.json();
 			console.log(data);
 			if (response.ok) {
-				navigate("/profile", {state: {email: data.user.email}});
+				navigate("/profile", {state: {email: data.user.email, token: data.token}});
 			}
 			else {
 				alert(data.message);

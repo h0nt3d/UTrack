@@ -34,5 +34,9 @@ app.get("/user/:email", async(req, res) => {
 const {router: authRouter, createUser} = require("./routes/authnticatn");
 app.use('/api/auth',authRouter);
 
+const instructorCourseRouter = require("./routes/InstructorCourse");
+app.use("/api/auth", instructorCourseRouter);
+
+
 app.listen(port, () => console.log(`EServer Running on port http://localhost:${port}`));
 
