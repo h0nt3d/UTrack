@@ -58,11 +58,6 @@ export default function Signup() {
           className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 	  onChange={(e) => setEmail(e.target.value)}
         />
-	<input
-          type="text"
-          placeholder="Personal Token"
-          className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
         <input
           type="password"
           placeholder="Password"

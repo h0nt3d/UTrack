@@ -1,12 +1,15 @@
 import profile from "../imagez/256-2560255_user-icon-user-white-icon-transparent-hd-png-removebg-preview.png"
 import {useState, useEffect} from "react";
-import {useLocation} from "react-router-dom";
-
+import {useLocation, useNavigate} from "react-router-dom";
+import LoginFailed from "./LoginFailed";
 
 export default function Logout ({styl}) {
     const loc = useLocation();
+    const navigate = useNavigate();
     const {email} = loc.state || {};
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
 	async function fetchUser() {
@@ -18,11 +21,23 @@ export default function Logout ({styl}) {
 		catch(err) {
 			console.error("Error fetching user data", err);
 		}
+		finally {
+			setLoading(false)
+		}
 	}
 	 if (email) fetchUser();
+
+	 else {
+		setError("No email provided");
+		setLoading(false);
+	 }
   }, [email]);
 
-    if (!user) return <p>Loading your profile...</p>
+    if (loading) return <p>Loading your profile...</p>
+
+    if (error || !user) {
+	return (<LoginFailed />);
+    }
 
     return (
         <div className={styl.header}>
