@@ -42,30 +42,35 @@ export default function Signup() {
         <h1 className="text-2xl font-bold mb-6 text-center">Sign Up for Instructors</h1>
 	<input
           type="text"
+		  data-testid="signup-firstName"
           placeholder="First Name"
           className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 	  onChange={(e) => setFirstName(e.target.value)}
         />
 	<input
           type="text"
+		  data-testid="signup-lastName"
           placeholder="Last Name"
           className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 	  onChange={(e) => setLastName(e.target.value)}
         />
         <input
           type="text"
+		  data-testid="signup-email"
           placeholder="Email"
           className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 	  onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
+		  data-testid="signup-password"
           placeholder="Password"
           className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 	  onChange={(e) => setPassword(e.target.value)}
         />
 	<input
           type="password"
+		  data-testid="signup-confirmPassword"
           placeholder="Retype Password"
           className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 	  onChange={(e) => setConfirmPassword(e.target.value)}
