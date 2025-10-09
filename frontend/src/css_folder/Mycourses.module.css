@@ -1,0 +1,132 @@
+
+body {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  margin: 0;
+}
+
+.my_courses{
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(to bottom, #BCEEFF, #FFFFFF);
+}
+
+.header{
+  background-color: black;
+  color: white;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 50px;
+}
+
+.img{
+  height: 30px;
+  width: 40px;
+}
+
+.log{
+  margin-left: auto;
+  margin-right: 15px;
+  border: 2px solid transparent;
+}
+
+.log:hover{
+  color: rgb(128, 198, 222);
+}
+
+.bod{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  gap: 100px;
+  /* background-color: green; */
+}
+
+.button{
+  background-color: black;
+  color: white;
+  height: 50px;
+  width: 270px;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  margin-left: auto;
+}
+
+.button:hover{
+  border: 2px solid rgb(128, 198, 222);
+  color: rgb(128, 198, 222);
+}
+
+.plus{
+  height: 30px;
+  width: 30px;
+  margin-left: 10px;
+}
+
+.my_c {
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+.course{
+  display: flex; 
+  background-color: black;
+  color: white;
+  height: 150px;
+  width: 200px;
+  align-items: center;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+
+.course:hover {
+  border: 2px solid rgb(128, 198, 222);
+  color: rgb(128, 198, 222);
+}
+
+.all_courses{
+  display: flex;
+  gap: 35px;
+  flex-wrap: wrap;
+  width: 700px;
+  margin: 0 auto; 
+}
+
+.course_img{
+  height: 130px;
+  object-fit: cover;
+  margin-top: auto;
+}
+
+.code_of_course{
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;  
+}
+
+.prof_button{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid transparent;
+}
+
+.prof_button:hover{
+  color: rgb(128, 198, 222);
+}
+
+.text_button_beg{
+  width: 700px;
+  display: flex;
+  /* align-items: space-evenly; */
+  /* background-color: red; */
+}
