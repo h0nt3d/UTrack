@@ -1,0 +1,69 @@
+* [33m2f981ca[m[33m ([m[1;31morigin/docker_setup[m[33m, [m[1;32mdocker_setup[m[33m)[m structure changed and JWT authentication added
+*   [33m9174fe6[m Merge branch 'frontend-test' of https://github.com/h0nt3d/SWE4103-Project into docker_setup
+[32m|[m[33m\[m  
+* [33m|[m [33m077e849[m Setup Jest, Supertest for Backend
+[33m|[m [33m|[m * [33m47623ca[m[33m ([m[1;36mHEAD -> [m[1;32mfrontend-test[m[33m, [m[1;31morigin/frontend-test[m[33m)[m Added Checking for retyping password
+[33m|[m [33m|[m[33m/[m  
+[33m|[m * [33m26c78d6[m Mad Course Number unique in Instructor Schema
+[33m|[m * [33mdcc1bb6[m Added fetching of courses
+[33m|[m * [33m7f74140[m Added displaying of course name on box
+[33m|[m * [33mebbc914[m Implemented Adding Courses Functionality
+[33m|[m * [33mea63dc5[m Removed CommentsOC
+[33m|[m * [33mbc62cc8[m Made dashboard to display the name of instructor
+[33m|[m * [33m678a6da[m Changed retype password text type
+[33m|[m * [33me5e8210[m Update README.md
+[33m|[m * [33m243a7c7[m Modified Instructor.js
+[33m|[m * [33mf4f619e[m Added Routing between login and courses page
+[33m|[m * [33mb25d8ec[m Added react-router-dom as frontend dependency
+[33m|[m * [33m3f1537c[m Added fields for first name and last name
+[33m|[m * [33m9a29441[m Removed finally that stops backend after user creation
+[33m|[m * [33mdb1e613[m Add instructor course list and course overview pages
+[33m|[m[33m/[m  
+* [33ma5d1108[m JWT authentication and special key added
+* [33mbc08612[m Changed username to email and added field for personal token in the front end
+* [33mbfde170[m Update README.md
+* [33m8144b1a[m Added a Frontend example for signing up
+* [33m1394214[m Added postcss and tailwind
+* [33m5db3997[m Removed template frontend files
+* [33m144a9f0[m Added hash.js in routes directory and modified backend_v1.js to implement hashing in a seperate file
+* [33me294ee0[m Edited Instructor Schema
+* [33m695782e[m Fixed Communication between Mongo and backend
+* [33m4b06bc2[m Correct misspelling
+* [33m0a39162[m Changed the structure including models ,routes with authentication
+* [33m9dd2879[m Removed deprecated usenewurlparser and useunifiedtopology
+* [33m4e5535e[m Added cors and express functionality
+* [33mfdd3b50[m Added Sample frontend react code
+[34m|[m *   [33m51cbcb0[m[33m ([m[1;35mrefs/stash[m[33m)[m WIP on docker_setup: adc1b53 Added react frontend directory
+[34m|[m [35m|[m[36m\[m  
+[34m|[m [35m|[m * [33m0f9889c[m index on docker_setup: adc1b53 Added react frontend directory
+[34m|[m [35m|[m[35m/[m  
+[34m|[m [35m|[m * [33me8e2027[m[33m ([m[1;31morigin/cicd_setup[m[33m)[m Setup CI/CD pipeline through GitHub Actions
+[34m|[m [35m|[m[34m/[m  
+[34m|[m[34m/[m[35m|[m   
+* [35m|[m [33m53e74be[m Updated README.md
+* [35m|[m [33mf403a95[m Added cors and express in the backend
+* [35m|[m [33mb5597e7[m Update README.md
+* [35m|[m [33m165633c[m Added Example for connection to MongoDB and storing data
+* [35m|[m [33mf0b831b[m Update README.md
+* [35m|[m [33m5c216ee[m Update README.md
+* [35m|[m [33ma60d126[m Update README.md
+* [35m|[m [33m72cc775[m Update README.md
+* [35m|[m [33m609ba35[m Setup Jest, Cypress for Frontend
+* [35m|[m [33m44e816f[m Readded json files and README.md
+* [35m|[m [33m1db369c[m Added Async Hashing functions
+* [35m|[m [33mfac202a[m Updated .gitignore to include bcrypt
+* [35m|[m [33md231e2b[m Added backend dir
+* [35m|[m [33md539c32[m Added git ignore
+[35m|[m[35m/[m  
+* [33madc1b53[m Added react frontend directory
+* [33ma4e8bdb[m Renamed to DOCKERINSTALL
+* [33m1b97eb9[m Removed version
+* [33m5daa378[m Added mongo-dump
+* [33m14392dd[m Removed volumes to use mongo dump
+* [33m64d7b63[m Update README.md
+* [33m4897df6[m Update README.md
+* [33ma9e0709[m Update README.md
+* [33mc48027d[m Added images dir
+* [33mddde9cc[m Added steps to setup docker desktop
+* [33m7ec3612[m Added docker-compose.yaml for MongoDB & MongoExpress
+* [33m3e0d2d2[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Initial commit
