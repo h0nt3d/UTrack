@@ -1,3 +1,7 @@
+/**
+ * This file contains all acceptance tests related to instructor sign-up.
+ */
+
 describe("Instructor Sign-Up", () => {
     
     // Sign-Up Page
@@ -15,7 +19,6 @@ describe("Instructor Sign-Up", () => {
         cy.get('input[data-testid="signup-firstName"]').should('be.visible');
         cy.get('input[data-testid="signup-lastName"]').should('be.visible');
         cy.get('input[data-testid="signup-email"]').should('be.visible');
-        cy.get('input[data-testid="signup-personalToken"]').should('be.visible');
         cy.get('input[data-testid="signup-password"]').should('be.visible');
         cy.get('input[data-testid="signup-confirmPassword"]').should('be.visible');
     });
@@ -23,7 +26,7 @@ describe("Instructor Sign-Up", () => {
     // Account Creation
     it("Creates an instructor account with valid data.", () => {
         // Mock Response
-        cy.intercept('POST', 'http://localhost:5000/signup', {
+        cy.intercept('POST', 'http://localhost:5000/api/auth/signup', {
             statusCode: 200,
             body: {
                 message: "User created successfully",
@@ -39,7 +42,6 @@ describe("Instructor Sign-Up", () => {
         cy.get('input[data-testid="signup-firstName"]').type("John");
         cy.get('input[data-testid="signup-lastName"]').type("Doe");
         cy.get('input[data-testid="signup-email"]').type("john.doe@example.com");
-        cy.get('input[data-testid="signup-personalToken"]').type("token1");
         cy.get('input[data-testid="signup-password"]').type("password123");
         cy.get('input[data-testid="signup-confirmPassword"]').type("password123");
 
@@ -50,10 +52,10 @@ describe("Instructor Sign-Up", () => {
     });
 
     // Empty Fields
-    // Note: This test will not pass under the current conditions. (10/08)
+    // Note: This test will not pass. We have no required fields. (10/08)
     it("Shows a validation error when there are empty fields.", () => {
         // Mock Response
-        cy.intercept('POST', 'http://localhost:5000/signup').as('mockSignup');
+        cy.intercept('POST', 'http://localhost:5000/api/auth/signup').as('mockSignup');
 
         // Submit Form w/ Empty Fields
         cy.get('button').contains("Create Account").click();
@@ -75,42 +77,34 @@ describe("Instructor Sign-Up", () => {
         cy.get('input[data-testid="signup-firstName"]').type("John");
         cy.get('input[data-testid="signup-lastName"]').type("Doe");
         cy.get('input[data-testid="signup-email"]').type("john.doe@example.com");
-        cy.get('input[data-testid="signup-personalToken"]').type("token1");
         cy.get('input[data-testid="signup-password"]').type("password123");
         cy.get('input[data-testid="signup-confirmPassword"]').type("password321");
 
-        // Password Alert
-        cy.on('window:alert', (alertText) => {
-            expect(alertText).to.match(/Passwords do not match\. Please retype\./i);
-        });
-
         cy.get('button').contains("Create Account").click();
+        cy.contains("Passwords do not match. Please retype.").should('be.visible');
     });
 
     // Invalid Email
-    // Note: This test will not pass under the current conditions. (10/08)
     it("Shows a validation error when an email input is incorrectly formatted.", () => {
+
         // Form
         cy.get('input[data-testid="signup-firstName"]').type("John");
         cy.get('input[data-testid="signup-lastName"]').type("Doe");
-        cy.get('input[data-testid="signup-email"]').type("invalid");
-        cy.get('input[data-testid="signup-personalToken"]').type("token1");
+        cy.get('input[data-testid="signup-email"]').type("john.doe@gmail.com");
         cy.get('input[data-testid="signup-password"]').type("password123");
         cy.get('input[data-testid="signup-confirmPassword"]').type("password123");
 
-        // Email Alert
-        cy.on('window:alert', (alertText) => {
-            expect(alertText).to.match(/Invalid email address\. Please retype\./i);
-        });
-
         cy.get('button').contains("Create Account").click();
+        cy.contains("Please use a valid @unb.ca email address.").should('be.visible');
+
+        cy.get('@mockSignup.all').should('have.length.at.most', 0);
     });
 
     // Duplicate Emails
-    // Note: This test will not pass under the current conditions. (10/08)
+    // Note: This test will not pass. We do not check for a duplicate email. (10/08)
     it("Shows a validation error for a duplicate email.", () => {
         // Mock Response
-        cy.intercept('POST', 'http://localhost:5000/signup', {
+        cy.intercept('POST', 'http://localhost:5000/api/auth/signup', {
             statusCode: 400,
             body: { message: "Email already registered." }
         }).as('duplicateEmail');
@@ -119,23 +113,18 @@ describe("Instructor Sign-Up", () => {
         cy.get('input[data-testid="signup-firstName"]').type("John");
         cy.get('input[data-testid="signup-lastName"]').type("Doe");
         cy.get('input[data-testid="signup-email"]').type("john.doe@example.com");
-        cy.get('input[data-testid="signup-personalToken"]').type("token1");
         cy.get('input[data-testid="signup-password"]').type("password123");
         cy.get('input[data-testid="signup-confirmPassword"]').type("password123");
 
-        cy.on('window:alert', (alertText) => {
-            expect(alertText).to.match(/Email already registered/i);
-        });
-
         cy.get('button').contains("Create Account").click();
-
         cy.wait('@duplicateEmail');
+        cy.contains("Email already registered.").should('be.visible');
     });
 
     // Redirected to Profile
     it("Redirects the instructor after a successful sign-up.", () => {
         // Mock Response
-        cy.intercept('POST', 'http://localhost:5000/signup', {
+        cy.intercept('POST', 'http://localhost:5000/api/auth/signup', {
             statusCode: 200,
             body: {
                 message: "User created successfully",
@@ -151,7 +140,6 @@ describe("Instructor Sign-Up", () => {
         cy.get('input[data-testid="signup-firstName"]').type("John");
         cy.get('input[data-testid="signup-lastName"]').type("Doe");
         cy.get('input[data-testid="signup-email"]').type("john.doe@example.com");
-        cy.get('input[data-testid="signup-personalToken"]').type("token1");
         cy.get('input[data-testid="signup-password"]').type("password123");
         cy.get('input[data-testid="signup-confirmPassword"]').type("password123");
 
