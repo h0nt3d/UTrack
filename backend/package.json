@@ -21,7 +21,7 @@
     "supertest": "^7.1.4"
   },
   "scripts": {
-    "test": "jest",
-    "lint": "npx eslint *.js middleware/**/*.js models/**/*.js routes/**/*.js utils/**/*.js tests/**/*.js --fix"
+    "test": "jest --passWithNoTests",
+    "lint": "eslint *.js middleware/**/*.js models/**/*.js routes/**/*.js utils/**/*.js tests/**/*.js --fix"
   }
 }
