@@ -8,5 +8,20 @@
     "mongoose": "^8.19.1",
     "nodemon": "^3.1.10",
     "prompt-sync": "^4.2.0"
+  },
+  "devDependencies": {
+    "@eslint/css": "^0.13.0",
+    "@eslint/js": "^9.37.0",
+    "@eslint/json": "^0.13.2",
+    "@eslint/markdown": "^7.4.0",
+    "eslint": "^9.37.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.4.0",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
+  },
+  "scripts": {
+    "test": "jest --passWithNoTests",
+    "lint": "eslint *.js middleware/**/*.js models/**/*.js routes/**/*.js utils/**/*.js --fix"
   }
 }
