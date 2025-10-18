@@ -56,6 +56,22 @@ async function createUser(firstName, lastName, email, password) {
   return sanitizeUser(doc);
 }
 
+async function createInstructor(firstName, lastName, email, password) {
+  const existing = await User.findOne({ email });
+  if (existing) {
+    const err = new Error("Email already registered");
+    err.status = 400;
+    throw err;
+  }
+  
+  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+  const doc = await User.create({ firstName, lastName, email, password : passwordHash, isInstructor : true });
+  console.log("Hashing password for", email);
+  return sanitizeUser(doc);
+}
+
+
+
 // ---------- SIGNUP ----------
 router.post("/signup", signupValidators, async (req, res) => {
   const errors = validationResult(req);
@@ -76,6 +92,29 @@ router.post("/signup", signupValidators, async (req, res) => {
     return res.status(code).json({ message: code === 400 ? err.message : "Error creating user with express"+err.message });
   }
 });
+
+router.post("/instructor-signup", signupValidators, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty())
+    return res.status(400).json({ message: errors.array().map(e => e.msg).join(", ") });
+
+  const { firstName, lastName, email, password } = req.body;
+  
+  try {
+    
+    const user = await createInstructor(firstName, lastName, email, password);
+    // Add JWT (keeps your original response shape, just adds token)
+    const token = signToken({ id: user.id, email: user.email });
+    
+    return res.json({ message: "User created successfully", user, token });
+  } catch (err) {
+    const code = err.status || 500;
+    return res.status(code).json({ message: code === 400 ? err.message : "Error creating user with express"+err.message });
+  }
+});
+
+
+
 
 // ---------- LOGIN ----------
 router.post("/login", loginValidators, async (req, res) => {
