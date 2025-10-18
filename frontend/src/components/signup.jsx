@@ -75,13 +75,17 @@ export default function Signup() {
           className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 	  onChange={(e) => setConfirmPassword(e.target.value)}
         />
-        <button className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
+        <button className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition"
 	  type="button"
 	  onClick={handleSubmit}>
           Create Account
         </button>
+	<button className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition mt-2"
+	  type="button">
+	  Already Have an Account?
+        </button>
       </form>
-    </div>
+  </div>
   );
 }
 

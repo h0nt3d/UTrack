@@ -2,10 +2,12 @@ import React from "react";
 import Signup from "./components/signup";
 import Mycourses from "./components/Mycourses";
 import Coursepage from "./components/Coursepage";
+import Landingpage from "./components/Landingpage";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 export default function App() {
-
+	
+	/*
 	const [ nnew, setNnew] = React.useState(true);
 
 	const [specificCourse, setSpecificCourse] = React.useState(true);
@@ -20,10 +22,12 @@ export default function App() {
 		setSelectedCourse(courseData);
 		setSpecificCourse(false);
     }
+    */
 	return(
 		<Router>
 			<Routes>
-				<Route path = "/" element={<Signup />} />
+				<Route path = "/" element= {<Landingpage />} />
+				<Route path = "/signup" element={<Signup />} />
 				<Route path = "/profile" element={<Mycourses />} />
 			</Routes>
 		</Router>
