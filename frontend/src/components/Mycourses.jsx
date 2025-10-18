@@ -7,7 +7,7 @@ import styles from "../css_folder/Mycourses.module.css"
 import { useLocation } from "react-router-dom";
 import CourseModal from "../subcomponents/CourseModal.jsx"
 
-export function Mycourses ({user}) {
+export default function Mycourses ({user}) {
   const loc = useLocation();
   const {email, token} = loc.state || {};
   const [showModal, setShowModal] = useState(false);
@@ -76,7 +76,7 @@ export function Mycourses ({user}) {
 
         <div className={styles.all_courses}>
           {course.map((c) => (
-            <Course styl={styles} course={c} handle={handle} />
+            <Course styl={styles} course={c} handle={handle} token={token}/>
           ))}
         </div>
       </div>
@@ -91,4 +91,3 @@ export function Mycourses ({user}) {
   );
 }
 
-export default Mycourses

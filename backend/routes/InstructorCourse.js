@@ -59,4 +59,20 @@ router.get("/get-courses", requireAuth, async (req, res) => {
   }
 });
 
+router.get("/get-course/:courseNumber", requireAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).send("User not found");
+
+    const courseNumber = req.params.courseNumber;
+    const course = user.courses.find(c => c.courseNumber === courseNumber);
+
+    if (!course) return res.status(404).send("Course not found");
+    res.json(course);
+  } catch (err) {
+    res.status(500).send("Error fetching course: " + err.message);
+  }
+});
+
+
 module.exports = router;
