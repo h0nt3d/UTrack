@@ -1,7 +1,7 @@
 const express = require("express");
 const { body, param, validationResult } = require("express-validator");
 const { requireAuth } = require("../middleware/auth");
-const Instructor = require("../models/Instructor");
+const User = require("../models/User");
 const router = express.Router();
 
 
@@ -30,7 +30,7 @@ router.post(
     const { courseNumber, courseName, description = "" } = req.body;
 
     try {
-      const user = await Instructor.findById(req.user.id);
+      const user = await User.findById(req.user.id);
       if (!user) return res.status(404).json({success:false, message: "User not found" });
 
       // prevent duplicate courseNumber for this user
@@ -51,7 +51,7 @@ router.post(
 
 router.get("/get-courses", requireAuth, async (req, res) => {
   try {
-    const user = await Instructor.findById(req.user.id, { courses: 1, _id: 0 }).lean();
+    const user = await User.findById(req.user.id, { courses: 1, _id: 0 }).lean();
     if (!user) return res.status(404).json({ message: "User not found" });
     return res.json({ courses: user.courses || [] });
   } catch {

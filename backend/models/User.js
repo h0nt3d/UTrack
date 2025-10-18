@@ -1,5 +1,7 @@
-// models/Instructor.js
+// models/User.js
 const mongoose = require("mongoose");
+
+
 
 // ---------- Course Subdocument Schema ----------
 const courseSchema = new mongoose.Schema(
@@ -19,12 +21,19 @@ const courseSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    students: [
+      {
+       type: mongoose.Schema.Types.ObjectId,
+       ref: "User",
+      }
+    ],
   },
   { _id: false } // we don't need a separate _id for each course
 );
 
-// ---------- Instructor Schema ----------
-const instructorSchema = new mongoose.Schema(
+
+// ---------- User Schema ----------
+const userSchema = new mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -47,6 +56,11 @@ const instructorSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isInstructor: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
     courses: {
       type: [courseSchema],
       default: [],
@@ -55,8 +69,9 @@ const instructorSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+
 // ---------- Validator: prevent duplicate courseNumber per instructor ----------
-instructorSchema.path("courses").validate(function (courses) {
+userSchema.path("courses").validate(function (courses) {
   const seen = new Set();
   for (const c of courses) {
     const key = (c.courseNumber || "").toLowerCase().trim();
@@ -70,5 +85,5 @@ instructorSchema.path("courses").validate(function (courses) {
 }, "Duplicate courseNumber in courses.");
 
 // ---------- Model Export ----------
-module.exports = mongoose.model("Instructor", instructorSchema);
+module.exports = mongoose.model("Instructor", userSchema);
 

@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors());
 
 const connectToMongo = require("./db.js");
-const Instructor = require("./models/Instructor.js");
+const User = require("./models/User.js");
 //const {hashPassword} = require("./routes/hash");
 
 const startApp = async () => {
@@ -21,7 +21,7 @@ startApp();
 //Getting User Name
 app.get("/user/:email", async(req, res) => {
 	try {
-		const user = await Instructor.findOne({email: req.params.email});
+		const user = await User.findOne({email: req.params.email});
 		if (!user) return res.status(404).json({message: "User not found"});
 		res.json(user);
 	}
