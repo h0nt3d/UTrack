@@ -2,6 +2,7 @@ const express = require("express");
 const { body, validationResult } = require("express-validator");
 const { requireAuth } = require("../middleware/auth");
 const Instructor = require("../models/Instructor");
+const Student = require("../models/Student");
 const Course = require("../models/Course");
 const router = express.Router();
 
@@ -71,10 +72,20 @@ router.get("/get-courses", requireAuth, async (req, res) => {
 // ---------- Get a specific course ----------
 router.get("/get-course/:courseNumber", requireAuth, async (req, res) => {
   try {
-    const course = await Course.findOne({ courseNumber: req.params.courseNumber, instructor: req.user.id }).lean()
-	  .populate("students", "firstName lastName email");
+    const course = await Course.findOne({
+      courseNumber: req.params.courseNumber,
+      instructor: req.user.id,
+    }).lean();
+
     if (!course) return res.status(404).json({ message: "Course not found" });
-    res.json(course);
+
+    // Fetch full student objects by email
+    const students = await Student.find({
+      email: { $in: course.students || [] },
+    }).lean();
+
+    // Merge course and student data
+    res.json({ ...course, students });
   } catch (err) {
     res.status(500).json({ message: "Error fetching course: " + err.message });
   }

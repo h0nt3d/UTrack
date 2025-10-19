@@ -69,7 +69,7 @@ export default function AddStudent() {
         Back
       </button>
 
-      <h1 className="text-3xl font-bold mb-6">Add Students to {courseName}</h1>
+      <h1 className="text-3xl font-bold mb-6">Add Students to {courseId}</h1>
 
       <form onSubmit={handleAddStudent} className="bg-white rounded-lg shadow-lg p-8 w-11/12 md:w-2/3 lg:w-1/2 mb-6">
         <h2 className="text-xl font-semibold mb-4">Create New Student</h2>
