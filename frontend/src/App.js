@@ -4,6 +4,7 @@ import Mycourses from "./components/Mycourses";
 import Coursepage from "./components/Coursepage";
 import Landingpage from "./components/Landingpage";
 import CourseDetails from "./components/CourseDetails";
+import AddStudent from "./components/AddStudent";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
 				<Route path = "/signup" element={<Signup />} />
 				<Route path = "/profile" element={<Mycourses />} />
 				<Route path = "/course/:id" element={<CourseDetails />} />
+				<Route path = "/course/:id/add-students" element = {<AddStudent />} />
 			</Routes>
 		</Router>
 	);

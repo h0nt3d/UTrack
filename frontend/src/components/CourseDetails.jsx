@@ -1,4 +1,4 @@
-import { useParams, useLocation } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 export default function CourseDetails() {
@@ -6,6 +6,7 @@ export default function CourseDetails() {
   const location = useLocation();
   const token = location.state?.token;
   const [course, setCourse] = useState(null);
+  const navigate = useNavigate();
 
 	useEffect(() => {
 	    async function fetchCourse() {
@@ -55,7 +56,8 @@ export default function CourseDetails() {
 	      <p className="text-gray-700 mb-2"><strong>Students Enrolled:</strong> {course.students?.length || 0}</p>
 	    </div>
 	      <button
-	      	 className="mt-6 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition">
+	      	 className="mt-6 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
+		 onClick={() => navigate(`/course/${id}/add-students`, { state: { token } })}>
 	      Add Students
 	    </button>
 	  </div>

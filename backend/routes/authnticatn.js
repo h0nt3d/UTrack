@@ -3,7 +3,7 @@ const express = require("express");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const Instructor = require("../models/Instructor");
 
 const router = express.Router();
 const SALT_ROUNDS = 10;
@@ -43,7 +43,7 @@ function signToken(userPayload) {
 
 // Same signature as your original code expects
 async function createUser(firstName, lastName, email, password) {
-  const existing = await User.findOne({ email });
+  const existing = await Instructor.findOne({ email });
   if (existing) {
     const err = new Error("Email already registered");
     err.status = 400;
@@ -51,13 +51,13 @@ async function createUser(firstName, lastName, email, password) {
   }
   
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-  const doc = await User.create({ firstName, lastName, email, password : passwordHash });
+  const doc = await Instructor.create({ firstName, lastName, email, password : passwordHash });
   console.log("Hashing password for", email);
   return sanitizeUser(doc);
 }
 
 async function createInstructor(firstName, lastName, email, password) {
-  const existing = await User.findOne({ email });
+  const existing = await Instructor.findOne({ email });
   if (existing) {
     const err = new Error("Email already registered");
     err.status = 400;
@@ -65,7 +65,7 @@ async function createInstructor(firstName, lastName, email, password) {
   }
   
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
-  const doc = await User.create({ firstName, lastName, email, password : passwordHash, isInstructor : true });
+  const doc = await Instructor.create({ firstName, lastName, email, password : passwordHash, isInstructor : true });
   console.log("Hashing password for", email);
   return sanitizeUser(doc);
 }
@@ -125,7 +125,7 @@ router.post("/login", loginValidators, async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const userDoc = await User.findOne({ email });
+    const userDoc = await Instructor.findOne({ email });
     if (!userDoc) return res.status(401).json({ message: "Invalid credentials" });
 
     const ok = await bcrypt.compare(password, userDoc.password);

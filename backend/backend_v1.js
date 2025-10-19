@@ -8,9 +8,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const connectToMongo = require("./db.js");
-const User = require("./models/User.js");
-//const {hashPassword} = require("./routes/hash");
+const connectToMongo = require("./db");
+const instructor = require("./models/Instructor");
 
 const startApp = async () => {
     await connectToMongo();
@@ -18,10 +17,10 @@ const startApp = async () => {
 startApp();
 
 
-//Getting User Name
+//Getting User
 app.get("/user/:email", async(req, res) => {
 	try {
-		const user = await User.findOne({email: req.params.email});
+		const user = await Instructor.findOne({email: req.params.email});
 		if (!user) return res.status(404).json({message: "User not found"});
 		res.json(user);
 	}
@@ -37,6 +36,8 @@ app.use('/api/auth',authRouter);
 const instructorCourseRouter = require("./routes/InstructorCourse");
 app.use("/api/auth", instructorCourseRouter);
 
+const studentRouter = require("./routes/Student");
+app.use("/api/students", studentRouter);
 
 app.listen(port, () => console.log(`EServer Running on port http://localhost:${port}`));
 
