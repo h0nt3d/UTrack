@@ -13,7 +13,7 @@ export default function AddStudent() {
   useEffect(() => {
     async function fetchStudents() {
       try {
-        const res = await fetch(`http://localhost:5000/api/students/course${id}`, {
+        const res = await fetch(`http://localhost:5000/api/students/course/${id}`, {
           headers: { "Content-Type": "application/json", "authtoken": token },
         });
         const data = await res.json();

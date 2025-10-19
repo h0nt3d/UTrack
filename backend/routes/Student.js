@@ -1,7 +1,8 @@
 const express = require("express");
 const { body, validationResult } = require("express-validator");
 const { requireAuth } = require("../middleware/auth");
-const User = require("../models/Student");
+const Student = require("../models/Student");
+const Instructor = require("../models/Instructor");
 const router = express.Router();
 
 // ---------- Validator Helper ----------
@@ -29,17 +30,16 @@ router.post(
 
     try {
       // Check if student already exists
-      const existingUser = await User.findOne({ email: email.toLowerCase() });
-      if (existingUser) {
-        return res.status(409).json({ message: "User with this email already exists" });
+      const existingStudent = await Student.findOne({ email: email.toLowerCase() });
+      if (existingStudent) {
+        return res.status(409).json({ message: "Student with this email already exists" });
       }
 
-      const student = new User({
+      const student = new Student({
         firstName,
         lastName,
         email: email.toLowerCase(),
         password: "", // empty, can be set on first login
-        isInstructor: false,
         courses: [],
       });
 
@@ -54,7 +54,7 @@ router.post(
 // ---------- Get students for a specific course ----------
 router.get("/course/:courseNumber", requireAuth, async (req, res) => {
   try {
-    const instructor = await User.findById(req.user.id);
+    const instructor = await Instructor.findById(req.user.id);
     if (!instructor) return res.status(404).json({ message: "Instructor not found" });
 
     const course = instructor.courses.find(c => c.courseNumber === req.params.courseNumber);
@@ -74,14 +74,14 @@ router.post("/course/:courseNumber/add-student", requireAuth, async (req, res) =
   if (!email) return res.status(400).json({ message: "Email is required" });
 
   try {
-    const instructor = await User.findById(req.user.id);
+    const instructor = await Instructor.findById(req.user.id);
     if (!instructor) return res.status(404).json({ message: "Instructor not found" });
 
     const course = instructor.courses.find(c => c.courseNumber === req.params.courseNumber);
     if (!course) return res.status(404).json({ message: "Course not found" });
 
     // Check if student exists
-    const student = await User.findOne({ email: email.toLowerCase() });
+    const student = await Student.findOne({ email: email.toLowerCase() });
     if (!student) return res.status(404).json({ message: "Student not found" });
 
     // Prevent duplicates
