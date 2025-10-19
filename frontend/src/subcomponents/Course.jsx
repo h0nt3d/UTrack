@@ -10,7 +10,7 @@ export default function Course ({course, styl, token, handle}) {
 
     return (
 	    <Link
-      		to={`/course/${course._id}`}
+      		to={`/course/${course.courseNumber}`}
       		state={{ token }}
       		className={`${styl.course_card} flex flex-col items-center text-center`}>
         	<h3 className={styl.course}>
