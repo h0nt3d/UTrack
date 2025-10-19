@@ -16,7 +16,7 @@ export default function App() {
 				<Route path = "/signup" element={<Signup />} />
 				<Route path = "/profile" element={<Mycourses />} />
 				<Route path = "/course/:id" element={<CourseDetails />} />
-				<Route path = "/course/:id/add-students" element = {<AddStudent />} />
+				<Route path = "/course/:courseId/add-students" element = {<AddStudent />} />
 			</Routes>
 		</Router>
 	);

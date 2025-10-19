@@ -21,7 +21,6 @@ export default function Mycourses ({user}) {
 		const response = await fetch("http://localhost:5000/api/auth/get-courses", {
 			method: "GET",
 			headers: {"Content-Type": "application/json", "authtoken": token},
-			body: JSON.stringify(newCourse),
 		});
 		const data = await response.json();
 		if (response.ok) {
@@ -46,7 +45,7 @@ export default function Mycourses ({user}) {
 		body: JSON.stringify(newCourse),
 	      });
 	      const data = await response.json();
-	      if (response.ok) setCourse(data.courses);
+	      if (response.ok) setCourse(prev => [...prev, data.course]);
 	      setShowModal(false);
 	    }
 	 catch (err) {
@@ -76,7 +75,7 @@ export default function Mycourses ({user}) {
 
         <div className={styles.all_courses}>
           {course.map((c) => (
-            <Course styl={styles} course={c} handle={handle} token={token}/>
+            <Course key={c._id} styl={styles} course={c} handle={handle} token={token}/>
           ))}
         </div>
       </div>

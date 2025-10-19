@@ -2,56 +2,63 @@ import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 
 export default function AddStudent() {
-  const { id } = useParams();
+  const { courseId } = useParams(); // now using courseId instead of courseNumber
   const location = useLocation();
   const navigate = useNavigate();
   const token = location.state?.token;
 
   const [students, setStudents] = useState([]);
   const [newStudent, setNewStudent] = useState({ firstName: "", lastName: "", email: "" });
+  const [courseName, setCourseName] = useState("");
 
   useEffect(() => {
-    async function fetchStudents() {
+    async function fetchCourseAndStudents() {
       try {
-        const res = await fetch(`http://localhost:5000/api/students/course/${id}`, {
+        // Fetch course to get name and students
+        const courseRes = await fetch(`http://localhost:5000/api/auth/get-course/${courseId}`, {
           headers: { "Content-Type": "application/json", "authtoken": token },
         });
-        const data = await res.json();
-        if (res.ok) setStudents(data.students || []);
+        const courseData = await courseRes.json();
+        if (!courseRes.ok) throw new Error(courseData.message || "Failed to fetch course");
+
+        setCourseName(courseData.courseName || "Course");
+        setStudents(courseData.students || []);
       } catch (err) {
         console.error(err);
       }
     }
-    fetchStudents();
-  }, [id, token]);
+    fetchCourseAndStudents();
+  }, [courseId, token]);
 
   async function handleAddStudent(e) {
-	  e.preventDefault();
+    e.preventDefault();
 
-	  try {
-	      const createRes = await fetch(`http://localhost:5000/api/students/create`, {
-	      method: "POST",
-	      headers: { "Content-Type": "application/json", "authtoken": token },
-	      body: JSON.stringify(newStudent),
-	    });
-	    const createData = await createRes.json();
-	    if (!createRes.ok) throw new Error(createData.message || "Failed to create student");
+    try {
+      // Step 1: Create student
+      const createRes = await fetch(`http://localhost:5000/api/students/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "authtoken": token },
+        body: JSON.stringify(newStudent),
+      });
+      const createData = await createRes.json();
+      if (!createRes.ok) throw new Error(createData.message || "Failed to create student");
 
-	    const addRes = await fetch(`http://localhost:5000/api/students/course/${id}/add-student`, {
-	      method: "POST",
-	      headers: { "Content-Type": "application/json", "authtoken": token },
-	      body: JSON.stringify({ email: newStudent.email }),
-	    });
-	    const addData = await addRes.json();
-	    if (!addRes.ok) throw new Error(addData.message || "Failed to add student to course");
+      // Step 2: Add student to course
+      const addRes = await fetch(`http://localhost:5000/api/students/course/${courseId}/add-student`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "authtoken": token },
+        body: JSON.stringify({ email: newStudent.email }),
+      });
+      const addData = await addRes.json();
+      if (!addRes.ok) throw new Error(addData.message || "Failed to add student to course");
 
-	    setStudents(addData.students);
-	    setNewStudent({ firstName: "", lastName: "", email: "" });
-
-	  } catch (err) {
-	    console.error(err);
-	  }
-	}
+      // Update student list
+      setStudents(addData.students || []);
+      setNewStudent({ firstName: "", lastName: "", email: "" });
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
@@ -62,7 +69,7 @@ export default function AddStudent() {
         Back
       </button>
 
-      <h1 className="text-3xl font-bold mb-6">Add Students to Course {id}</h1>
+      <h1 className="text-3xl font-bold mb-6">Add Students to {courseName}</h1>
 
       <form onSubmit={handleAddStudent} className="bg-white rounded-lg shadow-lg p-8 w-11/12 md:w-2/3 lg:w-1/2 mb-6">
         <h2 className="text-xl font-semibold mb-4">Create New Student</h2>
