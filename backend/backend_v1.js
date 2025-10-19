@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 const cors = require("cors");
 const express = require("express");
 
@@ -9,18 +8,20 @@ app.use(express.json());
 app.use(cors());
 
 const connectToMongo = require("./db");
-const instructor = require("./models/Instructor");
+connectToMongo()
+  .catch(err => {
+    console.error("Mongo connection error:", err);
+    process.exit(1);
+  });
 
-const startApp = async () => {
-    await connectToMongo();
-}
-startApp();
 
+const Instructor = require("./models/Instructor");
 
 //Getting User
 app.get("/user/:email", async(req, res) => {
 	try {
-		const user = await Instructor.findOne({email: req.params.email});
+		const email = decodeURIComponent(req.params.email).toLowerCase();
+		const user = await Instructor.findOne({ email });
 		if (!user) return res.status(404).json({message: "User not found"});
 		res.json(user);
 	}

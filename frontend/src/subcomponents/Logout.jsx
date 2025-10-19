@@ -14,7 +14,7 @@ export default function Logout ({styl}) {
     useEffect(() => {
 	async function fetchUser() {
 		try {
-			const response = await fetch(`http://localhost:5000/user/${email}`);
+			const response = await fetch(`http://localhost:5000/user/${encodeURIComponent(email.toLowerCase())}`);
 			const data = await response.json();
 			setUser(data);
 		}
