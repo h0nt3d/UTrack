@@ -1,11 +1,17 @@
 import React from "react";
 //import {useState} from "react";
+import StudentPage from './components/StudentPage';
 import Signup from "./components/signup";
+import ProjectOverview from "./components/ProjectOverview";
+
 
 export default function MyForm() {
 	return (
 		<div>
-			<Signup />
+			<Signup/>
+			<StudentPage/>
+			<ProjectOverview/>
+			
 		</div>
 	);
 }
