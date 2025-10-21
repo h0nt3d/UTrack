@@ -1,0 +1,158 @@
+.Isignup-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #cfeeff 0%, #eaf6ff 55%, #ffffff 100%);
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: #0b1220;
+  padding: 0;
+  gap: 10px;
+}
+
+.Ibrand-header {
+  text-align: center;
+  margin: 0;
+}
+
+.Ibrand-header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.Isignup-card {
+  width: min(420px, 92vw);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 28px 26px 24px;
+  box-shadow: 0 14px 38px rgba(15, 23, 42, 0.15);
+  position: relative;
+  text-align: left;
+  border: 1px solid #e6eaf1;
+}
+
+.Iicon-wrapper {
+  display: grid;
+  place-items: center;
+  margin: -8px auto 10px;
+}
+
+.Iarrow-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow:
+    0 4px 6px rgba(15, 23, 42, 0.05),
+    0 1px 2px rgba(15, 23, 42, 0.08);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.Iarrow-icon:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 10px rgba(15, 23, 42, 0.08),
+    0 2px 4px rgba(15, 23, 42, 0.12);
+}
+
+.Isignup-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 6px 0 16px;
+  color: #0f172a;
+}
+
+.Isignup-form {
+  display: grid;
+  gap: 12px;
+}
+
+.Iinput-group {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.Iinput-group:focus-within {
+  border-color: #9cc8ff;
+  box-shadow: 0 0 0 4px rgba(156, 200, 255, 0.35);
+  background: #ffffff;
+}
+
+.Iinput-icon {
+  display: grid;
+  place-items: center;
+  color: #64748b;
+}
+
+.Iinput-group input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: #0b1220;
+  padding: 8px 2px;
+}
+
+.Iinput-group input::placeholder {
+  color: #9aa5b1;
+}
+
+.Isubmit-btn {
+  margin-top: 6px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #0f172a;
+  box-shadow: 0 10px 20px rgba(2, 6, 23, 0.20);
+  transition: transform .1s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+.Isubmit-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.02);
+  box-shadow: 0 12px 24px rgba(2, 6, 23, 0.24);
+}
+
+.Isubmit-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 16px rgba(2, 6, 23, 0.18);
+}
+
+.Isignin-btn-wrapper {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.Isignin-btn-wrapper a {
+  color: #5b6fc5;
+  text-decoration: underline;
+}
+
+.Isignin-btn-wrapper a:hover {
+  color: #3f55b3;
+}
+
+@media (max-width: 420px) {
+  .Isignup-card { padding: 20px 18px; }
+  .Isignup-title { font-size: 20px; }
+}

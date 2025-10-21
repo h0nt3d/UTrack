@@ -1,0 +1,146 @@
+.Llogin-selection-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, #cfeeff 0%, #eaf6ff 55%, #ffffff 100%);
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: #0b1220;
+  padding: 0;
+  gap: 10px;
+}
+
+.Lbrand-header {
+  text-align: center;
+  margin: 0;
+}
+
+.Lbrand-header h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+}
+
+.Llogin-card {
+  width: min(480px, 92vw);
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  padding: 30px 26px 24px;
+  position: relative;
+  text-align: left;
+  border: 1px solid #e6eaf1;
+}
+
+.Llogin-card:hover {
+  transform: none;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+}
+
+.Llogin-card::before {
+  content: none;
+}
+
+.Lform-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 6px 0 16px;
+  color: #0f172a;
+}
+
+.Llogin-form {
+  display: grid;
+  gap: 12px;
+}
+
+.Linput-group {
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+.Linput-group:focus-within {
+  border-color: #9cc8ff;
+  box-shadow: 0 0 0 4px rgba(156, 200, 255, 0.25);
+  background: #ffffff;
+}
+
+.Linput-icon {
+  display: grid;
+  place-items: center;
+  color: #64748b;
+}
+
+.Linput-group input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 15px;
+  color: #0b1220;
+  padding: 8px 2px;
+}
+
+.Linput-group input::placeholder {
+  color: #9aa5b1;
+}
+
+.Lform-error {
+  color: #ff4d4f;
+  font-size: 0.95rem;
+  margin: 4px 0 2px;
+  text-align: center;
+}
+
+.Lprimary-btn {
+  margin-top: 6px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #0f172a;
+  box-shadow: none;
+  transition: filter .15s ease;
+}
+
+.Lprimary-btn:hover {
+  filter: brightness(1.1);
+}
+
+.Lprimary-btn:active {
+  transform: none;
+}
+
+.Lform-footnote {
+  margin: 16px 0 2px;
+  text-align: center;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.Llink-text {
+  color: #0f172a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.Llink-text:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 420px) {
+  .Llogin-card { padding: 20px 18px; }
+  .Lbrand-title { font-size: 1.9rem; }
+}
