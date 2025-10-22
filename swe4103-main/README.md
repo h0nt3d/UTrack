@@ -1,5 +1,5 @@
-Claim - /first-time-user
-Instructorsignup - /instructor-signup
-Login - /login
-Signup - /signup
-Stusignup - /student-signup
+Claim - /first-time-user<br>
+Instructorsignup - /instructor-signup<br>
+Login - /login<br>
+Signup - /signup<br>
+Stusignup - /student-signup<br>
