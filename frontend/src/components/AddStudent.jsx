@@ -75,6 +75,7 @@ export default function AddStudent() {
         <h2 className="text-xl font-semibold mb-4">Create New Student</h2>
         <input
           type="text"
+          data-testid="student-firstName"
           placeholder="First Name"
           value={newStudent.firstName}
           onChange={(e) => setNewStudent({ ...newStudent, firstName: e.target.value })}
@@ -83,6 +84,7 @@ export default function AddStudent() {
         />
         <input
           type="text"
+          data-testid="student-lastName"
           placeholder="Last Name"
           value={newStudent.lastName}
           onChange={(e) => setNewStudent({ ...newStudent, lastName: e.target.value })}
@@ -91,6 +93,7 @@ export default function AddStudent() {
         />
         <input
           type="email"
+          data-testid="student-email"
           placeholder="Email"
           value={newStudent.email}
           onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
