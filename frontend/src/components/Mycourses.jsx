@@ -1,90 +1,96 @@
-import { useState, useEffect } from 'react'
-import Course from "../subcomponents/Course.jsx"
-import Logout from "../subcomponents/Logout.jsx"
-import plus from "../imagez/add-icon-plus-icon-cross-white-text-symmetry-symbol-light-logo-png-clipart-removebg-preview.png"
-import imgg from "../imagez/minimalist-white-abstract-background_1272857-194151.jpg"
-import styles from "../css_folder/Mycourses.module.css"
-import { useLocation } from "react-router-dom";
-import CourseModal from "../subcomponents/CourseModal.jsx"
+// src/pages/Mycourses.jsx
+import { useEffect, useMemo, useState } from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import Logout from "../subcomponents/Logout.jsx";
+import Course from "../subcomponents/Course.jsx";
+import CourseModal from "../subcomponents/CourseModal.jsx";
+import plus from "../imagez/add-icon-plus-icon-cross-white-text-symmetry-symbol-light-logo-png-clipart-removebg-preview.png";
+import styles from "../css_folder/Mycourses.module.css";
+import { fetchCoursesByEmail, addCourseForEmail } from "./js/Mycourses.js"
 
-export function Mycourses ({user}) {
+export default function Mycourses({ user }) {
   const loc = useLocation();
-  const {email} = loc.state || {};
+  const email = useMemo(
+    () =>
+      (loc.state?.email ||
+       user?.email ||
+       localStorage.getItem("email") ||
+       "").trim().toLowerCase(),
+    [loc.state?.email, user?.email]
+  );
+
+  // Get user data from localStorage for display purposes
+  const storedUser = useMemo(() => {
+    const storedUserData = localStorage.getItem('user');
+    const storedFirstName = localStorage.getItem('firstName');
+    const storedLastName = localStorage.getItem('lastName');
+    
+    if (storedUserData && storedFirstName && storedLastName) {
+      try {
+        const userData = JSON.parse(storedUserData);
+        return {
+          firstName: storedFirstName,
+          lastName: storedLastName,
+          email: userData.email
+        };
+      } catch (err) {
+        console.error("Error parsing stored user data", err);
+        return null;
+      }
+    }
+    return null;
+  }, []);
+
   const [showModal, setShowModal] = useState(false);
-  const [course, setCourse] = useState([]);
+  const [courses, setCourses] = useState([]);
 
   useEffect(() => {
-	    if (!email) return;
+    if (!email) return;
+    (async () => {
+      const list = await fetchCoursesByEmail(email);
+      setCourses(list);
+    })();
+  }, [email]);
 
-	    async function fetchCourses() {
-	      try {
-		const response = await fetch(`http://localhost:5000/get-courses/${email}`);
-		const data = await response.json();
-		if (response.ok) {
-		  setCourse(data.courses);
-		}
-	      } catch (err) {
-		console.error("Error fetching courses:", err);
-	      }
-	    }
+  // If truly no email — bounce to login
+  if (!email) return <Navigate to="/login" replace />;
 
-	    fetchCourses();
-	  }, [email]);
+  const handleAddCourse = async (newCourse) => {
+    const list = await addCourseForEmail(email, newCourse);
+    setCourses(list);
+    setShowModal(false);
+  };
 
-
-
-
-  async function addCourse(newCourse)  {
-	try {
-	      const response = await fetch(`http://localhost:5000/add-course/${email}`, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(newCourse),
-	      });
-	      const data = await response.json();
-	      if (response.ok) setCourse(data.courses);
-	      setShowModal(false);
-	    }
-	 catch (err) {
-	      console.error("Error adding course:", err);
-	    }	
-  }
-
-  function handle (course) {
-    user.spec(course)
-  }
+  const handleCourseClick = (c) => user?.spec?.(c);
 
   return (
-  <div className={styles.my_courses}>
-    <Logout styl={styles}/>
+    <div className={styles.my_courses}>
+      <Logout styl={styles} user={storedUser} />
 
-   <div className={styles.bod}>
+      <div className={styles.bod}>
         <div className={styles.text_button_beg}>
           <h1 className={styles.my_c}>My Courses</h1>
-          <button
-            className={styles.button}
-            onClick={() => setShowModal(true)}
-          >
-            <img className={styles.plus} src={plus} />
+          <button className={styles.button} onClick={() => setShowModal(true)}>
+            <img className={styles.plus} src={plus} alt="Add Course" />
             <p className={styles.add_text}>Add course</p>
           </button>
         </div>
 
         <div className={styles.all_courses}>
-          {course.map((c) => (
-            <Course styl={styles} course={c} handle={handle} />
+          {courses.map((c, idx) => (
+            <Course
+              key={c.id || c._id || c.title || idx}
+              styl={styles}
+              course={c}
+              handle={handleCourseClick}
+            />
           ))}
         </div>
       </div>
 
       {showModal && (
-        <CourseModal
-          onClose={() => setShowModal(false)}
-          onSave={addCourse}
-        />
+        <CourseModal onClose={() => setShowModal(false)} onSave={handleAddCourse} />
       )}
     </div>
   );
 }
-
-export default Mycourses

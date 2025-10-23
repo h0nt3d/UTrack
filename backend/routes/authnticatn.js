@@ -84,17 +84,18 @@ router.post("/login", loginValidators, async (req, res) => {
     return res.status(400).json({ message: errors.array().map(e => e.msg).join(", ") });
 
   const { email, password } = req.body;
-
+  
   try {
     const userDoc = await Instructor.findOne({ email });
     if (!userDoc) return res.status(401).json({ message: "Invalid credentials" });
-
-    const ok = await bcrypt.compare(password, userDoc.passwordHash);
+  
+    const ok = await bcrypt.compare(password, userDoc.password);
     if (!ok) return res.status(401).json({ message: "Invalid credentials" });
 
+    
     const user = sanitizeUser(userDoc);
     const token = signToken({ id: user.id, email: user.email });
-
+    
     return res.json({ message: "Login successful", user, token });
   } catch (err) {
     return res.status(500).json({ message: "Login error"+err.message });

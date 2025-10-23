@@ -2,6 +2,7 @@ import React from "react";
 import Signup from "./components/signup";
 import Mycourses from "./components/Mycourses";
 import Coursepage from "./components/Coursepage";
+import SigninInst from "./components/SignInInstructor/Login";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 
@@ -25,6 +26,7 @@ export default function App() {
 		<Router>
 			<Routes>
 				<Route path = "/" element={<Signup />} />
+				<Route path = "/login" element={<SigninInst />} />
 				<Route path = "/profile" element={<Mycourses />} />
 			</Routes>
 		</Router>
