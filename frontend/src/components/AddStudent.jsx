@@ -72,23 +72,7 @@ export default function AddStudent() {
       <h1 className="text-3xl font-bold mb-6">Add Students to {courseId}</h1>
 
       <form onSubmit={handleAddStudent} className="bg-white rounded-lg shadow-lg p-8 w-11/12 md:w-2/3 lg:w-1/2 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Create New Student</h2>
-        <input
-          type="text"
-          placeholder="First Name"
-          value={newStudent.firstName}
-          onChange={(e) => setNewStudent({ ...newStudent, firstName: e.target.value })}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
-        <input
-          type="text"
-          placeholder="Last Name"
-          value={newStudent.lastName}
-          onChange={(e) => setNewStudent({ ...newStudent, lastName: e.target.value })}
-          className="w-full p-2 mb-3 border rounded"
-          required
-        />
+        <h2 className="text-xl font-semibold mb-4">Create New Student</h2> 
         <input
           type="email"
           placeholder="Email"
@@ -109,7 +93,7 @@ export default function AddStudent() {
         ) : (
           <ul>
             {students.map((s) => (
-              <li key={s._id} className="border-b py-2">{s.firstName} {s.lastName} ({s.email})</li>
+              <li key={s._id} className="border-b py-2">{s.firstName} {s.lastName} {s.email}</li>
             ))}
           </ul>
         )}

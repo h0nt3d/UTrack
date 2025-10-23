@@ -44,7 +44,7 @@ export default function Logout ({styl}) {
 
             <button className={styl.prof_button}>
                 <img src={profile} alt="profile" className={styl.img}/>
-                <h3 className={styl.name}>{user.firstName} {user.lastName}</h3>
+                <h3 className={styl.name}>{user.email}</h3>
             </button>
 
             <button className={styl.log}>

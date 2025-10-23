@@ -19,8 +19,8 @@ function handleValidation(req, res) {
 router.post(
   "/create",
   [
-    body("firstName").exists({ checkFalsy: true }).withMessage("First Name is required").trim(),
-    body("lastName").exists({ checkFalsy: true }).withMessage("Last Name is required").trim(),
+    //body("firstName").exists({ checkFalsy: true }).withMessage("First Name is required").trim(),
+    //body("lastName").exists({ checkFalsy: true }).withMessage("Last Name is required").trim(),
     body("email").exists({ checkFalsy: true }).withMessage("Email is required").isEmail().normalizeEmail(),
   ],
   async (req, res) => {
