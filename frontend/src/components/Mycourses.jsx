@@ -10,13 +10,22 @@ import { fetchCoursesByEmail, addCourseForEmail } from "./js/Mycourses.js"
 
 export default function Mycourses({ user }) {
   const loc = useLocation();
+  const {email: stateEmail, token: stateToken} = loc.state || {};
+  
+  // Get email from multiple sources with priority
   const email = useMemo(
     () =>
-      (loc.state?.email ||
+      (stateEmail ||
        user?.email ||
        localStorage.getItem("email") ||
        "").trim().toLowerCase(),
-    [loc.state?.email, user?.email]
+    [stateEmail, user?.email]
+  );
+
+  // Get token from multiple sources with priority
+  const token = useMemo(
+    () => stateToken || localStorage.getItem("token"),
+    [stateToken]
   );
 
   // Get user data from localStorage for display purposes
@@ -40,25 +49,84 @@ export default function Mycourses({ user }) {
     }
     return null;
   }, []);
-
   const [showModal, setShowModal] = useState(false);
   const [courses, setCourses] = useState([]);
 
   useEffect(() => {
     if (!email) return;
-    (async () => {
-      const list = await fetchCoursesByEmail(email);
-      setCourses(list);
-    })();
-  }, [email]);
+    
+    // Try to fetch courses using token-based API first, fallback to email-based API
+    if (token) {
+      fetchCoursesWithToken();
+    } else {
+      fetchCoursesWithEmail();
+    }
+
+    async function fetchCoursesWithToken() {
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/get-courses", {
+          method: "GET",
+          headers: {"Content-Type": "application/json", "authtoken": token},
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setCourses(data.courses || []);
+        } else {
+          // Fallback to email-based API if token fails
+          fetchCoursesWithEmail();
+        }
+      } catch (err) {
+        console.error("Error fetching courses with token:", err);
+        // Fallback to email-based API
+        fetchCoursesWithEmail();
+      }
+    }
+
+    async function fetchCoursesWithEmail() {
+      try {
+        const list = await fetchCoursesByEmail(email);
+        setCourses(list);
+      } catch (err) {
+        console.error("Error fetching courses with email:", err);
+      }
+    }
+  }, [email, token]);
 
   // If truly no email — bounce to login
   if (!email) return <Navigate to="/login" replace />;
 
   const handleAddCourse = async (newCourse) => {
-    const list = await addCourseForEmail(email, newCourse);
-    setCourses(list);
-    setShowModal(false);
+    // Try to add course using token-based API first, fallback to email-based API
+    if (token) {
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/createCourses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "authtoken": token },
+          body: JSON.stringify(newCourse),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          setCourses(prev => [...prev, data.course]);
+          setShowModal(false);
+        } else {
+          // Fallback to email-based API if token fails
+          const list = await addCourseForEmail(email, newCourse);
+          setCourses(list);
+          setShowModal(false);
+        }
+      } catch (err) {
+        console.error("Error adding course with token:", err);
+        // Fallback to email-based API
+        const list = await addCourseForEmail(email, newCourse);
+        setCourses(list);
+        setShowModal(false);
+      }
+    } else {
+      // Use email-based API if no token
+      const list = await addCourseForEmail(email, newCourse);
+      setCourses(list);
+      setShowModal(false);
+    }
   };
 
   const handleCourseClick = (c) => user?.spec?.(c);
@@ -83,6 +151,7 @@ export default function Mycourses({ user }) {
               styl={styles}
               course={c}
               handle={handleCourseClick}
+              token={token}
             />
           ))}
         </div>
