@@ -14,8 +14,8 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 // ---------- Validators ----------
 const signupValidators = [
-  body("firstName").exists({ checkFalsy: true }).withMessage("firstName is required.").isString().trim(),
-  body("lastName").exists({ checkFalsy: true }).withMessage("lastName is required.").isString().trim(),
+  //body("firstName").exists({ checkFalsy: true }).withMessage("firstName is required.").isString().trim(),
+  //body("lastName").exists({ checkFalsy: true }).withMessage("lastName is required.").isString().trim(),
   body("email").exists({ checkFalsy: true }).withMessage("email is required.").isEmail().normalizeEmail(),
   body("password").exists({ checkFalsy: true }).withMessage("password is required.").isLength({ min: 8 }),
 ];
