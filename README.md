@@ -1,3 +1,5 @@
+![alt text](https://github.com/h0nt3d/UTrack/blob/main/images/uTrack-logo.png?raw=true)
+
 # Dependencies
 ### Backend:
 - prompt-sync
@@ -26,6 +28,7 @@ Inside the frontend Directory, run <br>
 
 ## Launching React on port 3000
 `npm start`
+
 
 
 
