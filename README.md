@@ -1,3 +1,5 @@
+![alt text](https://github.com/h0nt3d/UTrack/blob/main/images/uTrack-logo.png?raw=true)
+
 # Dependencies
 ### Backend:
 - prompt-sync
