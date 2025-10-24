@@ -16,6 +16,7 @@ connectToMongo()
 
 
 const Instructor = require("./models/Instructor");
+const Course = require("./models/Course");
 
 //Getting User
 app.get("/user/:email", async(req, res) => {
@@ -39,6 +40,55 @@ app.use("/api/auth", instructorCourseRouter);
 
 const studentRouter = require("./routes/Student");
 app.use("/api/students", studentRouter);
+
+// Email-based routes for course management
+app.get("/get-courses/:email", async (req, res) => {
+  try {
+    const email = decodeURIComponent(req.params.email).toLowerCase();
+    const instructor = await Instructor.findOne({ email });
+    if (!instructor) return res.status(404).json({ message: "Instructor not found" });
+    
+    const courses = await Course.find({ instructor: instructor._id }).lean();
+    res.json({ courses });
+  } catch (err) {
+    console.error("Error fetching courses:", err);
+    res.status(500).json({ message: "Error fetching courses: " + err.message });
+  }
+});
+
+app.post("/add-course/:email", async (req, res) => {
+  try {
+    const email = decodeURIComponent(req.params.email).toLowerCase();
+    const instructor = await Instructor.findOne({ email });
+    if (!instructor) return res.status(404).json({ message: "Instructor not found" });
+    
+    const { courseNumber, courseName, description = "" } = req.body;
+    
+    // Check if this instructor already has a course with same courseNumber
+    const existingCourse = await Course.findOne({ courseNumber, instructor: instructor._id });
+    if (existingCourse) return res.status(409).json({ message: "courseNumber already exists" });
+    
+    // Create and save course
+    const newCourse = await Course.create({
+      courseNumber,
+      courseName,
+      description,
+      instructor: instructor._id,
+      students: [],
+    });
+    
+    // Add course reference to instructor
+    instructor.courses.push(newCourse._id);
+    await instructor.save();
+    
+    // Return all courses for this instructor
+    const courses = await Course.find({ instructor: instructor._id }).lean();
+    res.json({ success: true, message: "Course created", course: newCourse, courses });
+  } catch (err) {
+    console.error("Error adding course:", err);
+    res.status(500).json({ message: "Error adding course: " + err.message });
+  }
+});
 
 app.listen(port, () => console.log(`EServer Running on port http://localhost:${port}`));
 

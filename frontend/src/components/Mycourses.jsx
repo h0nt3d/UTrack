@@ -55,10 +55,11 @@ export default function Mycourses({ user }) {
   useEffect(() => {
     if (!email) return;
     
-    // Try to fetch courses using token-based API first, fallback to email-based API
+    // Use token-based API for proper instructor isolation
     if (token) {
       fetchCoursesWithToken();
     } else {
+      // If no token, try email-based API as fallback
       fetchCoursesWithEmail();
     }
 
@@ -72,6 +73,7 @@ export default function Mycourses({ user }) {
         if (response.ok) {
           setCourses(data.courses || []);
         } else {
+          console.error("Token-based API failed:", data.message);
           // Fallback to email-based API if token fails
           fetchCoursesWithEmail();
         }
@@ -88,6 +90,7 @@ export default function Mycourses({ user }) {
         setCourses(list);
       } catch (err) {
         console.error("Error fetching courses with email:", err);
+        setCourses([]); // Set empty array on error
       }
     }
   }, [email, token]);
@@ -96,7 +99,7 @@ export default function Mycourses({ user }) {
   if (!email) return <Navigate to="/login" replace />;
 
   const handleAddCourse = async (newCourse) => {
-    // Try to add course using token-based API first, fallback to email-based API
+    // Use token-based API for proper instructor isolation
     if (token) {
       try {
         const response = await fetch("http://localhost:5000/api/auth/createCourses", {
@@ -109,6 +112,7 @@ export default function Mycourses({ user }) {
           setCourses(prev => [...prev, data.course]);
           setShowModal(false);
         } else {
+          console.error("Token-based API failed:", data.message);
           // Fallback to email-based API if token fails
           const list = await addCourseForEmail(email, newCourse);
           setCourses(list);

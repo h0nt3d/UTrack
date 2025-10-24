@@ -79,8 +79,8 @@ export default function Signup() {
   }
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
-      <form className="bg-white p-8 rounded-lg shadow-md w-96">
+    <div className="flex items-center justify-center h-screen bg-gradient-to-b from-sky-300 via-sky-200 to-blue-50">
+      <form className="bg-gradient-to-b from-sky-300 via-sky-200 to-blue-50 p-8 rounded-lg shadow-md w-96">
         <h1 className="text-2xl font-bold mb-6 text-center">Sign Up for Instructors</h1>
 
         <input className="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -103,7 +103,7 @@ export default function Signup() {
         </div>
 
         <button type="button"
-                className="w-full bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
+                className="w-full bg-black text-white py-3 rounded-lg hover:bg-[#004369] transition"
                 onClick={handleSubmit}>
           Create Account
         </button>
