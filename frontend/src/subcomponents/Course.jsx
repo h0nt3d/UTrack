@@ -4,7 +4,7 @@ export default function Course ({course, styl, token, handle}) {
 
 	
     function courseOverview() {
-        handle(course)
+        handle(course);
     }
     
 
@@ -12,11 +12,12 @@ export default function Course ({course, styl, token, handle}) {
 	    <Link
       		to={`/course/${course.courseNumber}`}
       		state={{ token }}
-      		className={`${styl.course_card} flex flex-col items-center text-center`}>
+      		className={`${styl.course_card} flex flex-col items-center text-center`}
+      		onClick={courseOverview}>
         	<h3 className={styl.course}>
 	    		{course.courseNumber}: {course.courseName}
 	    	</h3>
-            	<img className={styl.course_img} src={course.img}/>
+            	<img className={styl.course_img} src={course.img} alt={`${course.courseName} course`}/>
 	    </Link>
     );
 }

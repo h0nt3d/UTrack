@@ -43,7 +43,7 @@ export default function CourseModal({ onClose, onSave }) {
           name="courseNumber"
           type="text"
           placeholder="Course Number (e.g., ECE101)"
-          value={course.courseId}
+          value={course.courseNumber}
           onChange={handleChange}
           style={{ display: "block", width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
         />
@@ -52,7 +52,7 @@ export default function CourseModal({ onClose, onSave }) {
           name="courseName"
           type="text"
           placeholder="Course Name"
-          value={course.name}
+          value={course.courseName}
           onChange={handleChange}
           style={{ display: "block", width: "100%", marginBottom: "0.5rem", padding: "0.5rem" }}
         />

@@ -1,16 +1,16 @@
 import styles from "../css_folder/Coursepage.module.css"
 import plus from "../imagez/add-icon-plus-icon-cross-white-text-symmetry-symbol-light-logo-png-clipart-removebg-preview.png"
 import profile from "../imagez/256-2560255_user-icon-user-white-icon-transparent-hd-png-removebg-preview.png"
-import Header from "../subcomponents/Header"
-import Project from "../subcomponents/Project"
-import React from "react" 
+import Header from "../subcomponents/Header";
+import Project from "../subcomponents/Project";
+import React from "react" ;
 
 export function Coursepage ({course}) {
 
-    const [project, setProject] = React.useState([])
+    const [project, setProject] = React.useState([]);
 
     function addProject(){
-        setProject(prev => [...prev, {namee: "Project #1: Finance Tracker"}])
+        setProject(prev => [...prev, {namee: "Project #1: Finance Tracker"}]);
     }
 
     return (
@@ -44,7 +44,7 @@ export function Coursepage ({course}) {
                 </div>
             </div>
         </div>
-  )
+  );
 }
 
-export default Coursepage
+export default Coursepage;

@@ -1,4 +1,4 @@
-import profile from "../imagez/256-2560255_user-icon-user-white-icon-transparent-hd-png-removebg-preview.png"
+import profile from "../imagez/256-2560255_user-icon-user-white-icon-transparent-hd-png-removebg-preview.png";
 import {useState, useEffect} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import LoginFailed from "./LoginFailed";
@@ -65,7 +65,19 @@ export default function Logout ({styl, user: propUser}) {
         }
     }, [email, propUser]);
 
-    if (loading) return <p>Loading your profile...</p>
+    if (loading) return <p>Loading your profile...</p>;
+
+    const handleLogout = () => {
+        // Clear all stored data
+        localStorage.removeItem('user');
+        localStorage.removeItem('firstName');
+        localStorage.removeItem('lastName');
+        localStorage.removeItem('email');
+        localStorage.removeItem('token');
+        
+        // Navigate to login page
+        navigate('/login');
+    };
 
     if (error || !user) {
         return (<LoginFailed />);
@@ -79,7 +91,7 @@ export default function Logout ({styl, user: propUser}) {
                 <h3 className={styl.name}>{user.firstName} {user.lastName}</h3>
             </button>
 
-            <button className={styl.log}>
+            <button className={styl.log} onClick={handleLogout}>
                 <h3>Log Out</h3>
             </button>
         </div>

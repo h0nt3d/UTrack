@@ -6,7 +6,7 @@ import Course from "../subcomponents/Course.jsx";
 import CourseModal from "../subcomponents/CourseModal.jsx";
 import plus from "../imagez/add-icon-plus-icon-cross-white-text-symmetry-symbol-light-logo-png-clipart-removebg-preview.png";
 import styles from "../css_folder/Mycourses.module.css";
-import { fetchCoursesByEmail, addCourseForEmail } from "./js/Mycourses.js"
+import { fetchCoursesByEmail, addCourseForEmail } from "./js/Mycourses.js";
 
 export default function Mycourses({ user }) {
   const loc = useLocation();
@@ -28,27 +28,6 @@ export default function Mycourses({ user }) {
     [stateToken]
   );
 
-  // Get user data from localStorage for display purposes
-  const storedUser = useMemo(() => {
-    const storedUserData = localStorage.getItem('user');
-    const storedFirstName = localStorage.getItem('firstName');
-    const storedLastName = localStorage.getItem('lastName');
-    
-    if (storedUserData && storedFirstName && storedLastName) {
-      try {
-        const userData = JSON.parse(storedUserData);
-        return {
-          firstName: storedFirstName,
-          lastName: storedLastName,
-          email: userData.email
-        };
-      } catch (err) {
-        console.error("Error parsing stored user data", err);
-        return null;
-      }
-    }
-    return null;
-  }, []);
   const [showModal, setShowModal] = useState(false);
   const [courses, setCourses] = useState([]);
 
@@ -137,7 +116,7 @@ export default function Mycourses({ user }) {
 
   return (
     <div className={styles.my_courses}>
-      <Logout styl={styles} user={storedUser} />
+      <Logout styl={styles} />
 
       <div className={styles.bod}>
         <div className={styles.text_button_beg}>
