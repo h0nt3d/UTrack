@@ -96,7 +96,7 @@ export default function Signup() {
 
         <div className="mb-4">
           <button type="button"
-                  className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition mb-2"
+                  className="w-full bg-sky-400 text-white py-3 rounded-lg hover:bg-sky-500 transition mb-2"
                   onClick={handleOpenLogin}>
             Already have an account? Sign In
           </button>
