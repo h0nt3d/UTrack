@@ -10,7 +10,7 @@ export default function Signup() {
 	}
 
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100">
+    <div className="flex items-center justify-center h-screen bg-gradient-to-b from-sky-300 via-sky-200 to-blue-50">
       <form className="bg-white p-8 rounded-lg shadow-md w-96 flex flex-col items-center">
         <img
           src={logo}
