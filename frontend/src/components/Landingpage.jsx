@@ -15,7 +15,7 @@ export default function Signup() {
         <img
           src={logo}
           alt="Banner"
-          className="w-50 h-50 mb-6 object-contain"
+          className="w-80 h-80 mb-6 object-contain rounded-lg"
         />
         <div className="flex gap-2 w-full">
           <button
