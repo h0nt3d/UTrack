@@ -72,9 +72,28 @@ export default function AddStudent() {
       <h1 className="text-3xl font-bold mb-6">Add Students to {courseId}</h1>
 
       <form onSubmit={handleAddStudent} className="bg-white rounded-lg shadow-lg p-8 w-11/12 md:w-2/3 lg:w-1/2 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Create New Student</h2> 
+        <h2 className="text-xl font-semibold mb-4">Create New Student</h2>
+        <input
+          type="text"
+          data-testid="student-firstName"
+          placeholder="First Name"
+          value={newStudent.firstName}
+          onChange={(e) => setNewStudent({ ...newStudent, firstName: e.target.value })}
+          className="w-full p-2 mb-3 border rounded"
+          required
+        />
+        <input
+          type="text"
+          data-testid="student-lastName"
+          placeholder="Last Name"
+          value={newStudent.lastName}
+          onChange={(e) => setNewStudent({ ...newStudent, lastName: e.target.value })}
+          className="w-full p-2 mb-3 border rounded"
+          required
+        />
         <input
           type="email"
+          data-testid="student-email"
           placeholder="Email"
           value={newStudent.email}
           onChange={(e) => setNewStudent({ ...newStudent, email: e.target.value })}
