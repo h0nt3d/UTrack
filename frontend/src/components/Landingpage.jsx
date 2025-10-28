@@ -19,14 +19,14 @@ export default function Signup() {
         />
         <div className="flex gap-2 w-full">
           <button
-            className="flex-1 bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition"
+            className="flex-1 bg-black text-white py-3 rounded-lg hover:bg-grey-900 transition"
             type="button"
             onClick={handleSubmit}
           >
             Instructors
           </button>
           <button
-            className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition"
+            className="flex-1 bg-black text-white py-3 rounded-lg hover:bg-grey-900 transition"
             type="button"
           >
             Students
