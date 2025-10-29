@@ -1,10 +1,10 @@
-//* Instructor Sign Up *//
+//* Student Sign Up *//
 import logo from "../imagez/utrack-rbg.png";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchSignup } from "./js/signupApi.js";
 import EmailVerify from "./EmailVerify/EmailVerify.jsx";
-import { User, KeyRound, Mail, Lock } from "lucide-react";
+import { Mail, Lock } from "lucide-react";
 
 function isValidEmailBasic(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
@@ -13,10 +13,8 @@ function isUnbEmail(email) {
   return email.toLowerCase().endsWith("@unb.ca");
 }
 
-export default function Signup() {
+export default function FirstLogin() {
   // --- state (must-keep) ---
-  const [firstName, setFirstName]           = useState("");
-  const [lastName,  setLastName]            = useState("");
   const [email,     setEmail]               = useState("");
   const [password,  setPassword]            = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -30,13 +28,11 @@ export default function Signup() {
   async function handleSubmit() {
     setErrorMessage("");
 
-    const fn  = firstName.trim();
-    const ln  = lastName.trim();
     const em  = email.trim().toLowerCase();
     const pw  = password;
     const cpw = confirmPassword;
 
-    if (!fn || !ln || !em || !pw || !cpw) {
+    if (!em || !pw || !cpw) {
       setErrorMessage("Please fill in all fields.");
       return;
     }
@@ -58,7 +54,7 @@ export default function Signup() {
     }
 
     // open OTP modal (must-keep)
-    setPendingUserData({ firstName: fn, lastName: ln, email: em, password: pw });
+    setPendingUserData({ email: em, password: pw });
     setShowEmailModal(true);
   }
 
@@ -121,26 +117,10 @@ export default function Signup() {
                   />
                 </div>
           <h2 className="text-center text-xl sm:text-2xl font-extrabold text-black mb-6">
-            Sign Up for Instructors
+            Student First Time Login
           </h2>
 
           <div className="space-y-4">
-            <Field
-              icon={User}
-              placeholder="First Name"
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <Field
-              icon={User}
-              placeholder="Last Name"
-              onChange={(e) => setLastName(e.target.value)}
-            />
-            {/* Optional Personal Token field to match the first pic UI (no backend change) */}
-            <Field
-              icon={KeyRound}
-              placeholder="Personal Token"
-              // leave unbound so it doesn't affect backend payload
-            />
             <Field
               icon={Mail}
               type="email"
@@ -165,18 +145,18 @@ export default function Signup() {
           <div className="mt-6 space-y-3">
             <button
               type="button"
+              disabled
               className="
-                mt-0 w-full rounded-xl bg-[#0b1220] text-white py-3
+                w-full rounded-xl bg-[#0b1220] text-white py-3
                 shadow-[0_8px_20px_rgba(0,0,0,0.15)]
-                hover:bg-[#1a1f33]
                 hover:shadow-[0_10px_25px_rgba(0,0,0,0.25)]
-                active:scale-[0.99]
+                hover:bg-[#1a1f33]
                 transition-all duration-200 ease-in-out
               "
               
               onClick={handleSubmit}
             >
-              Create Account
+              Claim Account
             </button>
 
             <div className="text-center text-sm text-gray-700">
