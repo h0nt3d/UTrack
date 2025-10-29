@@ -3,8 +3,6 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import * as XLSX from "xlsx";
 import styles from "../css_folder/Mycourses.module.css";
 import Logout from "../subcomponents/Logout.jsx";
-
-// Import your helpers (adjust paths if needed)
 import { checkHeaders, clean, valEmail, checkDupes } from "../utils/parseHelpers.js";
 
 export default function CSVExcelAdd() {
@@ -16,24 +14,24 @@ export default function CSVExcelAdd() {
   const [file, setFile] = useState(null);
   const [students, setStudents] = useState([]);
   const [error, setError] = useState("");
+  const [message, setMessage] = useState(null);
 
-  // Parse file in browser
+  // Parse file
   const parseFile = async (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
       reader.onload = (e) => {
-        let parsed = [];
         try {
           const data = e.target.result;
+          let parsed = [];
 
           if (file.name.endsWith(".csv")) {
             const [headerRow, ...rows] = data.split(/\r?\n/).filter(Boolean);
             const headers = headerRow.split(",").map((h) => h.trim());
-
             parsed = rows.map((row) => {
               const cols = row.split(",");
-              let obj = {};
+              const obj = {};
               headers.forEach((h, i) => (obj[h] = cols[i]?.trim() || ""));
               return obj;
             });
@@ -71,7 +69,7 @@ export default function CSVExcelAdd() {
       setError("");
     } catch (err) {
       console.error(err);
-      setError("Failed to parse file. Make sure it is valid CSV or XLSX.");
+      setError("Failed to parse file. Please check your CSV/XLSX formatting.");
       setStudents([]);
     }
   };
@@ -94,11 +92,20 @@ export default function CSVExcelAdd() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to add students");
 
-      alert(`Successfully added ${students.length} students!`);
-      navigate(-1);
+      setMessage({
+        text: `Successfully added ${students.length} students!`,
+        type: "success",
+      });
+      setTimeout(() => setMessage(null), 1500);
+
+      setStudents([]);
+      setFile(null);
+
+      setTimeout(() => navigate(-1), 1500);
     } catch (err) {
       console.error(err);
-      alert("Error adding students: " + err.message);
+      setMessage({ text: "Error adding students: " + err.message, type: "error" });
+      setTimeout(() => setMessage(null), 4000);
     }
   };
 
@@ -130,27 +137,67 @@ export default function CSVExcelAdd() {
             className="p-2 border rounded w-full max-w-md"
           />
         </div>
+
         {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
-        {/* Preview Students */}
+        {/* Parsed Students Table */}
         {students.length > 0 && (
-          <div className={`${styles.all_courses} mb-6 w-full max-w-lg mx-auto`}>
-            <h2 className="text-xl font-semibold mb-2 text-center">Parsed Students:</h2>
-            {students.map((s, idx) => (
-              <div
-                key={idx}
-                className={`${styles.course_card} flex items-center justify-between p-2 mb-2`}
-              >
-                {s.firstName} {s.lastName} ({s.email})
-              </div>
-            ))}
+          <div className="w-full max-w-3xl mx-auto mt-6">
+            <h2 className="text-xl font-semibold mb-4 text-center">
+              Parsed Students Preview
+            </h2>
 
-            <button
-              className={`${styles.button} mt-4 w-full flex justify-center items-center`}
-              onClick={handleAddStudents}
-            >
-              Add All Students
-            </button>
+            <div className="overflow-x-auto shadow-md rounded-lg border border-gray-300">
+              <table className="w-full border-collapse border border-gray-300 text-left">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="border border-gray-300 px-4 py-2">First Name</th>
+                    <th className="border border-gray-300 px-4 py-2">Last Name</th>
+                    <th className="border border-gray-300 px-4 py-2">Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map((s, idx) => (
+                    <tr
+                      key={idx}
+                      className="hover:bg-gray-50 transition-colors duration-150"
+                    >
+                      <td className="border border-gray-300 px-4 py-2">
+                        {s.firstName || "-"}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {s.lastName || "-"}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {s.email || "-"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex justify-center mt-6">
+              <button
+                className={`${styles.button} flex justify-center items-center`}
+                onClick={handleAddStudents}
+              >
+                Add All Students
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Success / Error Popup */}
+        {message && (
+          <div
+            className="fixed bottom-5 left-1/2 transform -translate-x-1/2 px-4 py-3 rounded shadow-md text-white font-medium transition-all duration-300"
+            style={{
+              backgroundColor:
+                message.type === "success" ? "#16a34a" : "#dc2626", // green/red
+            }}
+          >
+            {message.text}
           </div>
         )}
       </div>
