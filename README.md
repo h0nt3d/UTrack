@@ -24,7 +24,8 @@ Inside the backend Directory, run <br>
 ## Frontend
 Inside the frontend Directory, run <br>
 `npm install` <br>
-`npm install react-router-dom`
+`npm install react-router-dom` <br>
+<br> 'npm install lucide-react (Added recently)'
 
 ## Launching React on port 3000
 `npm start`
