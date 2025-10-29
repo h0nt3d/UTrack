@@ -16,6 +16,7 @@
 - postcss
 - autoprefixer
 - react-router-dom
+- xlsx
 
 ## Backend:
 Inside the backend Directory, run <br>
@@ -29,6 +30,7 @@ Inside the frontend Directory, run <br>
 
 ## Launching React on port 3000
 `npm start`
+
 
 
 
