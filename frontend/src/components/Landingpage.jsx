@@ -58,7 +58,6 @@ export default function Signup() {
         bg-gradient-to-b from-sky-300 to-sky-100
       "
     >
-      {/* Logo + Title */}
       <div className="flex flex-col items-center mb-8">
         <img
           src={logo}
@@ -67,7 +66,6 @@ export default function Signup() {
         />
       </div>
 
-      {/* Cards Row */}
       <div className="flex flex-wrap justify-center gap-8">
         <Card Icon={GraduationCap} title="Student Sign Up" onClick={goStudent} />
         <Card Icon={Users} title="Instructor Sign Up" onClick={goInstructor} />

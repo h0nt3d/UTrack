@@ -1,4 +1,3 @@
-//* Student Sign Up *//
 import logo from "../imagez/utrack-rbg.png";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,7 +13,6 @@ function isUnbEmail(email) {
 }
 
 export default function FirstLogin() {
-  // --- state (must-keep) ---
   const [email,     setEmail]               = useState("");
   const [password,  setPassword]            = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -24,7 +22,6 @@ export default function FirstLogin() {
 
   const navigate = useNavigate();
 
-  // --- handlers (must-keep contracts) ---
   async function handleSubmit() {
     setErrorMessage("");
 
@@ -53,7 +50,6 @@ export default function FirstLogin() {
       return;
     }
 
-    // open OTP modal (must-keep)
     setPendingUserData({ email: em, password: pw });
     setShowEmailModal(true);
   }
@@ -74,7 +70,6 @@ export default function FirstLogin() {
     setPendingUserData(null);
   }
 
-  // --- small input-with-icon helper (UI only) ---
   const Field = ({ icon: Icon, ...rest }) => (
     <div className="relative">
       <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -96,9 +91,7 @@ export default function FirstLogin() {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-sky-300 via-sky-200 to-blue-50 px-4">
-      {/* Top title like the first pic */}
 
-      {/* Card */}
       <div className="relative w-full max-w-md">
 
         <form
@@ -141,7 +134,6 @@ export default function FirstLogin() {
             />
           </div>
 
-          {/* Primary actions */}
           <div className="mt-6 space-y-3">
             <button
               type="button"
@@ -170,7 +162,6 @@ export default function FirstLogin() {
             </div>
           </div>
 
-          {/* Error box (must-keep behavior) */}
           {errorMessage && (
             <div className="mt-5 rounded-xl border border-red-200 bg-red-50 px-3 py-2">
               <div className="flex items-center gap-2">
@@ -194,7 +185,6 @@ export default function FirstLogin() {
         </form>
       </div>
 
-      {/* OTP Modal (must-keep) */}
       <EmailVerify
         isOpen={showEmailModal}
         onClose={handleCloseEmailModal}

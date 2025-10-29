@@ -14,7 +14,6 @@ const SigninInst = () => {
       const formData = new FormData(event.target);
       const formDataObj = Object.fromEntries(formData);
 
-      // MUST KEEP: same names expected by your existing handler
       const username = formDataObj.username;
       const password = formDataObj.password;
 
@@ -38,7 +37,6 @@ const SigninInst = () => {
     }
   };
 
-  // small input-with-icon helper (UI only)
   const Field = ({ icon: Icon, ...rest }) => (
     <div className="relative">
       <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
@@ -62,7 +60,6 @@ const SigninInst = () => {
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-b from-sky-300 via-sky-200 to-blue-50 px-4">
       <div className="w-full max-w-xl">
 
-        {/* Card */}
         <form
           onSubmit={handleLogin}
           className="
@@ -83,7 +80,6 @@ const SigninInst = () => {
           </h2>
 
           <div className="space-y-4">
-            {/* MUST KEEP: name='username' so your existing code works */}
             <Field
               icon={Mail}
               name="username"
@@ -92,7 +88,6 @@ const SigninInst = () => {
               autoComplete="username"
               required
             />
-            {/* MUST KEEP: name='password' so your existing code works */}
             <Field
               icon={Lock}
               name="password"
