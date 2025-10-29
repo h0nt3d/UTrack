@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import styles from "../css_folder/Mycourses.module.css"; // reuse Mycourses CSS
+import styles from "../css_folder/Mycourses.module.css";
 import Logout from "../subcomponents/Logout.jsx";
 
 export default function AddStudent() {
@@ -11,32 +11,15 @@ export default function AddStudent() {
 
   const [students, setStudents] = useState([]);
   const [newStudent, setNewStudent] = useState({ firstName: "", lastName: "", email: "" });
-  const [courseName, setCourseName] = useState("");
-
-  useEffect(() => {
-    async function fetchCourseAndStudents() {
-      try {
-        const courseRes = await fetch(`http://localhost:5000/api/auth/get-course/${courseId}`, {
-          headers: { "Content-Type": "application/json", "authtoken": token },
-        });
-        const courseData = await courseRes.json();
-        if (!courseRes.ok) throw new Error(courseData.message || "Failed to fetch course");
-
-        setCourseName(courseData.courseName || "Course");
-        setStudents(courseData.students || []);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-    fetchCourseAndStudents();
-  }, [courseId, token]);
+  const [message, setMessage] = useState(null);
+  const [isError, setIsError] = useState(false);
 
   async function handleAddStudent(e) {
     e.preventDefault();
     try {
       const createRes = await fetch(`http://localhost:5000/api/students/create`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "authtoken": token },
+        headers: { "Content-Type": "application/json", authtoken: token },
         body: JSON.stringify(newStudent),
       });
       const createData = await createRes.json();
@@ -46,7 +29,7 @@ export default function AddStudent() {
         `http://localhost:5000/api/students/course/${courseId}/add-student`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json", "authtoken": token },
+          headers: { "Content-Type": "application/json", authtoken: token },
           body: JSON.stringify({ email: newStudent.email }),
         }
       );
@@ -55,8 +38,17 @@ export default function AddStudent() {
 
       setStudents(addData.students || []);
       setNewStudent({ firstName: "", lastName: "", email: "" });
+
+      //Success message (green)
+      setIsError(false);
+      setMessage("Student added successfully!");
+      setTimeout(() => setMessage(null), 1500);
     } catch (err) {
       console.error(err);
+
+      setIsError(true);
+      setMessage(`${err.message}`);
+      setTimeout(() => setMessage(null), 2500);
     }
   }
 
@@ -83,7 +75,7 @@ export default function AddStudent() {
         <div className="flex justify-center mb-6">
           <form
             onSubmit={handleAddStudent}
-            className={`${styles.course_card} p-6 flex flex-col gap-3 w-full max-w-md`}
+            className={`${styles.course_card} p-6 flex flex-col gap-3 w-full max-w-md relative`}
           >
             <input
               type="email"
@@ -99,24 +91,20 @@ export default function AddStudent() {
             >
               Add Student
             </button>
-          </form>
-        </div>
 
-        {/* Existing Students */}
-        <div className={`${styles.all_courses} mt-6`}>
-          <h2 className="text-xl font-semibold mb-4 text-center">Existing Students</h2>
-          {students.length === 0 ? (
-            <p className="text-gray-600 text-center w-full mt-2">No students in this course yet.</p>
-          ) : (
-            students.map((s, idx) => (
+            {/*Success/Error Message Popup */}
+            {message && (
               <div
-                key={idx}
-                className={`${styles.course_card} flex items-center justify-between p-2 mb-2`}
+                className="absolute left-1/2 transform -translate-x-1/2 mt-2 text-center text-sm font-medium px-3 py-2 rounded shadow-md transition-all duration-300"
+                style={{
+                  backgroundColor: isError ? "#fee2e2" : "#d1fae5", // red or green
+                  color: isError ? "#991b1b" : "#065f46",
+                }}
               >
-                {s.firstName} {s.lastName} ({s.email})
+                {message}
               </div>
-            ))
-          )}
+            )}
+          </form>
         </div>
       </div>
     </div>

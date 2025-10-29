@@ -24,7 +24,7 @@ export default function CourseRoster() {
         const res = await fetch(
           `http://localhost:5000/api/auth/get-course/${courseNumber}`,
           {
-            headers: { "Content-Type": "application/json", "authtoken": token },
+            headers: { "Content-Type": "application/json", authtoken: token },
           }
         );
 
@@ -72,7 +72,9 @@ export default function CourseRoster() {
           <h1 className={styles.my_c}>{courseInfo.name}</h1>
           <p className="text-gray-700 font-medium">{courseInfo.number}</p>
           {courseInfo.description && (
-            <p className="text-gray-600 mt-2 ml-4 text-left">{courseInfo.description}</p>
+            <p className="text-gray-600 mt-2 ml-4 text-left">
+              {courseInfo.description}
+            </p>
           )}
         </div>
 
@@ -92,34 +94,54 @@ export default function CourseRoster() {
           <button
             className={`${styles.button} flex justify-center items-center`}
             style={{ minWidth: "150px" }}
-	    onClick={() =>
-      		navigate(`/course/${courseInfo.number}/add-students-file`, {
-       		 state: { token },
-      		})
-    	     }
+            onClick={() =>
+              navigate(`/course/${courseInfo.number}/add-students-file`, {
+                state: { token },
+              })
+            }
           >
             Add Students (CSV/Excel)
           </button>
         </div>
 
-       {/* Students List */}
-<div className={`${styles.all_courses} mt-6`}>
-  <h2 className="text-xl font-semibold mb-4 text-center">Current Students:</h2>
-  {students.length === 0 ? (
-    <p className="text-gray-600 text-center w-full mt-2">
-      No students enrolled in this course yet.
-    </p>
-  ) : (
-    students.map((s, idx) => (
-      <div
-        key={idx}
-        className={`${styles.course_card} flex items-center justify-between p-2 mb-2`}
-      >
-        {s.firstName} {s.lastName} ({s.email})
-      </div>
-    ))
-  )}
-</div>
+        {/* Students Table */}
+        <div className={`${styles.all_courses} mt-8`}>
+          <h2 className="text-xl font-semibold mb-4 text-center">
+            Current Students:
+          </h2>
+
+          {students.length === 0 ? (
+            <p className="text-gray-600 text-center mt-4">
+              No students enrolled in this course yet.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-300 text-left">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="border border-gray-300 px-4 py-2">Name</th>
+                    <th className="border border-gray-300 px-4 py-2">Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {students.map((s, idx) => (
+                    <tr
+                      key={idx}
+                      className="hover:bg-gray-50 transition-colors duration-150"
+                    >
+                      <td className="border border-gray-300 px-4 py-2">
+                        {s.firstName} {s.lastName}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {s.email}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
