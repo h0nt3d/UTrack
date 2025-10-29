@@ -1,7 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import styles from "../css_folder/Mycourses.module.css"; // reuse Mycourses CSS
+import * as XLSX from "xlsx";
+import styles from "../css_folder/Mycourses.module.css";
 import Logout from "../subcomponents/Logout.jsx";
+
+// Import your helpers (adjust paths if needed)
+import { checkHeaders, clean, valEmail, checkDupes } from "../utils/parseHelpers.js";
 
 export default function CSVExcelAdd() {
   const { courseId } = useParams();
@@ -9,70 +13,94 @@ export default function CSVExcelAdd() {
   const navigate = useNavigate();
   const token = location.state?.token;
 
-  const [courseInfo, setCourseInfo] = useState({ name: "", number: courseId });
-  const [students, setStudents] = useState([]);
   const [file, setFile] = useState(null);
+  const [students, setStudents] = useState([]);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function fetchCourse() {
-      try {
-        const res = await fetch(`http://localhost:5000/api/auth/get-course/${courseId}`, {
-          headers: { "Content-Type": "application/json", "authtoken": token },
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "Failed to fetch course");
+  // Parse file in browser
+  const parseFile = async (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
 
-        setCourseInfo({
-          name: data.courseName || courseInfo.name,
-          number: data.courseNumber || courseInfo.number,
-        });
+      reader.onload = (e) => {
+        let parsed = [];
+        try {
+          const data = e.target.result;
 
-        const normalizedStudents = (data.students || []).map((s) => ({
-          firstName: s.firstName || "",
-          lastName: s.lastName || "",
-          email: s.email || s.name || "",
-        }));
-        setStudents(normalizedStudents);
-      } catch (err) {
-        console.error(err);
-      }
+          if (file.name.endsWith(".csv")) {
+            const [headerRow, ...rows] = data.split(/\r?\n/).filter(Boolean);
+            const headers = headerRow.split(",").map((h) => h.trim());
+
+            parsed = rows.map((row) => {
+              const cols = row.split(",");
+              let obj = {};
+              headers.forEach((h, i) => (obj[h] = cols[i]?.trim() || ""));
+              return obj;
+            });
+          } else if (file.name.endsWith(".xlsx")) {
+            const workbook = XLSX.read(data, { type: "binary" });
+            const sheetName = workbook.SheetNames[0];
+            parsed = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+          }
+
+          parsed = checkHeaders(parsed);
+          parsed = clean(parsed);
+          parsed = valEmail(parsed);
+          parsed = checkDupes(parsed);
+
+          resolve(parsed);
+        } catch (err) {
+          reject(err);
+        }
+      };
+
+      reader.onerror = (err) => reject(err);
+
+      if (file.name.endsWith(".xlsx")) reader.readAsBinaryString(file);
+      else reader.readAsText(file);
+    });
+  };
+
+  const handleFileChange = async (e) => {
+    const selectedFile = e.target.files[0];
+    setFile(selectedFile);
+
+    try {
+      const parsedStudents = await parseFile(selectedFile);
+      setStudents(parsedStudents);
+      setError("");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to parse file. Make sure it is valid CSV or XLSX.");
+      setStudents([]);
     }
+  };
 
-    fetchCourse();
-  }, [courseId, token]);
-
-  async function handleFileUpload(e) {
-    e.preventDefault();
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
+  const handleAddStudents = async () => {
+    if (students.length === 0) return;
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/students/course/${courseId}/add-students-file`,
+        `http://localhost:5000/api/students/course/${courseId}/add-multiple`,
         {
           method: "POST",
-          headers: { authtoken: token },
-          body: formData,
+          headers: {
+            "Content-Type": "application/json",
+            authtoken: token,
+          },
+          body: JSON.stringify({ students }),
         }
       );
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to add students");
 
-      // Update student list after successful upload
-      const normalizedStudents = (data.students || []).map((s) => ({
-        firstName: s.firstName || "",
-        lastName: s.lastName || "",
-        email: s.email || s.name || "",
-      }));
-      setStudents(normalizedStudents);
-      setFile(null);
+      alert(`Successfully added ${students.length} students!`);
+      navigate(-1);
     } catch (err) {
       console.error(err);
+      alert("Error adding students: " + err.message);
     }
-  }
+  };
 
   return (
     <div className={styles.my_courses}>
@@ -89,51 +117,42 @@ export default function CSVExcelAdd() {
         </button>
 
         {/* Page Header */}
-        <div className="mb-4 mt-10 text-center">
-          <h1 className={styles.my_c}>Add Students from CSV/Excel file</h1>
-          <p className="text-gray-700 font-medium">{courseInfo.name} ({courseInfo.number})</p>
+        <div className="mb-6 mt-10 text-center">
+          <h1 className={styles.my_c}>Add Students via CSV/Excel</h1>
         </div>
 
-        {/* File Upload Form */}
+        {/* File Input */}
         <div className="flex justify-center mb-6">
-          <form
-            onSubmit={handleFileUpload}
-            className={`${styles.course_card} p-6 flex flex-col gap-3 w-full max-w-md`}
-          >
-            <input
-              type="file"
-              accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-              onChange={(e) => setFile(e.target.files[0])}
-              className="w-full p-2 border rounded"
-              required
-            />
-            <button
-              type="submit"
-              className={`${styles.button} flex justify-center items-center`}
-            >
-              Upload File
-            </button>
-          </form>
+          <input
+            type="file"
+            accept=".csv,.xlsx"
+            onChange={handleFileChange}
+            className="p-2 border rounded w-full max-w-md"
+          />
         </div>
+        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
-        {/* Current Students */}
-        <div className={`${styles.all_courses} mt-6`}>
-          <h2 className="text-xl font-semibold mb-4 text-center">Current Students:</h2>
-          {students.length === 0 ? (
-            <p className="text-gray-600 text-center w-full mt-2">
-              No students enrolled in this course yet.
-            </p>
-          ) : (
-            students.map((s, idx) => (
+        {/* Preview Students */}
+        {students.length > 0 && (
+          <div className={`${styles.all_courses} mb-6 w-full max-w-lg mx-auto`}>
+            <h2 className="text-xl font-semibold mb-2 text-center">Parsed Students:</h2>
+            {students.map((s, idx) => (
               <div
                 key={idx}
                 className={`${styles.course_card} flex items-center justify-between p-2 mb-2`}
               >
                 {s.firstName} {s.lastName} ({s.email})
               </div>
-            ))
-          )}
-        </div>
+            ))}
+
+            <button
+              className={`${styles.button} mt-4 w-full flex justify-center items-center`}
+              onClick={handleAddStudents}
+            >
+              Add All Students
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
