@@ -122,6 +122,7 @@ export default function Signup() {
           <div className="mt-6 space-y-3">
             <button
               type="button"
+              data-testid="signup-createAccount"
               className="w-full rounded-xl bg-[#0b1220] text-white py-3 shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:bg-[#1a1f33] hover:shadow-[0_10px_25px_rgba(0,0,0,0.25)] active:scale-[0.99] transition-all duration-200 ease-in-out"
               onClick={handleSubmit}
             >
