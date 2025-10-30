@@ -91,4 +91,91 @@ router.get("/get-course/:courseNumber", requireAuth, async (req, res) => {
   }
 });
 
+// Add project to a course
+router.post("/course/:courseNumber/add-project", requireAuth, async (req, res) => {
+  const { courseNumber } = req.params;
+  const { title, description = "" } = req.body;
+
+  if (!title || title.trim() === "")
+    return res.status(400).json({ message: "Project title is required" });
+
+  try {
+    const course = await Course.findOne({ courseNumber, instructor: req.user.id });
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    const newProject = { title: title.trim(), description: description.trim(), students: [] };
+    course.projects.push(newProject);
+
+    await course.save();
+
+    res.json({ success: true, message: "Project added successfully", projects: course.projects });
+  } catch (err) {
+    console.error("Error adding project:", err);
+    res.status(500).json({ message: "Error adding project: " + err.message });
+  }
+});
+
+// Add students to a project
+router.post(
+  "/course/:courseNumber/project/:projectTitle/add-students",
+  requireAuth,
+  async (req, res) => {
+    const { courseNumber, projectTitle } = req.params;
+    const { studentIds } = req.body; // array of student _id strings
+
+    if (!Array.isArray(studentIds) || studentIds.length === 0) {
+      return res.status(400).json({ message: "No students selected" });
+    }
+
+    try {
+      // Find the course for this instructor
+      const course = await Course.findOne({ courseNumber, instructor: req.user.id });
+      if (!course) return res.status(404).json({ message: "Course not found" });
+
+      // Find the project by title
+      const project = course.projects.find(p => p.title === projectTitle);
+      if (!project) return res.status(404).json({ message: "Project not found" });
+
+      // Add new student IDs, avoid duplicates
+      project.students = Array.from(new Set([...project.students, ...studentIds]));
+
+      await course.save();
+
+      // Fetch full student info to return to frontend
+      const students = await Student.find({ _id: { $in: project.students } }).lean();
+
+      res.json({ students });
+    } catch (err) {
+      console.error("Error adding students to project:", err);
+      res.status(500).json({ message: "Error adding students: " + err.message });
+    }
+  }
+);
+
+// Get students for a project
+router.get(
+  "/course/:courseNumber/project/:projectTitle/students",
+  requireAuth,
+  async (req, res) => {
+    const { courseNumber, projectTitle } = req.params;
+
+    try {
+      const course = await Course.findOne({ courseNumber, instructor: req.user.id }).lean();
+      if (!course) return res.status(404).json({ message: "Course not found" });
+
+      const project = course.projects.find(p => p.title === projectTitle);
+      if (!project) return res.status(404).json({ message: "Project not found" });
+
+      // Get full student info
+      const students = await Student.find({ _id: { $in: project.students } }).lean();
+
+      res.json({ students });
+    } catch (err) {
+      console.error("Error fetching project students:", err);
+      res.status(500).json({ message: "Error fetching project students: " + err.message });
+    }
+  }
+);
+
+
 module.exports = router;

@@ -3,11 +3,12 @@ describe("Instructor Sign-Up", () => {
     // Sign-Up Page
     it("Confirms the instructor sign-up page loads correctly.", () => {
         cy.visit('http://localhost:3000');
-        cy.contains("Sign Up for Instructors").should('be.visible')
+        cy.get('button[data-testid="landing-instructorSignUp"]').click();
+        cy.url().should('include', '/instructor-signup');
     });
 
     beforeEach(() => {
-        cy.visit('http://localhost:3000');
+        cy.visit('http://localhost:3000/instructor-signup');
     });
 
     // Sign-Up Fields
