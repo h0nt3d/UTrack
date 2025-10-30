@@ -10,7 +10,7 @@ export default function Signup() {
   const goClaim = () => navigate("/first-time-login");
   const goLogin = () => navigate("/login");
 
-  const Card = ({ Icon, title, onClick }) => (
+  const Card = ({ Icon, title, onClick, "data-testid" : testid }) => (
     <div
       className="
         group relative w-72 bg-white rounded-2xl shadow-md
@@ -25,6 +25,7 @@ export default function Signup() {
         <button
           type="button"
           onClick={onClick}
+          data-testid={testid}
           className="
             inline-flex items-center justify-center
             h-10 w-10 rounded-md
@@ -67,10 +68,10 @@ export default function Signup() {
       </div>
 
       <div className="flex flex-wrap justify-center gap-8">
-        <Card Icon={GraduationCap} title="Student Sign Up" onClick={goStudent} />
-        <Card Icon={Users} title="Instructor Sign Up" onClick={goInstructor} />
-        <Card Icon={UserCheck} title="Student First Time Login" onClick={goClaim} />
-        <Card Icon={LogIn} title="Login" onClick={goLogin} />
+        <Card Icon={GraduationCap} data-testid="landing-studentSignUp" title="Student Sign Up" onClick={goStudent} />
+        <Card Icon={Users} data-testid="landing-instructorSignUp" title="Instructor Sign Up" onClick={goInstructor} />
+        <Card Icon={UserCheck} data-testid="landing-studentFirstLogin" title="Student First Time Login" onClick={goClaim} />
+        <Card Icon={LogIn} data-testid="landing-login" title="Login" onClick={goLogin} />
       </div>
     </div>
   );

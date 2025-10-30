@@ -9,7 +9,7 @@ import { fetchSignup } from "./js/signupApi.js";
 const isValidEmailBasic = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 const isUnbEmail = (email) => email.toLowerCase().endsWith("@unb.ca");
 
-const Field = ({ icon: Icon, value, setValue, type = "text", placeholder }) => (
+const Field = ({ icon: Icon, value, setValue, type = "text", placeholder, "data-testid" : testid }) => (
   <div className="relative">
     <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
       <Icon size={18} strokeWidth={2} />
@@ -17,6 +17,7 @@ const Field = ({ icon: Icon, value, setValue, type = "text", placeholder }) => (
     <input
       type={type}
       placeholder={placeholder}
+      data-testid={testid}
       value={value}
       onChange={(e) => setValue(e.target.value)}
       className="
@@ -110,12 +111,12 @@ export default function Signup() {
           </h2>
 
           <div className="space-y-4">
-            <Field icon={User} placeholder="First Name" value={firstName} setValue={setFirstName} />
-            <Field icon={User} placeholder="Last Name" value={lastName} setValue={setLastName} />
-            <Field icon={KeyRound} placeholder="Personal Token" value={personalToken} setValue={setPersonalToken} />
-            <Field icon={Mail} type="email" placeholder="Email" value={email} setValue={setEmail} />
-            <Field icon={Lock} type="password" placeholder="Password" value={password} setValue={setPassword} />
-            <Field icon={Lock} type="password" placeholder="Retype Password" value={confirmPassword} setValue={setConfirmPassword} />
+            <Field icon={User} data-testid="signup-firstName" placeholder="First Name" value={firstName} setValue={setFirstName} />
+            <Field icon={User} data-testid="signup-lastName" placeholder="Last Name" value={lastName} setValue={setLastName} />
+            <Field icon={KeyRound} data-testid="signup-token" placeholder="Personal Token" value={personalToken} setValue={setPersonalToken} />
+            <Field icon={Mail} data-testid="signup-email" type="email" placeholder="Email" value={email} setValue={setEmail} />
+            <Field icon={Lock} data-testid="signup-password" type="password" placeholder="Password" value={password} setValue={setPassword} />
+            <Field icon={Lock} data-testid="signup-confirmPassword" type="password" placeholder="Retype Password" value={confirmPassword} setValue={setConfirmPassword} />
           </div>
 
           <div className="mt-6 space-y-3">
