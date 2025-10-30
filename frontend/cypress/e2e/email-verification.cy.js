@@ -1,5 +1,6 @@
 import React from 'react';
 import EmailVerify from "../../src/components/EmailVerify/EmailVerify";
+import emailjs from "@emailjs/browser";
 
 describe("Email Verification", () => {
 
@@ -42,9 +43,24 @@ describe("Email Verification", () => {
 
    it("Modal close buttons work correctly.", () => {
       signup('testemail@unb.ca');
+      cy.get('.modal-header').should('be.visible');
+      cy.get('.modal-body').should('be.visible');
+      cy.get('.modal-footer').should('be.visible');
+
       cy.get('.btn-close').click();
+      cy.get('.modal-header').should('not.exist');
+      cy.get('.modal-body').should('not.exist');
+      cy.get('.modal-footer').should('not.exist');
+      
       cy.get('button[data-testid="signup-createAccount"]').click();
+      cy.get('.modal-header').should('be.visible');
+      cy.get('.modal-body').should('be.visible');
+      cy.get('.modal-footer').should('be.visible');
+      
       cy.get('.btn.btn-secondary').click();
+      cy.get('.modal-header').should('not.exist');
+      cy.get('.modal-body').should('not.exist');
+      cy.get('.modal-footer').should('not.exist');
    });
 
 });
