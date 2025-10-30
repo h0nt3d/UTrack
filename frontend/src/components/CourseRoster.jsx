@@ -102,6 +102,18 @@ export default function CourseRoster() {
           >
             Add Students (CSV/Excel)
           </button>
+
+	  <button
+		  className={`${styles.button} flex justify-center items-center`}
+		  style={{ minWidth: "150px" }}
+		  onClick={() =>
+		    navigate(`/course/${courseInfo.number}/add-project`, {
+		      state: { token },
+		    })
+		  }
+		>
+		  Add Project
+	</button>
         </div>
 
         {/* Students Table */}

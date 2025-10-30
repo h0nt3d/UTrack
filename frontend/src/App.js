@@ -10,6 +10,7 @@ import StuSignup from "./components/StuSignup";
 import FirstLogin from "./components/FirstLogin";
 import CourseRoster from "./components/CourseRoster";
 import CSVExcelAdd from "./components/CSVExcelAdd";
+import AddProject from "./components/AddProject";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 
@@ -27,6 +28,7 @@ export default function App() {
 				<Route path = "/course/:courseNumber" element={<CourseRoster />} />
 				<Route path = "/course/:courseId/add-students" element = {<AddStudent />} />
 				<Route path = "/course/:courseId/add-students-file" element = {<CSVExcelAdd />} />
+				<Route path="/course/:courseId/add-project" element={<AddProject />} />
 			</Routes>
 		</Router>
 	);
