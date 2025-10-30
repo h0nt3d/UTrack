@@ -139,17 +139,6 @@ export default function AddProject() {
 
         {projects.length > 0 && (
           <div className={`${styles.all_courses} mt-8`}>
-            <h2 className="text-xl font-semibold mb-4 text-center">
-              Current Projects:
-            </h2>
-            <ul className="list-disc ml-6">
-              {projects.map((p, idx) => (
-                <li key={idx}>
-                  <strong>{p.title}</strong>
-                  {p.description && ` - ${p.description}`}
-                </li>
-              ))}
-            </ul>
           </div>
         )}
       </div>
