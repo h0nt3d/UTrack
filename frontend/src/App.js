@@ -11,6 +11,7 @@ import FirstLogin from "./components/FirstLogin";
 import CourseRoster from "./components/CourseRoster";
 import CSVExcelAdd from "./components/CSVExcelAdd";
 import AddProject from "./components/AddProject";
+import ProjectDetails from "./components/ProjectDetails";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 
@@ -29,6 +30,7 @@ export default function App() {
 				<Route path = "/course/:courseId/add-students" element = {<AddStudent />} />
 				<Route path = "/course/:courseId/add-students-file" element = {<CSVExcelAdd />} />
 				<Route path="/course/:courseId/add-project" element={<AddProject />} />
+				<Route path="/course/:courseNumber/project/:projectId" element={<ProjectDetails />} />
 			</Routes>
 		</Router>
 	);
