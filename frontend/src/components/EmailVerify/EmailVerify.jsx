@@ -179,6 +179,7 @@ export default function EmailVerify({ isOpen, onClose, onConfirm, userData }) {
                 <label htmlFor="verificationCode" className="form-label">Enter 6-digit code</label>
                 <input
                   id="verificationCode"
+                  data-testid="verification-code"
                   type="text"
                   className="form-control"
                   inputMode="numeric"

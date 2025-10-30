@@ -1,6 +1,8 @@
 /**
  * This file contains acceptance tests for managing courses.
  * 
+ * For these test cases, the course modal file (src/subcomponents/CourseModal.jsx) was updated to include test IDs.
+ * 
  * Note: All tests pass. (10/22)
  */
 

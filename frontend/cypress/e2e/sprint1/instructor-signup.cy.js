@@ -1,14 +1,19 @@
+/**
+ * This file contains all acceptance tests related to instructor sign-up.
+ * 
+ * For these test cases, the signup file (src/components/signup.jsx) was updated to include test IDs.
+ */
+
 describe("Instructor Sign-Up", () => {
     
     // Sign-Up Page
     it("Confirms the instructor sign-up page loads correctly.", () => {
         cy.visit('http://localhost:3000');
-        cy.get('button[data-testid="landing-instructorSignUp"]').click();
-        cy.url().should('include', '/instructor-signup');
+        cy.contains("Sign Up for Instructors").should('be.visible')
     });
 
     beforeEach(() => {
-        cy.visit('http://localhost:3000/instructor-signup');
+        cy.visit('http://localhost:3000');
     });
 
     // Sign-Up Fields
