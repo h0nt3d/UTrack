@@ -46,6 +46,7 @@ export default function Signup() {
   const navigate = useNavigate();
 
   const handleSubmit = () => {
+
     setErrorMessage("");
 
     const fn = firstName.trim();
@@ -53,6 +54,13 @@ export default function Signup() {
     const em = email.trim().toLowerCase();
     const pw = password;
     const cpw = confirmPassword;
+    const SPECIAL_INSTRUCTOR_TOKEN = process.env.REACT_APP_INSTRUCTOR_TOKEN;
+   
+    if (!personalToken.trim() != SPECIAL_INSTRUCTOR_TOKEN) {
+      setErrorMessage("Invalid Instructor Token. Please contact admin for a valid one.");
+	    console.log(SPECIAL_INSTRUCTOR_TOKEN);
+      return;
+    }
 
     if (!fn || !ln || !em || !pw || !cpw) {
       setErrorMessage("Please fill in all fields.");
