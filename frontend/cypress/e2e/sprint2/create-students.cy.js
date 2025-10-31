@@ -1,8 +1,12 @@
 /**
  * This file contains all cypress acceptance tests related to the Create Students epic.
  * 
- * Note: The system has the following flow:
- *  - Sign-Up -> Profile -> Course Details -> Add Students
+ * System Flow:
+ *   Sign-Up -> Profile -> Course Details -> Add Students
+ * 
+ * For these test cases, the add student file (src/components/AddStudent.jsx) was updated to include test IDs.
+ * 
+ * Note: These test cases will carry over to the next sprint.
  */
 
 // Test Data
@@ -254,6 +258,10 @@ describe("Create Students", () => {
         // Verify Enrollment
         cy.contains(/Students Enrolled: 1/i).should('be.visible');
     });
+
+    // ****************************************************************************************************
+    // Test Cases for Sprint 3
+    // ****************************************************************************************************
 
     // Registers Student
     it("Adds a student to a course when the student account already exists.", () => {

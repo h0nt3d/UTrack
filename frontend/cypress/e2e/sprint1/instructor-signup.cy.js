@@ -1,3 +1,9 @@
+/**
+ * This file contains all acceptance tests related to instructor sign-up.
+ *
+ * For these test cases, the signup file (src/components/signup.jsx) was updated to include test IDs.
+ */
+
 describe("Instructor Sign-Up", () => {
   // Sign-Up Page
   it("Confirms the instructor sign-up page loads correctly.", () => {
