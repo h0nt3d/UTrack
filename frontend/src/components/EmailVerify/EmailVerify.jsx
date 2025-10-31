@@ -32,6 +32,15 @@ export default function EmailVerify({ isOpen, onClose, onConfirm, userData }) {
       return; // <- CRITICAL: do not send if invalid
     }
 
+      // TEST BYPASS
+    if (window.Cypress) {
+      const validUntil = new Date(Date.now() + 15 * 60 * 1000);
+      setOtp("000000");
+      setExpiresAt(validUntil);
+      setSent(true);          
+      return;
+    }
+
     if (sendingRef.current) return;
     sendingRef.current = true;
     setSending(true);
@@ -178,6 +187,7 @@ export default function EmailVerify({ isOpen, onClose, onConfirm, userData }) {
                 </div>
                 <label htmlFor="verificationCode" className="form-label">Enter 6-digit code</label>
                 <input
+                  data-testid = "verify-email-form"
                   id="verificationCode"
                   type="text"
                   className="form-control"
@@ -212,6 +222,7 @@ export default function EmailVerify({ isOpen, onClose, onConfirm, userData }) {
 
             {sent && isValidEmail(email) && (
               <button
+                data-testid = "email-verify-confirm"
                 type="button"
                 className="btn btn-primary"
                 onClick={handleVerify}
