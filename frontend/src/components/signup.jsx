@@ -58,7 +58,6 @@ export default function Signup() {
    
     if (personalToken.trim() !== SPECIAL_INSTRUCTOR_TOKEN) {
       setErrorMessage("Invalid Instructor Token. Please contact admin for a valid one.");
-	    console.log(SPECIAL_INSTRUCTOR_TOKEN);
       return;
     }
 
