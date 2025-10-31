@@ -56,7 +56,7 @@ export default function Signup() {
     const cpw = confirmPassword;
     const SPECIAL_INSTRUCTOR_TOKEN = process.env.REACT_APP_INSTRUCTOR_TOKEN;
    
-    if (!personalToken.trim() != SPECIAL_INSTRUCTOR_TOKEN) {
+    if (personalToken.trim() !== SPECIAL_INSTRUCTOR_TOKEN) {
       setErrorMessage("Invalid Instructor Token. Please contact admin for a valid one.");
 	    console.log(SPECIAL_INSTRUCTOR_TOKEN);
       return;
