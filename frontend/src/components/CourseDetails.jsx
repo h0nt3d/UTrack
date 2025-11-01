@@ -1,65 +1,167 @@
-import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
+import styles from "../css_folder/Mycourses.module.css";
+import Logout from "../subcomponents/Logout.jsx";
 
 export default function CourseDetails() {
-  const { id } = useParams();
+  const { courseNumber } = useParams();
   const location = useLocation();
-  const token = location.state?.token;
-  const [course, setCourse] = useState(null);
   const navigate = useNavigate();
+  const token = location.state?.token;
 
-	useEffect(() => {
-	    async function fetchCourse() {
-	      try {
-		const res = await fetch(`http://localhost:5000/api/auth/get-course/${id}`, {
-		  method: "GET",
-		  headers: {
-		    "Content-Type": "application/json",
-		    "authtoken": token
-		  }
-		});
+  const [courseInfo, setCourseInfo] = useState({
+    name: location.state?.courseName || "",
+    number: location.state?.courseNumber || courseNumber,
+    description: location.state?.courseDescription || "",
+  });
 
-		const data = await res.json();
-		if (res.ok) {
-		  setCourse(data);
-		} else {
-		  console.error("Error fetching course:", data.message);
-		}
-	      } catch (err) {
-		console.error("Network error:", err);
-	      }
-	    }
+  const [students, setStudents] = useState([]);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [instructor, setInstructor] = useState(null);
 
-	    fetchCourse();
-	  }, [id, token]);
+  useEffect(() => {
+    if (!token) return;
 
-	 if (!course) {
-	    return (
-	      <div className="flex items-center justify-center h-screen">
-		<p className="text-gray-600 text-lg">Loading course details...</p>
-	      </div>
-	    );
-	 }
+    const fetchCourseData = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/student-auth/get-course/${courseNumber}`,
+          {
+            headers: { "Content-Type": "application/json", authtoken: token },
+          }
+        );
 
-	return (
-	  <div className="min-h-screen bg-gray-50 relative flex flex-col items-center justify-center px-4">
-	    <button
-	      onClick={() => window.history.back()}
-	      className="absolute top-4 left-4 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
-	    >
-	      Back to My Courses
-	    </button>
-	    <div className="bg-white rounded-lg shadow-lg p-8 w-11/12 md:w-2/3 lg:w-1/2 mt-10">
-	      <h1 className="text-3xl font-bold mb-4 text-center">{course.courseName}</h1>
-	      <p className="text-gray-700 mb-2"><strong>Course Number:</strong> {course.courseNumber}</p>
-	      <p className="text-gray-700 mb-2"><strong>Description:</strong> {course.description || "No description provided."}</p>
-	      <p className="text-gray-700 mb-2"><strong>Students Enrolled:</strong> {course.students?.length || 0}</p>
-	    </div>
-	      <button
-	      	 className="mt-6 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
-		 onClick={() => navigate(`/course/${id}/add-students`, { state: { token } })}>
-	      Add Students
-	    </button>
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to fetch course");
+
+        setCourseInfo({
+          name: data.courseName || courseInfo.name,
+          number: data.courseNumber || courseInfo.number,
+          description: data.description || courseInfo.description,
+        });
+
+        setStudents(data.students || []);
+        setProjects(data.projects || []);
+	setInstructor(data.instructor || null);
+      } catch (err) {
+        console.error("Error fetching course data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourseData();
+  }, [courseNumber, token]);
+
+  const goBack = () => navigate(-1);
+
+  if (!token) return <p className="text-center mt-8">Access denied.</p>;
+
+  return (
+    <div className={styles.my_courses}>
+      <Logout styl={styles} />
+
+      <div className={`${styles.bod} relative`}>
+        {/* Back Button */}
+        <button
+          className={`${styles.button} absolute top-0 left-0 m-2 flex justify-center items-center`}
+          style={{ width: "120px" }}
+          onClick={goBack}
+        >
+          Back
+        </button>
+        
+        {/* Course Info */}
+        <div className="mb-4 mt-10 text-center">
+          <h1 className={styles.my_c}>{courseInfo.name}</h1>
+          <p className="text-gray-700 font-medium">{courseInfo.number}</p>
+          {courseInfo.description && (
+            <p className="text-gray-600 mt-2 ml-4 text-left">
+              {courseInfo.description}
+            </p>
+          )}
+        </div>
+
+	{/* Instructor */}
+	{instructor && (
+	  <div className="text-center mb-4">
+	    <p className="text-gray-700 font-medium">
+	      Instructor: {instructor.firstName} {instructor.lastName} ({instructor.email})
+	    </p>
 	  </div>
-	);	
- }
+	)}
+
+        {/* Loading state */}
+        {loading && (
+          <p className="text-gray-600 text-center w-full mt-4">
+            Loading course details...
+          </p>
+        )}
+
+        {/* Students */}
+        {!loading && (
+          <div className={`${styles.all_courses} mt-8`}>
+            <h2 className="text-xl font-semibold mb-4 text-center">Students</h2>
+            {students.length === 0 ? (
+              <p className="text-gray-600 text-center mt-4">
+                No students enrolled yet.
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-left">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="border border-gray-300 px-4 py-2">Name</th>
+                      <th className="border border-gray-300 px-4 py-2">Email</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {students.map((s, idx) => (
+                      <tr
+                        key={idx}
+                        className="hover:bg-gray-50 transition-colors duration-150"
+                      >
+                        <td className="border border-gray-300 px-4 py-2">
+                          {s.firstName} {s.lastName}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">{s.email}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Projects */}
+        {!loading && (
+          <div className={`${styles.all_courses} mt-8`}>
+            <h2 className="text-xl font-semibold mb-4 text-center">Projects</h2>
+            {projects.length === 0 ? (
+              <p className="text-gray-600 text-center mt-4">
+                No projects available for this course.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2 ml-6">
+                {projects.map((p, idx) => (
+                  <div
+                    key={idx}
+                    className={`${styles.button} w-max px-4 py-2 text-left cursor-default`}
+                  >
+                    <strong>{p.title}</strong>
+                    {p.description && (
+                      <p className="text-gray-700 mt-1">{p.description}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+

@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Navigate } from "react-router-dom";
 import Logout from "../subcomponents/Logout.jsx";
-import Course from "../subcomponents/Course.jsx";
+import StudentCourse from "../subcomponents/StudentCourse.jsx";
 import styles from "../css_folder/Mycourses.module.css";
 import { fetchStudentCourses } from "./js/StudentDashboard.js";
 
@@ -53,7 +53,7 @@ export default function StudentDashboard({ user }) {
         ) : (
           <div className={styles.all_courses}>
             {courses.map((course, idx) => (
-              <Course
+              <StudentCourse
                 key={course.courseNumber || idx}
                 styl={styles}
                 course={course}

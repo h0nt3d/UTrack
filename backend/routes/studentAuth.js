@@ -93,6 +93,48 @@ router.get("/get-courses", async (req, res) => {
   }
 });
 
+// ---------- GET COURSE DETAILS FOR STUDENT ----------
+
+router.get("/get-course/:courseNumber", async (req, res) => {
+  try {
+    const { courseNumber } = req.params;
+    if (!courseNumber)
+      return res.status(400).json({ message: "Course number required" });
+
+    // Populate instructor
+    const course = await Course.findOne({ courseNumber }).populate(
+      "instructor",
+      "firstName lastName email"
+    );
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    const studentDocs = await Student.find({ email: { $in: course.students } });
+    const normalizedStudents = studentDocs.map((s) => ({
+      firstName: s.firstName || "",
+      lastName: s.lastName || "",
+      email: s.email,
+    }));
+
+    res.json({
+      courseName: course.courseName,
+      courseNumber: course.courseNumber,
+      description: course.description,
+      students: normalizedStudents,
+      projects: course.projects || [],
+      instructor: course.instructor
+        ? {
+            firstName: course.instructor.firstName,
+            lastName: course.instructor.lastName,
+            email: course.instructor.email,
+          }
+        : null,
+    });
+  } catch (err) {
+    console.error("Error fetching course details for student:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 router.get("/get-student/:email", async (req, res) => {
   try {
     const email = decodeURIComponent(req.params.email).toLowerCase();
