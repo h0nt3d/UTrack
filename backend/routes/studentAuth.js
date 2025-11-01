@@ -4,6 +4,7 @@ const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const Student = require("../models/Student");
+const Course = require("../models/Course");
 
 const router = express.Router();
 const SALT_ROUNDS = 10;
@@ -68,17 +69,22 @@ router.post("/login", [
   }
 });
 
-// routes/studentAuth.js
+// ---------- GET STUDENT COURSES ----------
 router.get("/get-courses", async (req, res) => {
   try {
     const email = req.query.email?.toLowerCase();
     if (!email) return res.status(400).json({ message: "Email required" });
 
+    // Find the student by email
     const student = await Student.findOne({ email });
     if (!student) return res.status(404).json({ message: "Student not found" });
 
-    // Assuming student document stores an array of enrolled course IDs
-    const courses = await Course.find({ _id: { $in: student.courses } });
+    // Match Course.courseNumber against Student.courses (array of courseNumbers)
+    const courses = await Course.find({ courseNumber: { $in: student.courses } });
+
+    if (!courses || courses.length === 0) {
+      return res.status(404).json({ message: "No courses found for this student." });
+    }
 
     res.json({ courses });
   } catch (err) {
