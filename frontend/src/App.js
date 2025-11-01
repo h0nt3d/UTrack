@@ -7,11 +7,16 @@ import Landingpage from "./components/Landingpage";
 import CourseDetails from "./components/CourseDetails";
 import AddStudent from "./components/AddStudent";
 import StuSignup from "./components/StuSignup";
-import FirstLogin from "./components/FirstLogin";
 import CourseRoster from "./components/CourseRoster";
 import CSVExcelAdd from "./components/CSVExcelAdd";
 import AddProject from "./components/AddProject";
 import ProjectDetails from "./components/ProjectDetails";
+import SuccessPage from "./components/SuccessPage";
+
+import FirstLogin from "./components/FirstLogin";
+import StudentDashboard from "./components/StudentDashboard";
+
+
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 
@@ -31,6 +36,10 @@ export default function App() {
 				<Route path = "/course/:courseId/add-students-file" element = {<CSVExcelAdd />} />
 				<Route path="/course/:courseId/add-project" element={<AddProject />} />
 				<Route path="/course/:courseNumber/project/:projectId" element={<ProjectDetails />} />
+
+				<Route path="/first-login" element={<FirstLogin />} />
+				<Route path="/student-dashboard" element={<StudentDashboard />} />
+				<Route path="/success" element={<SuccessPage />} />
 			</Routes>
 		</Router>
 	);

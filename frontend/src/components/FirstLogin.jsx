@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchSignup } from "./js/signupApi.js";
 import EmailVerify from "./EmailVerify/EmailVerify.jsx";
 import { Mail, Lock } from "lucide-react";
+import { studentFirstLogin } from "./js/studentAuthApi.js";
 
 function isValidEmailBasic(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
@@ -23,36 +24,42 @@ export default function FirstLogin() {
   const navigate = useNavigate();
 
   async function handleSubmit() {
-    setErrorMessage("");
+  setErrorMessage("");
 
-    const em  = email.trim().toLowerCase();
-    const pw  = password;
-    const cpw = confirmPassword;
+  const em  = email.trim().toLowerCase();
+  const pw  = password;
+  const cpw = confirmPassword;
 
-    if (!em || !pw || !cpw) {
-      setErrorMessage("Please fill in all fields.");
-      return;
-    }
-    if (!isValidEmailBasic(em)) {
-      setErrorMessage("Please enter a valid email address.");
-      return;
-    }
-    if (!isUnbEmail(em)) {
-      setErrorMessage("Please use a valid @unb.ca email address.");
-      return;
-    }
-    if (pw !== cpw) {
-      setErrorMessage("Passwords do not match. Please retype.");
-      return;
-    }
-    if (pw.length < 8) {
-      setErrorMessage("Password must be at least 8 characters.");
-      return;
-    }
-
-    setPendingUserData({ email: em, password: pw });
-    setShowEmailModal(true);
+  if (!em || !pw || !cpw) {
+    setErrorMessage("Please fill in all fields.");
+    return;
   }
+  if (!isValidEmailBasic(em)) {
+    setErrorMessage("Please enter a valid email address.");
+    return;
+  }
+  if (!isUnbEmail(em)) {
+    setErrorMessage("Please use a valid @unb.ca email address.");
+    return;
+  }
+  if (pw !== cpw) {
+    setErrorMessage("Passwords do not match. Please retype.");
+    return;
+  }
+  if (pw.length < 8) {
+    setErrorMessage("Password must be at least 8 characters.");
+    return;
+  }
+
+  // Call backend API
+  const result = await studentFirstLogin({ email: em, password: pw });
+
+  if (result.success) {
+    navigate("/student-dashboard", { state: { email: em } });
+  } else {
+    setErrorMessage(result.error || "Error claiming account.");
+   }
+ }
 
   async function handleEmailVerificationConfirmed(verifiedUser) {
     const result = await fetchSignup(verifiedUser);
@@ -137,7 +144,7 @@ export default function FirstLogin() {
           <div className="mt-6 space-y-3">
             <button
               type="button"
-              disabled
+              
               className="
                 w-full rounded-xl bg-[#0b1220] text-white py-3
                 shadow-[0_8px_20px_rgba(0,0,0,0.15)]
