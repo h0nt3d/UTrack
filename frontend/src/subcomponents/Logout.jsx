@@ -22,6 +22,8 @@ export default function Logout({ styl, user: propUser }) {
     const storedUser = localStorage.getItem("user");
     const storedFirstName = localStorage.getItem("firstName");
     const storedLastName = localStorage.getItem("lastName");
+    const storedRole = localStorage.getItem("role");
+    const storedEmail = localStorage.getItem("email");
 
     if (storedUser && storedFirstName && storedLastName) {
       try {
@@ -34,13 +36,13 @@ export default function Logout({ styl, user: propUser }) {
         setLoading(false);
       } catch (err) {
         console.error("Error parsing stored user data", err);
-        fetchUserFromAPI();
+        fetchUserFromAPI(storedEmail, storedRole);
       }
     } else {
-      fetchUserFromAPI();
+      fetchUserFromAPI(storedEmail || email, storedRole);
     }
 
-    async function fetchUserFromAPI() {
+    async function fetchUserFromAPI(email, role = "instructor") {
       if (!email) {
         setError("No email provided");
         setLoading(false);
@@ -48,14 +50,24 @@ export default function Logout({ styl, user: propUser }) {
       }
 
       try {
-        const response = await fetch(
-          `http://localhost:5000/user/${encodeURIComponent(email.toLowerCase())}`
-        );
+        const endpoint =
+          role === "student"
+            ? `http://localhost:5000/api/student-auth/get-student/${encodeURIComponent(
+                email.toLowerCase()
+              )}`
+            : `http://localhost:5000/user/${encodeURIComponent(email.toLowerCase())}`;
+
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.message || "User not found");
+        }
+
         const data = await response.json();
         setUser(data);
       } catch (err) {
         console.error("Error fetching user data", err);
-        setError("Failed to fetch user data");
+        setError(err.message || "Failed to fetch user data");
       } finally {
         setLoading(false);
       }
@@ -70,7 +82,7 @@ export default function Logout({ styl, user: propUser }) {
     localStorage.removeItem("lastName");
     localStorage.removeItem("email");
     localStorage.removeItem("token");
-
+    localStorage.removeItem("role");
     navigate("/login");
   };
 
@@ -89,12 +101,20 @@ export default function Logout({ styl, user: propUser }) {
       }}
     >
       {/* Profile Button */}
-      <button className={styl.prof_button} style={{ display: "flex", alignItems: "center" }}>
+      <button
+        className={styl.prof_button}
+        style={{ display: "flex", alignItems: "center" }}
+      >
         <img
           src={profile}
           alt="profile"
           className={styl.img}
-          style={{ width: "40px", height: "40px", borderRadius: "50%", marginRight: "0.5rem" }}
+          style={{
+            width: "40px",
+            height: "40px",
+            borderRadius: "50%",
+            marginRight: "0.5rem",
+          }}
         />
         <h3 className={styl.name}>
           {user.firstName} {user.lastName}
@@ -105,7 +125,13 @@ export default function Logout({ styl, user: propUser }) {
       <img
         src={logo}
         alt="System Logo"
-        style={{ height: "50px", objectFit: "contain", position: "absolute", left: "50%", transform: "translateX(-50%)", }}
+        style={{
+          height: "50px",
+          objectFit: "contain",
+          position: "absolute",
+          left: "50%",
+          transform: "translateX(-50%)",
+        }}
       />
 
       {/* Logout Button */}

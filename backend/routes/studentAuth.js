@@ -87,6 +87,23 @@ router.get("/get-courses", async (req, res) => {
   }
 });
 
+router.get("/get-student/:email", async (req, res) => {
+  try {
+    const email = decodeURIComponent(req.params.email).toLowerCase();
+    const student = await Student.findOne({ email });
+
+    if (!student) return res.status(404).json({ message: "Student not found" });
+
+    res.json({
+      firstName: student.firstName || "",
+      lastName: student.lastName || "",
+      email: student.email,
+    });
+  } catch (err) {
+    console.error("Error fetching student:", err);
+    res.status(500).json({ message: "Error fetching student: " + err.message });
+  }
+});
 
 module.exports = router;
 

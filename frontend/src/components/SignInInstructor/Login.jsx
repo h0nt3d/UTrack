@@ -25,6 +25,7 @@ const Signin = () => {
         localStorage.setItem("user", JSON.stringify(result.data.user || { email: username }));
         localStorage.setItem("firstName", result.data.user?.firstName || "");
         localStorage.setItem("lastName", result.data.user?.lastName || "");
+	localStorage.setItem("role", role);
 
         // Redirect to profile page
         window.location.href = "/profile";
