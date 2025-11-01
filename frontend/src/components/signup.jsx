@@ -91,7 +91,8 @@ export default function Signup() {
     if (result.success) {
       const signedEmail = result.data?.user?.email || verifiedUser.email;
       localStorage.setItem("email", signedEmail);
-      navigate("/profile", { state: { email: signedEmail } });
+      navigate("/login", { state: { email: signedEmail } });
+      
     } else {
       setErrorMessage(result.error || "Signup failed.");
     }

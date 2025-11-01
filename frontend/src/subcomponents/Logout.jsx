@@ -75,7 +75,7 @@ export default function Logout({ styl, user: propUser }) {
   };
 
   if (error || !user) {
-    return;
+    return <LoginFailed />;
   }
 
   return (
