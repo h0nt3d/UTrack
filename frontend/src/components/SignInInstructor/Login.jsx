@@ -18,20 +18,25 @@ const Signin = () => {
       const loginData = { email: username, password };
       const result = await fetchLogin(loginData, role);
 
-      if (result.success) {
-        // Save user info in localStorage
-        localStorage.setItem("email", result.data.user?.email || username);
-        localStorage.setItem("token", result.data.token);
-        localStorage.setItem("user", JSON.stringify(result.data.user || { email: username }));
-        localStorage.setItem("firstName", result.data.user?.firstName || "");
-        localStorage.setItem("lastName", result.data.user?.lastName || "");
-	localStorage.setItem("role", role);
+	if (result.success) {
+	  // Save user info in localStorage
+	  localStorage.setItem("email", result.data.user?.email || username);
+	  localStorage.setItem("token", result.data.token);
+	  localStorage.setItem("user", JSON.stringify(result.data.user || { email: username }));
+	  localStorage.setItem("firstName", result.data.user?.firstName || "");
+	  localStorage.setItem("lastName", result.data.user?.lastName || "");
+	  localStorage.setItem("role", role);
 
-        // Redirect to profile page
-        window.location.href = "/profile";
-      } else {
-        setError(result.error || "Login failed");
-      }
+	  // Redirect based on role
+	  if (role === "student") {
+	    window.location.href = "/student-dashboard";
+	  } else {
+	    window.location.href = "/profile"; // instructor view
+	  }
+	} else {
+	  setError(result.error || "Login failed");
+	}
+	    
     } catch (err) {
       console.error("Login error:", err);
       setError("An error occurred during login");
