@@ -12,6 +12,7 @@ export default function ProjectDetails() {
     projectDescription,
     courseName,
     courseNumber,
+    team,
   } = location.state || {};
 
   const [projectStudents, setProjectStudents] = useState([]);
@@ -121,7 +122,7 @@ const handleAddStudents = async () => {
         </button>
 
         <div className="mt-10 mb-4 text-center">
-          <h1 className={styles.my_c}>{projectTitle}</h1>
+          <h1 className={styles.my_c}>{projectTitle}-{team}</h1>
           {projectDescription && <p className="text-gray-600">{projectDescription}</p>}
           <p className="text-gray-700 font-medium mt-1">{courseName} ({courseNumber})</p>
         </div>

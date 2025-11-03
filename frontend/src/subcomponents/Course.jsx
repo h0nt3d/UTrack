@@ -15,16 +15,20 @@ export default function Course({ course, styl, token }) {
     });
   };
 
+  function deleteHandle () {
+    
+  }
+  
+
   return (
     <div
-      className={`${styl.course_card} flex flex-col items-center text-center cursor-pointer`}
+      className={`${styl.course_card} ${styl.course} relative flex flex-col items-center justify-center text-center cursor-pointer`}
       onClick={goToRoster}
     >
-      <h3 className={styl.course}>
+      <h3>
         {course.courseNumber}: {course.courseName}
       </h3>
       {course.img && <img className={styl.course_img} src={course.img} alt={course.courseName} />}
-    </div>
+    </div> 
   );
 }
-

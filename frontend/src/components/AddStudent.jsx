@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import styles from "../css_folder/Mycourses.module.css";
 import Logout from "../subcomponents/Logout.jsx";
+import {studJoySampleData} from "./datapoints.js"
 
 export default function AddStudent() {
   const { courseId } = useParams();
@@ -10,7 +11,7 @@ export default function AddStudent() {
   const token = location.state?.token;
 
   const [students, setStudents] = useState([]);
-  const [newStudent, setNewStudent] = useState({ firstName: "", lastName: "", email: "" });
+  const [newStudent, setNewStudent] = useState({ firstName: "", lastName: "", email: "", joyHistory:[] });
   const [message, setMessage] = useState(null);
   const [isError, setIsError] = useState(false);
 
@@ -37,7 +38,7 @@ export default function AddStudent() {
       if (!addRes.ok) throw new Error(addData.message || "Failed to add student to course");
 
       setStudents(addData.students || []);
-      setNewStudent({ firstName: "", lastName: "", email: "" });
+      setNewStudent({ firstName: "", lastName: "", email: "", joyHistory:studJoySampleData });
 
       //Success message (green)
       setIsError(false);

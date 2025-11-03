@@ -10,7 +10,7 @@ export default function AddProject() {
   const token = location.state?.token;
 
   const [projects, setProjects] = useState([]);
-  const [newProject, setNewProject] = useState({ title: "", description: "" });
+  const [newProject, setNewProject] = useState({ title: "", description: "", team:"" });
   const [message, setMessage] = useState(null);
   const [isError, setIsError] = useState(false);
 
@@ -46,9 +46,10 @@ export default function AddProject() {
 
   const handleAddProject = async (e) => {
     e.preventDefault();
-    if (!newProject.title.trim()) return;
+    if (!newProject.title.trim() || !newProject.team.trim()) return;
 
     try {
+      console.log(token);
       const res = await fetch(
         `http://localhost:5000/api/auth/course/${courseId}/add-project`,
         {
@@ -57,7 +58,7 @@ export default function AddProject() {
           body: JSON.stringify(newProject),
         }
       );
-
+      console.log(res);
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.message || "Failed to add project");
@@ -65,7 +66,7 @@ export default function AddProject() {
 
       const data = await res.json();
       setProjects(data.projects || []);
-      setNewProject({ title: "", description: "" });
+      setNewProject({ title: "", description: "", team: "" });
       setIsError(false);
       setMessage("Project added successfully!");
       setTimeout(() => setMessage(null), 1500);
@@ -90,7 +91,7 @@ export default function AddProject() {
         </button>
 
         <div className="mb-4 mt-10 text-center">
-          <h1 className={styles.my_c}>Add Projects to {courseId}</h1>
+          <h1 className={styles.my_c}>Add Project-Teams to {courseId}</h1>
         </div>
 
         <div className="flex justify-center mb-6">
@@ -116,11 +117,21 @@ export default function AddProject() {
               }
               className="w-full p-2 border rounded"
             />
+            <input
+              type="text"
+              placeholder="Team Name"
+              value={newProject.team}
+              onChange={(e) =>
+                setNewProject({ ...newProject, team: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+            />
             <button
               type="submit"
               className={`${styles.button} flex justify-center items-center`}
             >
-              Add Project
+              Add Project-Team
             </button>
 
             {message && (

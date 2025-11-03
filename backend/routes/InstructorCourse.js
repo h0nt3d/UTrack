@@ -92,22 +92,24 @@ router.get("/get-course/:courseNumber", requireAuth, async (req, res) => {
 });
 
 // Add project to a course
-router.post("/course/:courseNumber/add-project", requireAuth, async (req, res) => {
+router.post("/course/:courseNumber/add-project", requireAuth , async (req, res) => {
   const { courseNumber } = req.params;
-  const { title, description = "" } = req.body;
+  const { title, description = "", team="" } = req.body;
 
   if (!title || title.trim() === "")
     return res.status(400).json({ message: "Project title is required" });
-
+  if (!team || team.trim() === "")
+    return res.status(400).json({ message: "Team name is required" });
+ 
   try {
     const course = await Course.findOne({ courseNumber, instructor: req.user.id });
     if (!course) return res.status(404).json({ message: "Course not found" });
 
-    const newProject = { title: title.trim(), description: description.trim(), students: [] };
+    const newProject = { title: title.trim(), description: description.trim(), team: team.trim(), students: [] };
     course.projects.push(newProject);
 
     await course.save();
-
+     console.log("Done here");
     res.json({ success: true, message: "Project added successfully", projects: course.projects });
   } catch (err) {
     console.error("Error adding project:", err);

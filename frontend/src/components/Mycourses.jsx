@@ -99,4 +99,3 @@ export default function Mycourses({ user }) {
     </div>
   );
 }
-
