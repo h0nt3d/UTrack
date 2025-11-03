@@ -1,6 +1,10 @@
 {
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe@unb.ca",
-  "password": "password123"
+  "instructor1": {
+    "firstName": "John",
+    "lastName": "Doe",
+    "personalToken": "test-token",
+    "email": "john.doe@unb.ca",
+    "password": "password123",
+    "authToken": "auth-token"
+  }
 }

@@ -1,78 +1,65 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-// ***********************************************
+// This file includes re-usable commands used for simulating common workflows.
+
+// Data
+let instructorData;
+let courseData;
+
+const BASE_URL = 'http://localhost:5000/api';
+const SPECIAL_TOKEN = 'test-token';
+
+// Fixtures
+beforeEach(() => {
+    // Instructor
+    cy.fixture('instructors').then((data) => {
+        instructorData = data.instructor1;
+    });
+
+    // Course
+    cy.fixture('courses').then((data) => {
+        courseData = data.course1;
+    });
+});
+
 
 /**
- * A command for emulating the instructor sign-up process.
+ * Instructor Sign-Up
  * 
- * Note that the data must also be defined in the specific test file to re-use it at a later point in time.
+ * A command for simulating the instructor sign-up process.
  */
 Cypress.Commands.add('InstructorSignUp', () => {
     // Data
-    // ====================================================================================================
-
-    const BASE_URL = 'http://localhost:5000/api'
-
-    const TEST_INSTRUCTOR = {
-        firstName: "John",
-        lastName: "Doe",
-        personalToken: "test-token",
-        email: "john.doe@unb.ca",
-        password: "password123"
-    };
-
-    const TEST_TOKEN = "token1"
-
-    // System Flow
-    // ====================================================================================================
+    if(!instructorData) {
+        throw new Error("Fixture Data Error");
+    }
 
     // Sign-Up Intercept
     cy.intercept('POST', `${BASE_URL}/auth/instructor-signup`, {
         statusCode: 200,
         body: {
             message: "User created successfully.",
-            user: { email: TEST_INSTRUCTOR.email },
-            token: TEST_TOKEN
+            user: { email: instructorData.email },
+            token: instructorData.authToken
         }
     }).as('mockSignup');
 
     // Landing Page
-    cy.visit('http://localhost:3000');
+    cy.visit('http://localhost:3000', {
+        onBeforeLoad(win) {
+            win.process = { env: { REACT_APP_INSTRUCTOR_TOKEN: SPECIAL_TOKEN } }
+        }
+    });;
 
     // Sign-Up Page
     cy.get('[data-testid="landing-instructorSignUp"]').click();
     cy.url().should('include', '/instructor-signup');
 
     // Instructor Information
-    cy.get('[data-testid="signup-firstName"]').type(TEST_INSTRUCTOR.firstName);
-    cy.get('[data-testid="signup-lastName"]').type(TEST_INSTRUCTOR.lastName);
-    cy.get('[data-testid="signup-token"]').type(TEST_INSTRUCTOR.personalToken);
-    cy.get('[data-testid="signup-email"]').type(TEST_INSTRUCTOR.email);
-    cy.get('[data-testid="signup-password"]').type(TEST_INSTRUCTOR.password);
-    cy.get('[data-testid="signup-confirmPassword"]').type(TEST_INSTRUCTOR.password);
+    cy.get('[data-testid="signup-firstName"]').type(instructorData.firstName);
+    cy.get('[data-testid="signup-lastName"]').type(instructorData.lastName);
+    cy.get('[data-testid="signup-personalToken"]').type(instructorData.personalToken);
+    cy.get('[data-testid="signup-email"]').type(instructorData.email);
+    cy.get('[data-testid="signup-password"]').type(instructorData.password);
+    cy.get('[data-testid="signup-confirmPassword"]').type(instructorData.password);
 
     // Create Account
     cy.contains("Create Account").click();
@@ -82,15 +69,15 @@ Cypress.Commands.add('InstructorSignUp', () => {
     cy.window().then((win) => {
         win.document.querySelectorAll('.modal, [role="dialog"], .modal-backdrop').forEach(el => el.remove());
 
-        win.localStorage.setItem('email', TEST_INSTRUCTOR.email);
-        win.localStorage.setItem('authToken', TEST_TOKEN);
+        win.localStorage.setItem('email', instructorData.email);
+        win.localStorage.setItem('authToken', instructorData.authToken);
     });
 
     // Profile
     cy.visit('http://localhost:3000/profile', {
         onBeforeLoad(win) {
-            win.localStorage.setItem('email', TEST_INSTRUCTOR.email);
-            win.localStorage.setItem('authToken', TEST_TOKEN);
+            win.localStorage.setItem('email', instructorData.email);
+            win.localStorage.setItem('authToken', instructorData.authToken);
         }
     });
 
@@ -101,34 +88,17 @@ Cypress.Commands.add('InstructorSignUp', () => {
 });
 
 /**
- * A command for emulating the process to add a course.
+ * Course Creation
  * 
- * This command first utilizes the instructor sign-up command to then add courses.
+ * A command for simulating the process of adding a course.
+ * 
+ * This command first utilizes the instructor sign-up command to then add a course.
  */
 Cypress.Commands.add('CreateCourse', () => {
     // Data
-    // ====================================================================================================
-
-    const BASE_URL = 'http://localhost:5000/api'
-
-    const TEST_INSTRUCTOR = {
-        firstName: "John",
-        lastName: "Doe",
-        personalToken: "test-token",
-        email: "john.doe@unb.ca",
-        password: "password123"
-    };
-
-    const TEST_TOKEN = "token1"
-
-    const TEST_COURSE = {
-        number: "SWE4103",
-        name: "Software Quality and Project Management",
-        description: "This course emphasizes software testing, verification, and validation, and project tracking, planning, and scheduling."
-    };
-
-    // System Flow
-    // ====================================================================================================
+    if(!instructorData || !courseData) {
+        throw new Error("Fixture Data Error");
+    }
 
     // Sign-Up
     cy.InstructorSignUp();
@@ -136,9 +106,9 @@ Cypress.Commands.add('CreateCourse', () => {
     // Re-Visit Page
     cy.visit('http://localhost:3000/profile', {
         onBeforeLoad(win) {
-            win.localStorage.setItem('email', TEST_INSTRUCTOR.email);
-            win.localStorage.setItem('authToken', TEST_TOKEN);
-            win.localStorage.setItem('token', TEST_TOKEN);
+            win.localStorage.setItem('email', instructorData.email);
+            win.localStorage.setItem('token', instructorData.personalToken);
+            win.localStorage.setItem('authToken', instructorData.authToken);
         }
     });
 
@@ -146,7 +116,7 @@ Cypress.Commands.add('CreateCourse', () => {
     cy.intercept('POST', `${BASE_URL}/auth/createCourses`, {
         statusCode: 200,
         body: {
-            course: { _id: '1', courseNumber: TEST_COURSE.number, courseName: TEST_COURSE.name }
+            course: { _id: '1', courseNumber: courseData.number, courseName: courseData.name }
         }
     }).as('mockCreateCourse');
 
@@ -154,9 +124,9 @@ Cypress.Commands.add('CreateCourse', () => {
     cy.contains('Add course').click();
 
     // Course Information
-    cy.get('[data-testid="course-number"]').type(TEST_COURSE.number);
-    cy.get('[data-testid="course-name"]').type(TEST_COURSE.name);
-    cy.get('[data-testid="course-description"]').type(TEST_COURSE.description);
+    cy.get('[data-testid="course-number"]').type(courseData.number);
+    cy.get('[data-testid="course-name"]').type(courseData.name);
+    cy.get('[data-testid="course-description"]').type(courseData.description);
 
     // Create
     cy.get('[data-testid="course-save"]').click();
@@ -168,5 +138,5 @@ Cypress.Commands.add('CreateCourse', () => {
     cy.wait('@mockCreateCourse');
 
     // Course Details
-    cy.contains(`${TEST_COURSE.number}: ${TEST_COURSE.name}`).should('be.visible');
+    cy.contains(`${courseData.number}: ${courseData.name}`).should('be.visible');
 });
