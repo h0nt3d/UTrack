@@ -1,21 +1,32 @@
-// API function for user login
-export const fetchLogin = async (loginData) => {
+// loginApi.js
+export const fetchLogin = async (loginData, role = "instructor") => {
   try {
-    const response = await fetch("http://localhost:5000/api/auth/login", {
+    let endpoint = "";
+    if (role === "instructor") {
+      endpoint = "http://localhost:5000/api/auth/login";
+    } else if (role === "student") {
+      endpoint = "http://localhost:5000/api/student-auth/login";
+    } else {
+      throw new Error("Invalid role selected");
+    }
+
+    const response = await fetch(endpoint, {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(loginData),
     });
 
     const data = await response.json();
-    
+
     if (response.ok) {
-      return { success: true, data };
+      const user = data.user || { email: loginData.email };
+      return { success: true, data: { ...data, user } };
     } else {
-      return { success: false, error: data.message };
+      return { success: false, error: data.message || "Login failed" };
     }
   } catch (error) {
-    console.error("Error during login: ", error);
+    console.error("Error during login:", error);
     return { success: false, error: "Network error occurred" };
   }
 };
+

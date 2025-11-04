@@ -4,19 +4,38 @@ import { useNavigate } from "react-router-dom";
 import { fetchSignup } from "./js/signupApi.js";
 import EmailVerify from "./EmailVerify/EmailVerify.jsx";
 import { Mail, Lock } from "lucide-react";
+import { studentFirstLogin, verifyStudentEmail } from "./js/studentAuthApi.js";
 
-function isValidEmailBasic(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
-}
-function isUnbEmail(email) {
-  return email.toLowerCase().endsWith("@unb.ca");
-}
+const isValidEmailBasic = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+const isUnbEmail = (email) => email.toLowerCase().endsWith("@unb.ca");
+
+const Field = ({ icon: Icon, value, setValue, type = "text", placeholder }) => (
+  <div className="relative">
+    <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+      <Icon size={18} strokeWidth={2} />
+    </div>
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder={placeholder}
+      className="
+        w-full pl-11 pr-4 h-12
+        rounded-xl border border-gray-200
+        bg-white/80 shadow-sm
+        placeholder:text-gray-400
+        focus:outline-none focus:ring-4 focus:ring-sky-200 focus:border-sky-400
+        transition
+      "
+    />
+  </div>
+);
 
 export default function FirstLogin() {
-  const [email,     setEmail]               = useState("");
-  const [password,  setPassword]            = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errorMessage, setErrorMessage]     = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [pendingUserData, setPendingUserData] = useState(null);
 
@@ -25,8 +44,8 @@ export default function FirstLogin() {
   async function handleSubmit() {
     setErrorMessage("");
 
-    const em  = email.trim().toLowerCase();
-    const pw  = password;
+    const em = email.trim().toLowerCase();
+    const pw = password;
     const cpw = confirmPassword;
 
     if (!em || !pw || !cpw) {
@@ -50,18 +69,31 @@ export default function FirstLogin() {
       return;
     }
 
+    // Show email verification modal first
     setPendingUserData({ email: em, password: pw });
     setShowEmailModal(true);
   }
 
   async function handleEmailVerificationConfirmed(verifiedUser) {
-    const result = await fetchSignup(verifiedUser);
+    const em = verifiedUser?.email || email.trim().toLowerCase();
+    
+    // Verify student email in backend (set isVerified to true)
+    const verifyResult = await verifyStudentEmail(em);
+    if (!verifyResult.success) {
+      setErrorMessage(verifyResult.error || "Email verification failed.");
+      setShowEmailModal(false);
+      return;
+    }
+
+    // After email verification, proceed with password claim
+    const pw = verifiedUser?.password || password;
+    const result = await studentFirstLogin({ email: em, password: pw });
+
     if (result.success) {
-      const signedEmail = result.data?.user?.email || verifiedUser.email;
-      localStorage.setItem("email", signedEmail);
-      navigate("/profile", { state: { email: signedEmail } });
+      navigate("/student-dashboard", { state: { email: em } });
     } else {
-      setErrorMessage(result.error || "Signup failed.");
+      setErrorMessage(result.error || "Error claiming account.");
+      setShowEmailModal(false);
     }
   }
 
@@ -70,82 +102,35 @@ export default function FirstLogin() {
     setPendingUserData(null);
   }
 
-  const Field = ({ icon: Icon, ...rest }) => (
-    <div className="relative">
-      <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-        <Icon size={18} strokeWidth={2} />
-      </div>
-      <input
-        {...rest}
-        className="
-          w-full pl-11 pr-4 h-12
-          rounded-xl border border-gray-200
-          bg-white/80 shadow-sm
-          placeholder:text-gray-400
-          focus:outline-none focus:ring-4 focus:ring-sky-200 focus:border-sky-400
-          transition
-        "
-      />
-    </div>
-  );
-
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-sky-300 via-sky-200 to-blue-50 px-4">
-
       <div className="relative w-full max-w-md">
-
         <form
-          className="
-            bg-white/95 backdrop-blur
-            rounded-3xl shadow-xl ring-1 ring-black/5
-            px-6 py-7 sm:px-8 sm:py-9
-          "
+          className="bg-white/95 backdrop-blur rounded-3xl shadow-xl ring-1 ring-black/5 px-6 py-7 sm:px-8 sm:py-9"
           onSubmit={(e) => e.preventDefault()}
         >
           <div className="flex flex-col items-center mb-8">
-                  <img
-                    src={logo}
-                    alt="UTrack Logo"
-                    className="w-60 h-30 object-contain mb-2 drop-shadow"
-                  />
-                </div>
+            <img
+              src={logo}
+              alt="UTrack Logo"
+              className="w-60 h-30 object-contain mb-2 drop-shadow"
+            />
+          </div>
+
           <h2 className="text-center text-xl sm:text-2xl font-extrabold text-black mb-6">
             Student First Time Login
           </h2>
 
           <div className="space-y-4">
-            <Field
-              icon={Mail}
-              type="email"
-              placeholder="Email"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Field
-              icon={Lock}
-              type="password"
-              placeholder="Password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Field
-              icon={Lock}
-              type="password"
-              placeholder="Retype Password"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+            <Field icon={Mail} type="email" placeholder="Email" value={email} setValue={setEmail} />
+            <Field icon={Lock} type="password" placeholder="Password" value={password} setValue={setPassword} />
+            <Field icon={Lock} type="password" placeholder="Retype Password" value={confirmPassword} setValue={setConfirmPassword} />
           </div>
 
           <div className="mt-6 space-y-3">
             <button
               type="button"
-              disabled
-              className="
-                w-full rounded-xl bg-[#0b1220] text-white py-3
-                shadow-[0_8px_20px_rgba(0,0,0,0.15)]
-                hover:shadow-[0_10px_25px_rgba(0,0,0,0.25)]
-                hover:bg-[#1a1f33]
-                transition-all duration-200 ease-in-out
-              "
-              
+              className="w-full rounded-xl bg-[#0b1220] text-white py-3 shadow-[0_8px_20px_rgba(0,0,0,0.15)] hover:shadow-[0_10px_25px_rgba(0,0,0,0.25)] hover:bg-[#1a1f33] transition-all duration-200 ease-in-out"
               onClick={handleSubmit}
             >
               Claim Account
@@ -153,10 +138,7 @@ export default function FirstLogin() {
 
             <div className="text-center text-sm text-gray-700">
               Went to the Wrong Page?{" "}
-              <a
-                href="/"
-                className="underline underline-offset-2 hover:text-black"
-              >
+              <a href="/" className="underline underline-offset-2 hover:text-black">
                 UTrack Main Menu
               </a>
             </div>
@@ -176,9 +158,7 @@ export default function FirstLogin() {
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
                   />
                 </svg>
-                <p className="text-sm font-medium text-red-700">
-                  {errorMessage}
-                </p>
+                <p className="text-sm font-medium text-red-700">{errorMessage}</p>
               </div>
             </div>
           )}
@@ -194,3 +174,4 @@ export default function FirstLogin() {
     </div>
   );
 }
+

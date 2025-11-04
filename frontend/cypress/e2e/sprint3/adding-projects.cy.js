@@ -5,47 +5,39 @@
 // Test Data
 // ****************************************************************************************************
 
-const BASE_URL = 'http://localhost:5000/api'
+// Data
+let instructorData;
+let courseData;
 
-// Instructor
-const TEST_INSTRUCTOR = {
-    firstName: "John",
-    lastName: "Doe",
-    personalToken: "test-token",
-    email: "john.doe@unb.ca",
-    password: "password123"
-};
+const BASE_URL = 'http://localhost:5000/api';
+const SPECIAL_TOKEN = 'test-token';
 
-// Token
-const TEST_TOKEN = "token1";
-
-// Course
-const TEST_COURSE  = {
-    number: "SWE4103",
-    name: "Software Quality and Project Management",
-    description: "This course emphasizes software testing, verification, and validation, and project tracking, planning, and scheduling."
-};
-
-// Test Cases
-// ****************************************************************************************************
-
+// Test Suite
 describe("Manage Projects", () => {
 
-    // Environment Setup
-    // ****************************************************************************************************
-
-    // Active Course
+    // Environment
+    // **************************************************
     beforeEach(() => {
+        // Instructor
+        cy.fixture('instructors').then((data) => {
+            instructorData = data.instructor1;
+        });
+
+        // Course
+        cy.fixture('courses').then((data) => {
+            courseData = data.course1;
+        });
+
         cy.CreateCourse();
     });
-
-    // Clean Storage
+    
+    // Clean
     after(() => {
         cy.clearLocalStorage();
     });
 
     // Test Cases
-    // ****************************************************************************************************
+    // **************************************************
 
     // Project Page
     it("Displays active projects, an add project button, and a back button.", () => {
