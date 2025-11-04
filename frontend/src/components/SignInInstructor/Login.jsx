@@ -82,6 +82,7 @@ const SigninInst = () => {
           <div className="space-y-4">
             <Field
               icon={Mail}
+              data-testid="login-email"
               name="username"
               type="email"
               placeholder="Email"
@@ -90,6 +91,7 @@ const SigninInst = () => {
             />
             <Field
               icon={Lock}
+              data-testid="login-password"
               name="password"
               type="password"
               placeholder="Password"
@@ -118,7 +120,7 @@ const SigninInst = () => {
             </div>
           )}
 
-          <p className="mt-4 text-center text-sm text-gray-700">
+          <p data-testid="login-mainMenu" className="mt-4 text-center text-sm text-gray-700">
             Went to the Wrong Page?{" "}
             <a href="/" className="underline underline-offset-2 hover:text-black">
               UTrack Main Menu
