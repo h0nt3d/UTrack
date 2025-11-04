@@ -78,6 +78,7 @@ export default function AddStudent() {
             className={`${styles.course_card} p-6 flex flex-col gap-3 w-full max-w-md relative`}
           >
             <input
+              data-testid = "email"
               type="email"
               placeholder="Email"
               value={newStudent.email}
@@ -86,6 +87,7 @@ export default function AddStudent() {
               required
             />
             <button
+              data-testid = "add-student-btn"
               type="submit"
               className={`${styles.button} flex justify-center items-center`}
             >

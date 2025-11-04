@@ -131,6 +131,7 @@ export default function CSVExcelAdd() {
         {/* File Input */}
         <div className="flex justify-center mb-6">
           <input
+            data-testid = "bulk-upload-input"
             type="file"
             accept=".csv,.xlsx"
             onChange={handleFileChange}

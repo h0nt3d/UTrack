@@ -1,0 +1,7 @@
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@unb.ca",
+  "personalToken": "test-token",
+  "password": "password123"
+}

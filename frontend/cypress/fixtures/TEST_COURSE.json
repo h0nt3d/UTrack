@@ -1,7 +1,5 @@
 {
-  "course1": {
     "number": "SWE4103",
     "name": "Software Quality and Project Management",
     "description": "This course emphasizes software testing, verification, and validation, and project tracking, planning, and scheduling."
-  }
 }

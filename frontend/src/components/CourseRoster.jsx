@@ -86,6 +86,7 @@ export default function CourseRoster() {
         {/* Action Buttons */}
         <div className="flex justify-center gap-4 mt-4">
           <button
+            data-testid = "add-student-btn"
             className={`${styles.button} flex justify-center items-center`}
             style={{ minWidth: "150px" }}
             onClick={() =>
