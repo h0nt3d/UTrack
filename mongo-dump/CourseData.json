@@ -1,0 +1,59 @@
+[
+  {
+    "courseNumber": "CS1073",
+    "courseName": "Introduction to Java I",
+    "description": "Basic concepts of computer science",
+    "instructor": "60cf7e4f1c4ae812c8d1f900",
+    "projects": [
+      {
+        "title": "Final Project",
+        "description": "Create a small software application",
+        "students": ["michael.brown@example.com", "emily.davis@example.com"],
+        "createdAt": "2025-01-15T10:00:00Z"
+      },
+      {
+        "title": "Midterm Project",
+        "description": "Build a calculator",
+        "students": ["daniel.wilson@example.com"],
+        "createdAt": "2025-03-10T14:30:00Z"
+      }
+    ],
+    "students": [
+      "michael.brown@example.com",
+      "emily.davis@example.com",
+      "daniel.wilson@example.com",
+      "Alex.Piroozfar@example.com"
+    ]
+  },
+  {
+    "courseNumber": "SWE4103",
+    "courseName": "Software Quality and Project Management",
+    "description": "In-depth study of calculus",
+    "instructor": "60cf7e4f1c4ae812c8d1f901",
+    "projects": [
+      {
+        "title": "Team 1",
+        "description": "Create an app for instructors and students",
+        "students": ["alice.johnson@example.com"],
+        "createdAt": "2025-02-01T09:00:00Z"
+      },
+      {
+        "title": "Team 2",
+        "description": "Create an app for instructors and students",
+        "students": ["Somtochukwu.Nwachukwu@example.com"],
+        "createdAt": "2025-02-01T09:00:00Z"
+      },
+      {
+        "title": "Team 3",
+        "description": "Create an app for instructors and students",
+        "students": ["Alex.Piroozfar@example.com"],
+        "createdAt": "2025-02-01T09:00:00Z"
+      }
+    ],
+    "students": [
+        "alice.johnson@example.com", 
+        "Alex.Piroozfar@example.com", 
+        "Somtochukwu.Nwachukwu@example.com"
+    ]
+  }
+]

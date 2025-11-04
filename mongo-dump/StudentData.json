@@ -1,0 +1,66 @@
+[
+  {
+    "firstName": "Somtochukwu",
+    "lastName": "Nwachukwu",
+    "email": "Somtochukwu.Nwachukwu@example.com",
+    "password": "student_pass_001",
+    "courses": ["SWE4103"],
+    "isVerified": true
+  },
+  {
+    "firstName": "Uchechi",
+    "lastName": "Okoronkwo",
+    "email": "Uchechi.Okoronkwo@example.com",
+    "password": "student_pass_002",
+    "courses": [],
+    "isVerified": true
+  },
+  {
+    "firstName": "Alex",
+    "lastName": "Piroozfar",
+    "email": "Alex.Piroozfar@example.com",
+    "password": "student_pass_003",
+    "courses": ["SWE4103", "CS1073"],
+    "isVerified": false
+  },
+  {
+    "firstName": "Ben",
+    "lastName": "MacGillivry",
+    "email": "Ben.MacGillivry@example.com",
+    "password": "student_pass_004",
+    "courses": [],
+    "isVerified": false
+  },
+  {
+    "firstName": "Daniel",
+    "lastName": "Wilson",
+    "email": "daniel.wilson@example.com",
+    "password": "student_pass_005",
+    "courses": ["CS1073"],
+    "isVerified": false
+  },
+  {
+    "firstName": "Michael",
+    "lastName": "Brown",
+    "email": "michael.brown@example.com",
+    "password": "student_pass_006",
+    "courses": ["CS1073"],
+    "isVerified": true
+  },
+  {
+    "firstName": "Emily",
+    "lastName": "Davis",
+    "email": "emily.davis@example.com",
+    "password": "student_pass_007",
+    "courses": ["CS1073"],
+    "isVerified": false
+  },
+  {
+    "firstName": "Alice",
+    "lastName": "Johnson",
+    "email": "alice.johnson@example.com",
+    "password": "student_pass_008",
+    "courses": ["SWE4103"],
+    "isVerified": true
+  }
+]

@@ -1,0 +1,64 @@
+[{
+    "firstName": "Alex",
+    "lastName": "Piroozfar",
+    "email": "Alex.Piroozfar@example.com",
+    "password": "hashed_password_123",
+    "courses": []
+  },
+  {
+    "firstName": "Ben",
+    "lastName": "MacGillivry",
+    "email": "Ben.MacGillivry@example.com",
+    "password": "hashed_password_456",
+    "courses": ["615c1f4e0a23b25a2e3f1234"]
+  },
+  {
+    "firstName": "Charles",
+    "lastName": "Robinson",
+    "email": "Charles.Robinson@example.com",
+    "password": "hashed_password_398",
+    "courses": ["615c1f4e0a23b25a2e3f1235"]
+  },
+  {
+    "firstName": "Darrel",
+    "lastName": "Mathew",
+    "email": "Darrel.Mathew@example.com",
+    "password": "hashed_password_936",
+    "courses": ["615c1f4e0a23b25a2e3f1236"]
+  },
+  {
+    "firstName": "Devansh",
+    "lastName": "Prabhakar",
+    "email": "Devansh.Prabhakar@example.com",
+    "password": "hashed_password_449",
+    "courses": ["615c1f4e0a23b25a2e3f1237"]
+  },
+  {
+    "firstName": "Ekene",
+    "lastName": "Unaigwe",
+    "email": "Ekene.Unaigwe@example.com",
+    "password": "hashed_password_284",
+    "courses": ["615c1f4e0a23b25a2e3f1238"]
+  },
+  {
+    "firstName": "Kamren",
+    "lastName": "Gregory",
+    "email": "Kamren.Gregory@example.com",
+    "password": "hashed_password_384",
+    "courses": ["615c1f4e0a23b25a2e3f1240"]
+  },
+  {
+    "firstName": "Michael",
+    "lastName": "Akano",
+    "email": "Michael.Akano@example.com",
+    "password": "hashed_password_654",
+    "courses": ["615c1f4e0a23b25a2e3f1239"]
+  },
+  {
+    "firstName": "Paramveer",
+    "lastName": "Singh Sidhu",
+    "email": "SinghSidhu.Paramveer@example.com",
+    "password": "hashed_password_769",
+    "courses": ["615c1f4e0a23b25a2e3f1241"]
+  }
+]
