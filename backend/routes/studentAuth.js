@@ -153,5 +153,26 @@ router.get("/get-student/:email", async (req, res) => {
   }
 });
 
+
+router.post("/verify-email", [
+  body("email").isEmail().withMessage("Valid email required."),
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) return res.status(400).json({ message: errors.array().map(e => e.msg).join(", ") });
+
+  const { email } = req.body;
+  try {
+    const student = await Student.findOne({ email: email.toLowerCase() });
+    if (!student) return res.status(404).json({ message: "Student not found." });
+
+    student.isVerified = true;
+    await student.save();
+
+    res.json({ success: true, message: "Email verified successfully.", isVerified: student.isVerified });
+  } catch (err) {
+    res.status(500).json({ message: "Error verifying email: " + err.message });
+  }
+});
+
 module.exports = router;
 

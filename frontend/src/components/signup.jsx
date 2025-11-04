@@ -91,6 +91,7 @@ export default function Signup() {
     if (result.success) {
       const signedEmail = result.data?.user?.email || verifiedUser.email;
       localStorage.setItem("email", signedEmail);
+      localStorage.setItem("token", result.data?.token || "");
       navigate("/login", { state: { email: signedEmail } });
       
     } else {

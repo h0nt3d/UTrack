@@ -122,29 +122,34 @@ export default function StuSignup() {
             <Field
               icon={User}
               placeholder="First Name"
+              value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
             <Field
               icon={User}
               placeholder="Last Name"
+              value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
             <Field
               icon={Mail}
               type="email"
               placeholder="Email"
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <Field
               icon={Lock}
               type="password"
               placeholder="Password"
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
             <Field
               icon={Lock}
               type="password"
               placeholder="Retype Password"
+              value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>

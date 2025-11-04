@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchSignup } from "./js/signupApi.js";
 import EmailVerify from "./EmailVerify/EmailVerify.jsx";
 import { Mail, Lock } from "lucide-react";
-import { studentFirstLogin } from "./js/studentAuthApi.js";
+import { studentFirstLogin, verifyStudentEmail } from "./js/studentAuthApi.js";
 
 const isValidEmailBasic = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
 const isUnbEmail = (email) => email.toLowerCase().endsWith("@unb.ca");
@@ -69,23 +69,31 @@ export default function FirstLogin() {
       return;
     }
 
+    // Show email verification modal first
+    setPendingUserData({ email: em, password: pw });
+    setShowEmailModal(true);
+  }
+
+  async function handleEmailVerificationConfirmed(verifiedUser) {
+    const em = verifiedUser?.email || email.trim().toLowerCase();
+    
+    // Verify student email in backend (set isVerified to true)
+    const verifyResult = await verifyStudentEmail(em);
+    if (!verifyResult.success) {
+      setErrorMessage(verifyResult.error || "Email verification failed.");
+      setShowEmailModal(false);
+      return;
+    }
+
+    // After email verification, proceed with password claim
+    const pw = verifiedUser?.password || password;
     const result = await studentFirstLogin({ email: em, password: pw });
 
     if (result.success) {
       navigate("/student-dashboard", { state: { email: em } });
     } else {
       setErrorMessage(result.error || "Error claiming account.");
-    }
-  }
-
-  async function handleEmailVerificationConfirmed(verifiedUser) {
-    const result = await fetchSignup(verifiedUser);
-    if (result.success) {
-      const signedEmail = result.data?.user?.email || verifiedUser.email;
-      localStorage.setItem("email", signedEmail);
-      navigate("/profile", { state: { email: signedEmail } });
-    } else {
-      setErrorMessage(result.error || "Signup failed.");
+      setShowEmailModal(false);
     }
   }
 

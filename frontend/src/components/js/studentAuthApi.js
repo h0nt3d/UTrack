@@ -27,3 +27,26 @@ export async function studentFirstLogin({ email, password }) {
   }
 }
 
+export async function verifyStudentEmail(email) {
+  try {
+    const res = await fetch("http://localhost:5000/api/student-auth/verify-email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Failed to verify email.");
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    console.error("Student email verification error:", err.message);
+    return { success: false, error: err.message };
+  }
+}
+
