@@ -41,6 +41,9 @@ app.use("/api/auth", instructorCourseRouter);
 const studentRouter = require("./routes/Student");
 app.use("/api/students", studentRouter);
 
+const joyFactorRouter = require("./routes/JoyFactor");
+app.use("/api", joyFactorRouter);
+
 // Email-based routes for course management
 app.get("/get-courses/:email", async (req, res) => {
   try {

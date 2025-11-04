@@ -41,7 +41,10 @@ export default function LineChart ({stud, num}) {
     const firstDay = new Date(today)
     firstDay.setDate(today.getDate() - num)
 
-    const filterData = studJoySampleData.filter(item => {
+    // Use stud prop if provided, otherwise fall back to sample data
+    const dataSource = stud && Array.isArray(stud) && stud.length > 0 ? stud : studJoySampleData;
+
+    const filterData = dataSource.filter(item => {
         const itemD = new Date(item.x)
         return itemD >= firstDay && itemD <= today
     })
@@ -64,7 +67,7 @@ export default function LineChart ({stud, num}) {
                     datasets: [
                         {
                             label: 's Joy',
-                            data: studJoySampleData,
+                            data: filterData,
                             borderColor: '#8EEAFF',
                             pointBackgroundColor: "#FFB74D",
                             pointBorderColor: "#FF5722",

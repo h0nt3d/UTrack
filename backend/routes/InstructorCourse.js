@@ -50,7 +50,8 @@ router.post(
       // Add course reference to instructor
       instructor.courses.push(newCourse._id);
       await instructor.save();
-
+      
+     
       res.json({ success: true, message: "Course created", course: newCourse });
     } catch (e) {
       console.error(e);
@@ -102,14 +103,24 @@ router.post("/course/:courseNumber/add-project", requireAuth , async (req, res) 
     return res.status(400).json({ message: "Team name is required" });
  
   try {
+    
     const course = await Course.findOne({ courseNumber, instructor: req.user.id });
+   
     if (!course) return res.status(404).json({ message: "Course not found" });
+    
 
+    
+     course.projects.forEach((p) => {
+      if (!p.team) p.team = "Unknown Team";
+    });
+    
     const newProject = { title: title.trim(), description: description.trim(), team: team.trim(), students: [] };
     course.projects.push(newProject);
+    console.log('All projects (before save):', course.projects.map(p => p.toObject ? p.toObject() : p));
 
+   
     await course.save();
-     console.log("Done here");
+  
     res.json({ success: true, message: "Project added successfully", projects: course.projects });
   } catch (err) {
     console.error("Error adding project:", err);

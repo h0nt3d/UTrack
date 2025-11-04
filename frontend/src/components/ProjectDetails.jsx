@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styles from "../css_folder/Mycourses.module.css";
 import Logout from "../subcomponents/Logout.jsx";
+import QuickAddJoyFactorModal from "./studentjoyfactor/QuickAddJoyFactorModal.jsx";
+import ViewJoyFactorChart from "./studentjoyfactor/ViewJoyFactorChart.jsx";
 
 export default function ProjectDetails() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { projectId } = useParams();
   const {
     token,
     projectTitle,
@@ -19,6 +22,11 @@ export default function ProjectDetails() {
   const [courseStudents, setCourseStudents] = useState([]);
   const [showAddStudents, setShowAddStudents] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState([]);
+  
+  // Joy Factor Modal States
+  const [selectedStudentForJoyFactor, setSelectedStudentForJoyFactor] = useState(null);
+  const [showAddJoyFactorModal, setShowAddJoyFactorModal] = useState(false);
+  const [showViewChartModal, setShowViewChartModal] = useState(false);
 
   // Fetch project students
   useEffect(() => {
@@ -198,6 +206,7 @@ const handleAddStudents = async () => {
                   <th className="border border-gray-300 px-4 py-2">First Name</th>
                   <th className="border border-gray-300 px-4 py-2">Last Name</th>
                   <th className="border border-gray-300 px-4 py-2">Email</th>
+                  <th className="border border-gray-300 px-4 py-2 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -206,12 +215,61 @@ const handleAddStudents = async () => {
                     <td className="border border-gray-300 px-4 py-2">{s.firstName}</td>
                     <td className="border border-gray-300 px-4 py-2">{s.lastName}</td>
                     <td className="border border-gray-300 px-4 py-2">{s.email}</td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      <div className="flex gap-2 justify-center">
+                        <button
+                          onClick={() => {
+                            setSelectedStudentForJoyFactor({ _id: s._id || s.id, firstName: s.firstName, lastName: s.lastName, email: s.email });
+                            setShowAddJoyFactorModal(true);
+                          }}
+                          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                        >
+                          Add Joy Factor
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedStudentForJoyFactor({ _id: s._id || s.id, firstName: s.firstName, lastName: s.lastName, email: s.email });
+                            setShowViewChartModal(true);
+                          }}
+                          className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                        >
+                          View Chart
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           )}
         </div>
+
+        {/* Joy Factor Modals */}
+        {showAddJoyFactorModal && selectedStudentForJoyFactor && (
+          <QuickAddJoyFactorModal
+            student={selectedStudentForJoyFactor}
+            isOpen={showAddJoyFactorModal}
+            onClose={() => {
+              setShowAddJoyFactorModal(false);
+              setSelectedStudentForJoyFactor(null);
+            }}
+            onSuccess={() => {
+              // Refresh project students if needed
+              // You can add a refresh function here if needed
+            }}
+          />
+        )}
+
+        {showViewChartModal && selectedStudentForJoyFactor && (
+          <ViewJoyFactorChart
+            student={selectedStudentForJoyFactor}
+            isOpen={showViewChartModal}
+            onClose={() => {
+              setShowViewChartModal(false);
+              setSelectedStudentForJoyFactor(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );
