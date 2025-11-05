@@ -198,7 +198,8 @@ router.get(
       }
 
       // Verify student exists
-      const student = await Student.findById(studentId);
+      const student = 
+         (await Student.findById(studentId))
       if (!student) {
         return res.status(404).json({ message: "Student not found" });
       }

@@ -29,7 +29,7 @@ export default function CardC ({stud, num, studentName}) {
 
     return (
         <Card sx={{ maxWidth: 700, margin: 2, boxShadow: 3}}>
-            <CardHeader title={studentName ? `${studentName} Joy` : 's Joy'} sx={{ textAlign: "center" }} />
+            <CardHeader title={studentName ? `${studentName}'s Joy` : 'Student Joy'} sx={{ textAlign: "center" }} />
             <CardContent>
                 <LineChart num={day} stud={dataSource}/>
             </CardContent>

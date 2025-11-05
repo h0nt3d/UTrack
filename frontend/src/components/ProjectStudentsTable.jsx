@@ -43,15 +43,12 @@ export default function ProjectStudentsTable ({projectStudents, token, setSelect
                             // Fetch joy factor data for this student
                             try {
                                 const res = await fetch(
-                                    `http://localhost:5000/api/auth/course/${courseNumber}/project/${projectId}/student/${studentId}/joy-factor`,
+                                    `http://localhost:5000/api/course/${courseNumber}/project/${projectId}/student/${studentId}/joy-factor`,
                                     {
                                         headers: { "Content-Type": "application/json", authtoken: token },
                                     }
                                 );
-                                /*
-                                const text = await res.text();   // <-- see raw response
-                                console.log("Raw response:", text);
-                                */
+
                               const data = await res.json();
                               if (res.ok && data.joyFactors) {
                                 setJoyFactorData(data.joyFactors);

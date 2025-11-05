@@ -86,7 +86,7 @@ export default function LineChart ({stud, num}) {
                                     return `${context[0].raw.x}`
                                 },
                                 label: function (context) {  
-                                    return  `Day: ${context.raw.x}, Avg: ${context.raw.y}`
+                                    return  `Day: ${context.raw.x}, Joy: ${context.raw.y}`
                                 },
                             }
                         }
