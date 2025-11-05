@@ -62,9 +62,10 @@ export default function ProjectStudentsTable ({projectStudents, token, setSelect
                               setLoadingChart(false);
                             }
                           }}
-                          className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
+                                                
+                          className="px-3 py-1 text-black rounded bg-yellow-400 hover:bg-yellow-500 text-sm"
                         >
-                          View Chart
+                          View Joy
                         </button>
                       </div>
                     </td>

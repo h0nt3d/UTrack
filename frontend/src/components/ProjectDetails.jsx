@@ -3,8 +3,13 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styles from "../css_folder/Mycourses.module.css";
 import Logout from "../subcomponents/Logout.jsx";
 import CardC from "./CardC.jsx";
+import TeamCardC from "./TeamCardC.jsx";
 import AddStudentsTable from "./AddStudentsTable.jsx"
 import ProjectStudentsTable from "./ProjectStudentsTable.jsx"
+import AllStudentsButton from "./AllStudentsButton.jsx"
+
+import StudentJoyModal from "./StudentJoyModal.jsx"
+import TeamJoyModal from "./TeamJoyModal.jsx"
 
 export default function ProjectDetails() {
   const location = useLocation();
@@ -27,6 +32,11 @@ export default function ProjectDetails() {
   const [showChartModal, setShowChartModal] = useState(false);
   const [joyFactorData, setJoyFactorData] = useState([]);
   const [loadingChart, setLoadingChart] = useState(false);
+
+  //mirroring the way individual students were done
+  const [showTeamChartModal, setShowTeamChartModal] = useState(false);
+  const [teamJoyData, setTeamJoyData] = useState([]);
+  const [loadingTeamChart, setLoadingTeamChart] = useState(false);
 
   // Fetch project students
   useEffect(() => {
@@ -158,49 +168,42 @@ const handleAddStudents = async () => {
           setShowChartModal = {setShowChartModal}
         />
 
+        {<AllStudentsButton
+          projectStudents= {projectStudents}
+          token= {token}
+          courseNumber= {courseNumber}
+          projectId= {projectId}
+          setTeamJoyData= {setTeamJoyData}
+          setLoadingTeamChart= {setLoadingTeamChart}
+          setShowTeamChartModal= {setShowTeamChartModal}
+        />}
        
-        {/* Joy Factor Chart Modal */}
-        {showChartModal && selectedStudentForChart && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-xl relative">
-              <button
-                onClick={() => {
-                  setShowChartModal(false);
-                  setSelectedStudentForChart(null);
-                  setJoyFactorData([]);
-                }}
-                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
-              >
-                ×
-              </button>
-              
-              {loadingChart ? (
-                <div className="text-center py-8">
-                  <p className="text-gray-600">Loading joy factor data...</p>
-                </div>
-              ) : (
-                <div>
-                  <h2 className="text-xl font-bold mb-4 text-center">
-                    Joy Factor Chart - {selectedStudentForChart.firstName} {selectedStudentForChart.lastName}
-                  </h2>
-                  {joyFactorData.length === 0 ? (
-                    <p className="text-center text-gray-600 py-8">
-                      No joy factor data available for this student yet.
-                    </p>
-                  ) : (
-                    <CardC 
-                      stud={joyFactorData} 
-                      num={90}
-                      studentName={`${selectedStudentForChart.firstName} ${selectedStudentForChart.lastName}`}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
+        {/*INDIVIDUAL JOY DISPLAY*/}
+        {showChartModal && selectedStudentForChart && 
+        <StudentJoyModal
+          showChartModal={showChartModal}
+          setShowChartModal={setShowChartModal}
+          selectedStudentForChart={selectedStudentForChart}
+          setSelectedStudentForChart={setSelectedStudentForChart}
+          joyFactorData={joyFactorData}
+          setJoyFactorData={setJoyFactorData}
+          loadingChart={loadingChart}
+        />}
+      
+      {/*TEAM JOY DISPLAY*/}
+      {showTeamChartModal && 
+      <TeamJoyModal
+        showTeamChartModal={showTeamChartModal}
+        setShowTeamChartModal={setShowTeamChartModal}
+        setSelectedStudentForChart={setSelectedStudentForChart}
+        teamJoyData={teamJoyData}
+        setTeamJoyData={setTeamJoyData}
+        loadingTeamChart={loadingTeamChart}
+      />}
+    
+        
     </div>
+  </div>
   );
 }
 
