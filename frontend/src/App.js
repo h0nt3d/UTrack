@@ -13,7 +13,7 @@ import ProjectDetails from "./components/ProjectDetails";
 import CardC from "./components/CardC";
 import FirstLogin from "./components/FirstLogin";
 import StudentDashboard from "./components/StudentDashboard";
-import CourseDetails from "./components/CourseDetails";
+import CourseDetails from "./components/NotUsed/CourseDetails";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 

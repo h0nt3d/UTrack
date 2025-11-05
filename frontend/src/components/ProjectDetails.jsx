@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import styles from "../css_folder/Mycourses.module.css";
 import Logout from "../subcomponents/Logout.jsx";
-import QuickAddJoyFactorModal from "./studentjoyfactor/QuickAddJoyFactorModal.jsx";
-import ViewJoyFactorChart from "./studentjoyfactor/ViewJoyFactorChart.jsx";
+import CardC from "./CardC.jsx";
 
 export default function ProjectDetails() {
   const location = useLocation();
@@ -22,11 +21,10 @@ export default function ProjectDetails() {
   const [courseStudents, setCourseStudents] = useState([]);
   const [showAddStudents, setShowAddStudents] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState([]);
-  
-  // Joy Factor Modal States
-  const [selectedStudentForJoyFactor, setSelectedStudentForJoyFactor] = useState(null);
-  const [showAddJoyFactorModal, setShowAddJoyFactorModal] = useState(false);
-  const [showViewChartModal, setShowViewChartModal] = useState(false);
+  const [selectedStudentForChart, setSelectedStudentForChart] = useState(null);
+  const [showChartModal, setShowChartModal] = useState(false);
+  const [joyFactorData, setJoyFactorData] = useState([]);
+  const [loadingChart, setLoadingChart] = useState(false);
 
   // Fetch project students
   useEffect(() => {
@@ -218,18 +216,37 @@ const handleAddStudents = async () => {
                     <td className="border border-gray-300 px-4 py-2">
                       <div className="flex gap-2 justify-center">
                         <button
-                          onClick={() => {
-                            setSelectedStudentForJoyFactor({ _id: s._id || s.id, firstName: s.firstName, lastName: s.lastName, email: s.email });
-                            setShowAddJoyFactorModal(true);
-                          }}
-                          className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                        >
-                          Add Joy Factor
-                        </button>
-                        <button
-                          onClick={() => {
-                            setSelectedStudentForJoyFactor({ _id: s._id || s.id, firstName: s.firstName, lastName: s.lastName, email: s.email });
-                            setShowViewChartModal(true);
+                          onClick={async () => {
+                            const studentId = s._id || s.id;
+                            setSelectedStudentForChart({ 
+                              _id: studentId, 
+                              firstName: s.firstName, 
+                              lastName: s.lastName, 
+                              email: s.email 
+                            });
+                            setShowChartModal(true);
+                            setLoadingChart(true);
+                            
+                            // Fetch joy factor data for this student
+                            try {
+                              const res = await fetch(
+                                `http://localhost:5000/api/course/${courseNumber}/project/${projectId}/student/${studentId}/joy-factor`,
+                                {
+                                  headers: { "Content-Type": "application/json", authtoken: token },
+                                }
+                              );
+                              const data = await res.json();
+                              if (res.ok && data.joyFactors) {
+                                setJoyFactorData(data.joyFactors);
+                              } else {
+                                setJoyFactorData([]);
+                              }
+                            } catch (err) {
+                              console.error("Error fetching joy factor:", err);
+                              setJoyFactorData([]);
+                            } finally {
+                              setLoadingChart(false);
+                            }
                           }}
                           className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
                         >
@@ -244,31 +261,45 @@ const handleAddStudents = async () => {
           )}
         </div>
 
-        {/* Joy Factor Modals */}
-        {showAddJoyFactorModal && selectedStudentForJoyFactor && (
-          <QuickAddJoyFactorModal
-            student={selectedStudentForJoyFactor}
-            isOpen={showAddJoyFactorModal}
-            onClose={() => {
-              setShowAddJoyFactorModal(false);
-              setSelectedStudentForJoyFactor(null);
-            }}
-            onSuccess={() => {
-              // Refresh project students if needed
-              // You can add a refresh function here if needed
-            }}
-          />
-        )}
-
-        {showViewChartModal && selectedStudentForJoyFactor && (
-          <ViewJoyFactorChart
-            student={selectedStudentForJoyFactor}
-            isOpen={showViewChartModal}
-            onClose={() => {
-              setShowViewChartModal(false);
-              setSelectedStudentForJoyFactor(null);
-            }}
-          />
+        {/* Joy Factor Chart Modal */}
+        {showChartModal && selectedStudentForChart && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-xl relative">
+              <button
+                onClick={() => {
+                  setShowChartModal(false);
+                  setSelectedStudentForChart(null);
+                  setJoyFactorData([]);
+                }}
+                className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              >
+                ×
+              </button>
+              
+              {loadingChart ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Loading joy factor data...</p>
+                </div>
+              ) : (
+                <div>
+                  <h2 className="text-xl font-bold mb-4 text-center">
+                    Joy Factor Chart - {selectedStudentForChart.firstName} {selectedStudentForChart.lastName}
+                  </h2>
+                  {joyFactorData.length === 0 ? (
+                    <p className="text-center text-gray-600 py-8">
+                      No joy factor data available for this student yet.
+                    </p>
+                  ) : (
+                    <CardC 
+                      stud={joyFactorData} 
+                      num={90}
+                      studentName={`${selectedStudentForChart.firstName} ${selectedStudentForChart.lastName}`}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         )}
       </div>
     </div>

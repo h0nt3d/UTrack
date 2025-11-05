@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import styles from "../css_folder/Mycourses.module.css";
-import Logout from "../subcomponents/Logout.jsx";
+import styles from "../../css_folder/Mycourses.module.css";
+import Logout from "../../subcomponents/Logout.jsx";
+import QuickAddJoyFactorModal from "../studentjoyfactor/QuickAddJoyFactorModal.jsx";
 
 export default function CourseDetails() {
   const { courseNumber } = useParams();
@@ -16,15 +17,19 @@ export default function CourseDetails() {
   });
 
   const [students, setStudents] = useState([]);
-  const [projects, setProjects] = useState([]);
+  const [studentProjects, setStudentProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [instructor, setInstructor] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [showJoyFactorModal, setShowJoyFactorModal] = useState(false);
+  const [studentId, setStudentId] = useState(null);
 
   useEffect(() => {
     if (!token) return;
 
     const fetchCourseData = async () => {
       try {
+        // Fetch course data
         const res = await fetch(
           `http://localhost:5000/api/student-auth/get-course/${courseNumber}`,
           {
@@ -42,8 +47,40 @@ export default function CourseDetails() {
         });
 
         setStudents(data.students || []);
-        setProjects(data.projects || []);
-	setInstructor(data.instructor || null);
+        setInstructor(data.instructor || null);
+
+        // Fetch student info to get student ID
+        const email = localStorage.getItem("email");
+        if (email) {
+          const studentRes = await fetch(
+            `http://localhost:5000/api/student-auth/get-student/${encodeURIComponent(email.toLowerCase())}`,
+            {
+              headers: { "Content-Type": "application/json", authtoken: token },
+            }
+          );
+          const studentData = await studentRes.json();
+          if (studentRes.ok && studentData._id) {
+            setStudentId(studentData._id);
+            
+            // Filter projects where student is assigned
+            // project.students can contain either ObjectIds or emails
+            const filteredProjects = (data.projects || []).filter((project) => {
+              if (!project.students || project.students.length === 0) return false;
+              // Check if student ID is in project.students (ObjectId format)
+              const hasStudentId = project.students.some((s) => {
+                const sStr = s.toString();
+                const studentIdStr = studentData._id.toString();
+                return sStr === studentIdStr || sStr === studentData._id;
+              });
+              // Check if student email is in project.students (email format)
+              const hasStudentEmail = project.students.some((s) => {
+                return s === email.toLowerCase() || s === email;
+              });
+              return hasStudentId || hasStudentEmail;
+            });
+            setStudentProjects(filteredProjects);
+          }
+        }
       } catch (err) {
         console.error("Error fetching course data:", err);
       } finally {
@@ -135,30 +172,74 @@ export default function CourseDetails() {
           </div>
         )}
 
-        {/* Projects */}
+        {/* Projects - Only show projects student is assigned to */}
         {!loading && (
           <div className={`${styles.all_courses} mt-8`}>
-            <h2 className="text-xl font-semibold mb-4 text-center">Projects</h2>
-            {projects.length === 0 ? (
+            <h2 className="text-xl font-semibold mb-4 text-center">My Projects</h2>
+            {studentProjects.length === 0 ? (
               <p className="text-gray-600 text-center mt-4">
-                No projects available for this course.
+                You are not assigned to any projects in this course.
               </p>
             ) : (
-              <div className="flex flex-col gap-2 ml-6">
-                {projects.map((p, idx) => (
-                  <div
-                    key={idx}
-                    className={`${styles.button} w-max px-4 py-2 text-left cursor-default`}
-                  >
-                    <strong>{p.title}</strong>
-                    {p.description && (
-                      <p className="text-gray-700 mt-1">{p.description}</p>
-                    )}
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse border border-gray-300 text-left">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="border border-gray-300 px-4 py-2">Project Title</th>
+                      <th className="border border-gray-300 px-4 py-2">Team</th>
+                      <th className="border border-gray-300 px-4 py-2">Description</th>
+                      <th className="border border-gray-300 px-4 py-2 text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {studentProjects.map((p, idx) => (
+                      <tr
+                        key={idx}
+                        className="hover:bg-gray-50 transition-colors duration-150"
+                      >
+                        <td className="border border-gray-300 px-4 py-2">
+                          <strong>{p.title}</strong>
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">{p.team || "-"}</td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {p.description || "-"}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2 text-center">
+                          <button
+                            onClick={() => {
+                              setSelectedProject(p);
+                              setShowJoyFactorModal(true);
+                            }}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                          >
+                            Add Joy Factor
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
+        )}
+
+        {/* Joy Factor Modal */}
+        {showJoyFactorModal && selectedProject && studentId && (
+          <QuickAddJoyFactorModal
+            student={{ _id: studentId }}
+            isOpen={showJoyFactorModal}
+            onClose={() => {
+              setShowJoyFactorModal(false);
+              setSelectedProject(null);
+            }}
+            onSuccess={() => {
+              setShowJoyFactorModal(false);
+              setSelectedProject(null);
+            }}
+            courseNumber={courseNumber}
+            projectId={selectedProject._id}
+          />
         )}
       </div>
     </div>

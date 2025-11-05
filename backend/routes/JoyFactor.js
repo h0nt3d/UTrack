@@ -4,6 +4,7 @@ const { requireAuth } = require("../middleware/auth");
 const JoyFactor = require("../models/JoyFactor");
 const Course = require("../models/Course");
 const Student = require("../models/Student");
+const Instructor = require("../models/Instructor");
 const router = express.Router();
 
 // Helper function for validation
@@ -44,12 +45,48 @@ router.post(
     const { studentId, date, rating } = req.body;
 
     try {
-    
-      // Find the course and verify instructor ownership
-      const course = await Course.findOne({
-        courseNumber,
-        instructor: req.user.id,
-      });
+      // Convert studentId to ObjectId to ensure proper type
+      const mongoose = require("mongoose");
+      let studentObjectId;
+      if (!mongoose.Types.ObjectId.isValid(studentId)) {
+        return res.status(400).json({ message: "Invalid student ID format" });
+      }
+      studentObjectId = new mongoose.Types.ObjectId(studentId);
+      
+      // Verify student exists
+      const student = await Student.findById(studentObjectId);
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+
+      // Find the course - check if user is instructor or student
+      const isInstructor = await Instructor.findById(req.user.id);
+      
+      let course;
+      if (isInstructor) {
+        // Instructor: verify they own the course
+        course = await Course.findOne({
+          courseNumber,
+          instructor: req.user.id,
+        });
+      } else {
+        // Student: verify they're enrolled in the course and adding their own joy factor
+        if (req.user.id !== studentObjectId.toString()) {
+          return res.status(403).json({ message: "Students can only add their own joy factor" });
+        }
+        
+        // Check if student is enrolled in the course
+        course = await Course.findOne({ courseNumber });
+        if (!course) {
+          return res.status(404).json({ message: "Course not found" });
+        }
+        
+        // Verify student is enrolled in the course
+        const isEnrolled = student.courses && student.courses.includes(courseNumber);
+        if (!isEnrolled) {
+          return res.status(403).json({ message: "Student is not enrolled in this course" });
+        }
+      }
 
       if (!course) {
         return res.status(404).json({ message: "Course not found" });
@@ -61,18 +98,12 @@ router.post(
         return res.status(404).json({ message: "Project not found" });
       }
 
-      // Verify student exists
-      const student = await Student.findById(studentId);
-      if (!student) {
-        return res.status(404).json({ message: "Student not found" });
-      }
-
       // Verify student is in the project
       const isStudentInProject = project.students.some((s) => {
         if (typeof s === "string") {
-          return s === studentId || s.toString() === studentId.toString();
+          return s === studentObjectId.toString() || s === student.email;
         }
-        return s.toString() === studentId.toString();
+        return s.toString() === studentObjectId.toString();
       });
 
       if (!isStudentInProject) {
@@ -88,32 +119,36 @@ router.post(
       }
 
       // Normalize date to start of day for consistent storage
-      const startOfDay = new Date(joyFactorDate);
-      startOfDay.setHours(0, 0, 0, 0);
+      // Each student can have independent entries for the same date in the same project
+      const normalizedDate = new Date(joyFactorDate);
+      normalizedDate.setHours(0, 0, 0, 0);
+      normalizedDate.setMinutes(0, 0, 0);
+      normalizedDate.setSeconds(0, 0);
+      normalizedDate.setMilliseconds(0);
 
-      // Create or update joy factor entry
-      // Using upsert to update if entry exists for same student-project-date
-      const endOfDay = new Date(startOfDay);
-      endOfDay.setHours(23, 59, 59, 999);
-
+      // Create or update joy factor entry for this specific student-project-date combination
+      // The unique index { student: 1, project: 1, date: 1 } ensures each student has independent data
+      // IMPORTANT: Using student ObjectId (NOT studentEmail) - each student has independent data
+      // The query uses student ObjectId, so each student can save for the same date in the same project
+      const updateData = {
+        project: projectId,
+        student: studentObjectId,  // Use ObjectId (NOT studentEmail) - ensures independent data per student
+        date: normalizedDate,
+        rating: parseInt(rating),
+        updatedAt: new Date(),
+      };
+      
+      // Explicitly ensure studentEmail is NOT in the update data
+      // This prevents conflicts with any old index on studentEmail
       const joyFactorEntry = await JoyFactor.findOneAndUpdate(
         {
-          student: studentId,
-          project: projectId,
-          date: {
-            $gte: startOfDay,
-            $lte: endOfDay,
-          },
+          student: studentObjectId,  // Query by student ObjectId - specific student
+          project: projectId,        // Specific project
+          date: normalizedDate,     // Exact normalized date (not a range)
         },
+        updateData,  // Only update fields in updateData (no studentEmail)
         {
-          project: projectId,
-          student: studentId,
-          date: startOfDay,
-          rating: parseInt(rating),
-          updatedAt: new Date(),
-        },
-        {
-          upsert: true,
+          upsert: true,  // Create if doesn't exist, update if exists
           new: true,
           setDefaultsOnInsert: true,
         }

@@ -143,6 +143,7 @@ router.get("/get-student/:email", async (req, res) => {
     if (!student) return res.status(404).json({ message: "Student not found" });
 
     res.json({
+      _id: student._id,
       firstName: student.firstName || "",
       lastName: student.lastName || "",
       email: student.email,

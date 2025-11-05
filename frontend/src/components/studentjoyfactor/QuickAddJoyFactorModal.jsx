@@ -9,11 +9,17 @@ export default function QuickAddJoyFactorModal({
   student, 
   isOpen, 
   onClose, 
-  onSuccess 
+  onSuccess,
+  courseNumber: propCourseNumber,
+  projectId: propProjectId
 }) {
-  const { courseNumber, projectId } = useParams();
+  const params = useParams();
   const location = useLocation();
   const token = location.state?.token || localStorage.getItem("token");
+  
+  // Use props if provided, otherwise fall back to URL params
+  const courseNumber = propCourseNumber || params.courseNumber;
+  const projectId = propProjectId || params.projectId;
 
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split("T")[0],
@@ -94,7 +100,9 @@ export default function QuickAddJoyFactorModal({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
         <h2 className="text-xl font-bold mb-4 text-center">
-          Add Joy Factor for {student?.firstName} {student?.lastName}
+          {student?.firstName && student?.lastName 
+            ? `Add Joy Factor for ${student.firstName} ${student.lastName}`
+            : "Add Your Joy Factor"}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">

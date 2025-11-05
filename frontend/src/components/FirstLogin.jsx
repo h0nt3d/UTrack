@@ -68,24 +68,29 @@ export default function FirstLogin() {
       setErrorMessage("Password must be at least 8 characters.");
       return;
     }
-
+    // Email verification is currently bypassed - calling directly
+    await handleEmailVerificationConfirmed();
+    
+    // Email verification modal code (commented out - bypassing email verification)
     // Show email verification modal first
-    setPendingUserData({ email: em, password: pw });
-    setShowEmailModal(true);
+    // setPendingUserData({ email: em, password: pw });
+    // setShowEmailModal(true);
   }
 
   async function handleEmailVerificationConfirmed(verifiedUser) {
+    // EmailVerify component is commented out - using form data directly
     const em = verifiedUser?.email || email.trim().toLowerCase();
     
+    // EmailVerify component is commented out, but verifyStudentEmail API still works
     // Verify student email in backend (set isVerified to true)
     const verifyResult = await verifyStudentEmail(em);
     if (!verifyResult.success) {
       setErrorMessage(verifyResult.error || "Email verification failed.");
-      setShowEmailModal(false);
+      // setShowEmailModal(false); // Not needed when modal is commented
       return;
     }
 
-    // After email verification, proceed with password claim
+    // After email verification (API called directly, modal bypassed), proceed with password claim
     const pw = verifiedUser?.password || password;
     const result = await studentFirstLogin({ email: em, password: pw });
 
@@ -93,7 +98,7 @@ export default function FirstLogin() {
       navigate("/student-dashboard", { state: { email: em } });
     } else {
       setErrorMessage(result.error || "Error claiming account.");
-      setShowEmailModal(false);
+      // setShowEmailModal(false); // Not needed when modal is commented
     }
   }
 
@@ -107,7 +112,7 @@ export default function FirstLogin() {
       <div className="relative w-full max-w-md">
         <form
           className="bg-white/95 backdrop-blur rounded-3xl shadow-xl ring-1 ring-black/5 px-6 py-7 sm:px-8 sm:py-9"
-          onSubmit={(e) => e.preventDefault()}
+          onSubmit={async (e) => { e.preventDefault(); await handleSubmit();}}
         >
           <div className="flex flex-col items-center mb-8">
             <img
@@ -165,12 +170,13 @@ export default function FirstLogin() {
         </form>
       </div>
 
-      <EmailVerify
+      {/* Email verification modal (commented out - bypassing email verification for now) */}
+      {/* <EmailVerify
         isOpen={showEmailModal}
         onClose={handleCloseEmailModal}
         onConfirm={handleEmailVerificationConfirmed}
         userData={pendingUserData}
-      />
+      /> */}
     </div>
   );
 }
