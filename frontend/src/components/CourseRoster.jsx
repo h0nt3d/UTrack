@@ -119,7 +119,7 @@ export default function CourseRoster() {
         
         <div className="flex justify-center">
           {/* Students Table */}
-          <div className={"flex flex-col items-center border border-black w-full max-w-[700px] mx-auto p-4 rounded-lg"}>
+          <div className={"flex flex-col items-center w-full max-w-[700px] mx-auto p-4 rounded-lg"}>
             <h2 className="text-xl font-semibold mb-4 text-center">
               Current Students in Course:
             </h2>
@@ -155,7 +155,7 @@ export default function CourseRoster() {
           </div>
 
           {/* Projects List */}
-          <div className={" border border-black flex flex-col items-center p-4 rounded-lg mx-auto"}>
+          <div className={" flex flex-col items-center p-4 rounded-lg mx-auto"}>
             <h2 className="text-xl font-semibold mb-4 text-center">
               Current Project-Teams:
             </h2>

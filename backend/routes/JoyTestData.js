@@ -1,4 +1,4 @@
-export const studJoySampleData = [
+const testData = [
   { x: '2025-08-07', y: 3.2 },
   { x: '2025-08-08', y: 4.1 },
   { x: '2025-08-09', y: 2.8 },
@@ -49,3 +49,5 @@ export const studJoySampleData = [
 
   { x: '2025-10-12', y: 4.0 },
 ];
+
+module.exports = testData;

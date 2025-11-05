@@ -1,5 +1,4 @@
 import {Line} from 'react-chartjs-2'
-import {studJoySampleData} from "./datapoints.js"
 import 'chartjs-adapter-date-fns';
 
 import {
@@ -42,7 +41,7 @@ export default function LineChart ({stud, num}) {
     firstDay.setDate(today.getDate() - num)
 
     // Use stud prop if provided, otherwise fall back to sample data
-    const dataSource = stud && Array.isArray(stud) && stud.length > 0 ? stud : studJoySampleData;
+    const dataSource = stud;
 
     const filterData = dataSource.filter(item => {
         const itemD = new Date(item.x)
@@ -66,7 +65,7 @@ export default function LineChart ({stud, num}) {
                 data ={{
                     datasets: [
                         {
-                            label: 's Joy',
+                            label: 'Joy',
                             data: filterData,
                             borderColor: '#8EEAFF',
                             pointBackgroundColor: "#FFB74D",

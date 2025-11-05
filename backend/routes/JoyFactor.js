@@ -177,6 +177,7 @@ router.get(
   "/course/:courseNumber/project/:projectId/student/:studentId/joy-factor",
   requireAuth,
   async (req, res) => {
+
     try {
       const { courseNumber, projectId, studentId } = req.params;
 
@@ -201,7 +202,7 @@ router.get(
       if (!student) {
         return res.status(404).json({ message: "Student not found" });
       }
-
+      /*
       // Get all joy factor entries for this student in this project
       const joyFactors = await JoyFactor.find({
         project: projectId,
@@ -217,6 +218,10 @@ router.get(
         id: entry._id,
       }));
 
+      */
+
+      const testData = require("./JoyTestData.js");
+
       res.json({
         success: true,
         student: {
@@ -228,12 +233,14 @@ router.get(
         projectTitle: project.title,
         courseNumber: course.courseNumber,
         courseName: course.courseName,
-        joyFactors: formattedData,
+        joyFactors: testData, //formattedData
       });
+
     } catch (err) {
       console.error("Error fetching joy factor:", err);
       res.status(500).json({ message: "Error fetching joy factor: " + err.message });
     }
+
   }
 );
 
