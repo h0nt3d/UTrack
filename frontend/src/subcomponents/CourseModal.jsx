@@ -41,6 +41,7 @@ export default function CourseModal({ onClose, onSave }) {
 
         <input
           name="courseNumber"
+          data-testid="course-number"
           type="text"
           placeholder="Course Number (e.g., ECE101)"
           value={course.courseNumber}
@@ -50,6 +51,7 @@ export default function CourseModal({ onClose, onSave }) {
 
         <input
           name="courseName"
+          data-testid="course-name"
           type="text"
           placeholder="Course Name"
           value={course.courseName}
@@ -59,6 +61,7 @@ export default function CourseModal({ onClose, onSave }) {
 
         <textarea
           name="description"
+          data-testid="course-description"
           placeholder="Course Description"
           value={course.description}
           onChange={handleChange}
@@ -66,10 +69,10 @@ export default function CourseModal({ onClose, onSave }) {
         />
 
         <div style={{ textAlign: "right" }}>
-          <button onClick={handleSubmit} style={{ marginRight: "0.5rem" }}>
+          <button data-testid="course-save" onClick={handleSubmit} style={{ marginRight: "0.5rem" }}>
             Save
           </button>
-          <button onClick={onClose}>Cancel</button>
+          <button data-testid="course-cancel" onClick={onClose}>Cancel</button>
         </div>
       </div>
     </div>

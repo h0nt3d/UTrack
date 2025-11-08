@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const express = require("express");
 
+
+
 const port = 5000;
 const app = express();
 app.use(express.json());
@@ -40,6 +42,12 @@ app.use("/api/auth", instructorCourseRouter);
 
 const studentRouter = require("./routes/Student");
 app.use("/api/students", studentRouter);
+
+const joyFactorRouter = require("./routes/JoyFactor");
+app.use("/api", joyFactorRouter);
+
+const studentAuthRouter = require("./routes/studentAuth");
+app.use("/api/student-auth", studentAuthRouter);
 
 // Email-based routes for course management
 app.get("/get-courses/:email", async (req, res) => {

@@ -6,7 +6,7 @@ const studentSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, default: "" },
   courses: [{ type: String }], // store courseNumber instead of ObjectId
+  isVerified: { type: Boolean, default: false },
 });
 
 module.exports = mongoose.model("Student", studentSchema);
-

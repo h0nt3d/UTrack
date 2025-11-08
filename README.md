@@ -16,18 +16,18 @@
 - postcss
 - autoprefixer
 - react-router-dom
+- xlsx
 
-## Backend:
-Inside the backend Directory, run <br>
-`npm install prompt-sync bcrypt mongoose cors express dotenv`
-
-## Frontend
-Inside the frontend Directory, run <br>
-`npm install` <br>
-`npm install react-router-dom`
+## Insatlling Dependencies
+- For Windows, inside UTrack Folder, run <br>
+`INSTALL_DEPENDENCIES.bat`
+- For Linux and MacOS, run <br>
+`INSTALL_DEPENDENCIES.sh`
 
 ## Launching React on port 3000
 `npm start`
+
+
 
 
 

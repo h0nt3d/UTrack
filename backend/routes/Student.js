@@ -93,5 +93,57 @@ router.post("/course/:courseNumber/add-student", requireAuth, async (req, res) =
   }
 });
 
+// ---------- Add multiple students to a course ----------
+router.post("/course/:courseNumber/add-multiple", requireAuth, async (req, res) => {
+  const { students } = req.body; // expects an array of { firstName, lastName, email }
+  if (!Array.isArray(students) || students.length === 0) {
+    return res.status(400).json({ message: "No students provided" });
+  }
+
+  try {
+    const course = await Course.findOne({ courseNumber: req.params.courseNumber });
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    const addedStudents = [];
+
+    for (let s of students) {
+      const email = s.email.toLowerCase();
+
+      // check if student exists, create if not
+      let student = await Student.findOne({ email });
+      if (!student) {
+        student = await Student.create({
+          firstName: s.firstName || "",
+          lastName: s.lastName || "",
+          email,
+          password: "",
+          courses: [],
+        });
+      }
+
+      // Add course to student if not present
+      if (!student.courses.includes(course.courseNumber)) {
+        student.courses.push(course.courseNumber);
+        await student.save();
+      }
+
+      // Add student email to course if not present
+      if (!course.students.includes(student.email)) {
+        course.students.push(student.email);
+      }
+
+      addedStudents.push(student);
+    }
+
+    await course.save();
+
+    res.status(200).json({ success: true, students: addedStudents });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error adding students: " + err.message });
+  }
+});
+
+
 module.exports = router;
 

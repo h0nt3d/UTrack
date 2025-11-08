@@ -1,6 +1,5 @@
-// src/pages/Mycourses.jsx
-import { useEffect, useMemo, useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { useEffect, useState, useMemo } from "react";
+import { Navigate } from "react-router-dom";
 import Logout from "../subcomponents/Logout.jsx";
 import Course from "../subcomponents/Course.jsx";
 import CourseModal from "../subcomponents/CourseModal.jsx";
@@ -9,110 +8,66 @@ import styles from "../css_folder/Mycourses.module.css";
 import { fetchCoursesByEmail, addCourseForEmail } from "./js/Mycourses.js";
 
 export default function Mycourses({ user }) {
-  const loc = useLocation();
-  const {email: stateEmail, token: stateToken} = loc.state || {};
-  
-  // Get email from multiple sources with priority
-  const email = useMemo(
-    () =>
-      (stateEmail ||
-       user?.email ||
-       localStorage.getItem("email") ||
-       "").trim().toLowerCase(),
-    [stateEmail, user?.email]
+  const emailFromState = useMemo(
+    () => (user?.email || localStorage.getItem("email") || "").trim().toLowerCase(),
+    [user?.email]
   );
+  const token = useMemo(() => localStorage.getItem("token"), []);
 
-  // Get token from multiple sources with priority
-  const token = useMemo(
-    () => stateToken || localStorage.getItem("token"),
-    [stateToken]
-  );
-
-  const [showModal, setShowModal] = useState(false);
   const [courses, setCourses] = useState([]);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    if (!email) return;
-    
-    // Use token-based API for proper instructor isolation
-    if (token) {
-      fetchCoursesWithToken();
-    } else {
-      // If no token, try email-based API as fallback
-      fetchCoursesWithEmail();
-    }
+    if (!emailFromState) return;
 
-    async function fetchCoursesWithToken() {
+    async function fetchCourses() {
       try {
-        const response = await fetch("http://localhost:5000/api/auth/get-courses", {
-          method: "GET",
-          headers: {"Content-Type": "application/json", "authtoken": token},
-        });
-        const data = await response.json();
-        if (response.ok) {
-          setCourses(data.courses || []);
+        if (token) {
+          const res = await fetch("http://localhost:5000/api/auth/get-courses", {
+            method: "GET",
+            headers: { "Content-Type": "application/json", "authtoken": token },
+          });
+          const data = await res.json();
+          setCourses(res.ok ? data.courses || [] : await fetchCoursesByEmail(emailFromState));
         } else {
-          console.error("Token-based API failed:", data.message);
-          // Fallback to email-based API if token fails
-          fetchCoursesWithEmail();
+          const list = await fetchCoursesByEmail(emailFromState);
+          setCourses(list);
         }
       } catch (err) {
-        console.error("Error fetching courses with token:", err);
-        // Fallback to email-based API
-        fetchCoursesWithEmail();
+        console.error(err);
+        setCourses([]);
       }
     }
 
-    async function fetchCoursesWithEmail() {
-      try {
-        const list = await fetchCoursesByEmail(email);
-        setCourses(list);
-      } catch (err) {
-        console.error("Error fetching courses with email:", err);
-        setCourses([]); // Set empty array on error
-      }
-    }
-  }, [email, token]);
+    fetchCourses();
+  }, [emailFromState, token]);
 
-  // If truly no email — bounce to login
-  if (!email) return <Navigate to="/login" replace />;
+  if (!emailFromState) return <Navigate to="/login" replace />;
 
   const handleAddCourse = async (newCourse) => {
-    // Use token-based API for proper instructor isolation
-    if (token) {
-      try {
-        const response = await fetch("http://localhost:5000/api/auth/createCourses", {
+    try {
+      if (token) {
+        const res = await fetch("http://localhost:5000/api/auth/createCourses", {
           method: "POST",
           headers: { "Content-Type": "application/json", "authtoken": token },
           body: JSON.stringify(newCourse),
         });
-        const data = await response.json();
-        if (response.ok) {
-          setCourses(prev => [...prev, data.course]);
-          setShowModal(false);
-        } else {
-          console.error("Token-based API failed:", data.message);
-          // Fallback to email-based API if token fails
-          const list = await addCourseForEmail(email, newCourse);
+        const data = await res.json();
+        if (res.ok) setCourses((prev) => [...prev, data.course]);
+        else {
+          const list = await addCourseForEmail(emailFromState, newCourse);
           setCourses(list);
-          setShowModal(false);
         }
-      } catch (err) {
-        console.error("Error adding course with token:", err);
-        // Fallback to email-based API
-        const list = await addCourseForEmail(email, newCourse);
+      } else {
+        const list = await addCourseForEmail(emailFromState, newCourse);
         setCourses(list);
-        setShowModal(false);
       }
-    } else {
-      // Use email-based API if no token
-      const list = await addCourseForEmail(email, newCourse);
-      setCourses(list);
+    } catch (err) {
+      console.error(err);
+    } finally {
       setShowModal(false);
     }
   };
-
-  const handleCourseClick = (c) => user?.spec?.(c);
 
   return (
     <div className={styles.my_courses}>
@@ -128,21 +83,19 @@ export default function Mycourses({ user }) {
         </div>
 
         <div className={styles.all_courses}>
-          {courses.map((c, idx) => (
-            <Course
-              key={c.id || c._id || c.title || idx}
-              styl={styles}
-              course={c}
-              handle={handleCourseClick}
-              token={token}
-            />
-          ))}
+          {courses.length === 0 ? (
+            <p className="text-gray-600 text-center w-full mt-4">
+              No courses found. Add one using the button above.
+            </p>
+          ) : (
+            courses.map((course, idx) => (
+              <Course key={course.courseNumber || idx} styl={styles} course={course} token={token} />
+            ))
+          )}
         </div>
       </div>
 
-      {showModal && (
-        <CourseModal onClose={() => setShowModal(false)} onSave={handleAddCourse} />
-      )}
+      {showModal && <CourseModal onClose={() => setShowModal(false)} onSave={handleAddCourse} />}
     </div>
   );
 }

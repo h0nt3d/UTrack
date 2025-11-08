@@ -1,23 +1,34 @@
-import {Link, useLocation} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-export default function Course ({course, styl, token, handle}) {
+export default function Course({ course, styl, token }) {
+  const navigate = useNavigate();
 
-	
-    function courseOverview() {
-        handle(course);
-    }
+  const goToRoster = () => {
+    navigate(`/course/${course.courseNumber}`, {
+      state: {
+        token,
+        courseName: course.courseName,
+        courseCode: course.courseCode,
+        courseNumber: course.courseNumber,
+        courseDescription: course.description || "",
+      },
+    });
+  };
+
+  function deleteHandle () {
     
+  }
+  
 
-    return (
-	    <Link
-      		to={`/course/${course.courseNumber}`}
-      		state={{ token }}
-      		className={`${styl.course_card} flex flex-col items-center text-center`}
-      		onClick={courseOverview}>
-        	<h3 className={styl.course}>
-	    		{course.courseNumber}: {course.courseName}
-	    	</h3>
-            	<img className={styl.course_img} src={course.img} alt={`${course.courseName} course`}/>
-	    </Link>
-    );
+  return (
+    <div
+      className={`${styl.course_card} ${styl.course} relative flex flex-col items-center justify-center text-center cursor-pointer`}
+      onClick={goToRoster}
+    >
+      <h3>
+        {course.courseNumber}: {course.courseName}
+      </h3>
+      {course.img && <img className={styl.course_img} src={course.img} alt={course.courseName} />}
+    </div> 
+  );
 }

@@ -1,8 +1,8 @@
-import styles from "../css_folder/Coursepage.module.css"
-import plus from "../imagez/add-icon-plus-icon-cross-white-text-symmetry-symbol-light-logo-png-clipart-removebg-preview.png"
-import profile from "../imagez/256-2560255_user-icon-user-white-icon-transparent-hd-png-removebg-preview.png"
-import Header from "../subcomponents/Header";
-import Project from "../subcomponents/Project";
+import styles from "./Coursepage.module.css"
+import plus from "../../imagez/add-icon-plus-icon-cross-white-text-symmetry-symbol-light-logo-png-clipart-removebg-preview.png"
+import profile from "../../imagez/256-2560255_user-icon-user-white-icon-transparent-hd-png-removebg-preview.png"
+import Header from "./Header";
+import Project from "./Project";
 import React from "react" ;
 
 export function Coursepage ({course}) {

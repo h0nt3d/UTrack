@@ -32,6 +32,33 @@ export default function EmailVerify({ isOpen, onClose, onConfirm, userData }) {
       return; // <- CRITICAL: do not send if invalid
     }
 
+    try {
+    const res = await fetch(`http://localhost:5000/api/auth/check-email/${encodeURIComponent(email)}`);
+    if (!res.ok) throw new Error("Server error");
+    const data = await res.json();
+
+    if (data.exists) {
+      setError("This email is already registered. Please log in instead.");
+      setSent(false);
+      setOtp("");
+      setExpiresAt(null);
+      return;
+    }
+  } catch (err) {
+    console.error("Error checking email:", err);
+    setError("Could not verify email status. Please try again later.");
+    return;
+  }
+
+      // TEST BYPASS
+    if (window.Cypress) {
+      const validUntil = new Date(Date.now() + 15 * 60 * 1000);
+      setOtp("000000");
+      setExpiresAt(validUntil);
+      setSent(true);          
+      return;
+    }
+
     if (sendingRef.current) return;
     sendingRef.current = true;
     setSending(true);
@@ -178,6 +205,7 @@ export default function EmailVerify({ isOpen, onClose, onConfirm, userData }) {
                 </div>
                 <label htmlFor="verificationCode" className="form-label">Enter 6-digit code</label>
                 <input
+                  data-testid = "verify-email-form"
                   id="verificationCode"
                   type="text"
                   className="form-control"
@@ -200,7 +228,7 @@ export default function EmailVerify({ isOpen, onClose, onConfirm, userData }) {
 
             {!sending && !sent && isValidEmail(email) && (
               <div className="text-center">
-                <p className="text-muted">Preparing to send verification code...</p>
+                
               </div>
             )}
           </div>
@@ -212,6 +240,7 @@ export default function EmailVerify({ isOpen, onClose, onConfirm, userData }) {
 
             {sent && isValidEmail(email) && (
               <button
+                data-testid = "email-verify-confirm"
                 type="button"
                 className="btn btn-primary"
                 onClick={handleVerify}

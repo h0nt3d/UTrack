@@ -141,4 +141,17 @@ router.post("/login", loginValidators, async (req, res) => {
   }
 });
 
+//-----CHECK EMAIL-----
+// Check if email is already registered
+router.get("/check-email/:email", async (req, res) => {
+  try {
+    const email = decodeURIComponent(req.params.email).toLowerCase();
+    const existing = await Instructor.findOne({ email });
+    res.json({ exists: !!existing });
+  } catch (err) {
+    res.status(500).json({ message: "Error checking email" });
+  }
+});
+
+
 module.exports = {router, createUser};
