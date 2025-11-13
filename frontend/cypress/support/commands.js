@@ -323,7 +323,7 @@ Cypress.Commands.add("CreateProject", () => {
           }).as("loadUser");
 
           // Open the course and go to Add Project
-          cy.contains("Add Project").click();
+          cy.contains("Add Project-Team").click();
 
           // Fill the form and submit
           cy.get("form").within(() => {
@@ -331,7 +331,8 @@ Cypress.Commands.add("CreateProject", () => {
             cy.get(
               'textarea[placeholder="Project Description (optional)"]'
             ).type(project.description);
-            cy.contains("Add Project").click();
+            cy.get('input[placeholder="Team Name"]').type(project.team_name);
+            cy.contains("Add Project-Team").click();
           });
 
           // Wait for the mocked POST and then navigate back to the course page and verify

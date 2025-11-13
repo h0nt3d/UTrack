@@ -1,5 +1,6 @@
 {
   "_id": "proj-1",
   "title": "Development Team Dashboard",
-  "description": "A dashboard for tracking software development progress, team productivity, and sprint goals in real time."
+  "description": "A dashboard for tracking software development progress, team productivity, and sprint goals in real time.",
+  "team_name": "Team1"
 }
