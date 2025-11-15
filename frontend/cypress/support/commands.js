@@ -347,3 +347,96 @@ Cypress.Commands.add("CreateProject", () => {
     });
   });
 });
+
+/**
+ * A command for simulating the process to add a project-team to a course.
+ * 
+ * This command first utilizes the create course command to then add project-teams.
+ */
+Cypress.Commands.add("CreateProjectTeam", () => {
+  // Data
+  const BASE_URL = "http://localhost:5000/api";
+  cy.fixture("TEST_INSTRUCTOR").then((TEST_INSTRUCTOR) => {
+    cy.fixture("TEST_COURSE").then((TEST_COURSE) => {
+      cy.fixture("TEST_PROJECT").then((TEST_PROJECT) => {
+        // Fixtures
+        const instructor = TEST_INSTRUCTOR;
+        const course = TEST_COURSE;
+        const project = TEST_PROJECT;
+        const COURSE_ID = course.number;
+
+        // Create Course
+        cy.CreateCourse();
+
+        // Verify Details
+        cy.contains(`${TEST_COURSE.number}: ${TEST_COURSE.name}`).click();
+        cy.contains(TEST_COURSE.name).should('be.visible');
+
+        // Responses
+        // ====================================================================================================
+
+        // Course Information Fetch
+        cy.intercept('GET', `${BASE_URL}/auth/get-course/${COURSE_ID}`, {
+          statusCode: 200,
+          times: 1,
+          body: {
+            courseNumber: course.number,
+            courseName: course.name,
+            description: course.description,
+            students: [],
+            projects: [],
+            instructor: { firstName: instructor.firstName, lastName: instructor.lastName, email: instructor.email }
+          }
+        }).as('mockGetCourse');
+
+        // Project Creation Response
+        cy.intercept('POST', `${BASE_URL}/auth/course/${TEST_COURSE.number}/add-project`, {
+          statusCode: 200,
+          body: {
+            projects: [{ _id: '1', title: project.title, description: project.description, team: project.team_name }]
+          }
+        }).as('mockAddProject');
+
+        // ====================================================================================================
+
+        // Add New Project
+        cy.contains("Add Project-Team").click();
+        cy.wait('@mockGetCourse');
+
+        // Project Information
+        cy.get('[data-testid="project-title"]').type(project.title);
+        cy.get('[data-testid="project-description"]').type(project.description);
+        cy.get('[data-testid="project-teamname"]').type(TEST_PROJECT.team_name);
+
+        // Create
+        cy.get('[data-testid="project-save"]').click();
+        cy.wait('@mockAddProject');
+
+        // Updated Course Information Fetch
+        cy.intercept('GET', `${BASE_URL}/auth/get-course/${COURSE_ID}`, {
+          statusCode: 200,
+          body: {
+            courseNumber: course.number,
+            courseName: course.name,
+            description: course.description,
+            students: [],
+            projects: [{ _id: '1', title: project.title, description: project.description, team: project.team_name }],
+            instructor: { firstName: instructor.firstName, lastName: instructor.lastName, email: instructor.email }
+          }
+        }).as('mockGetUpdatedCourse');
+
+        // Verify Updated Course Details
+        cy.contains("Back").click();
+        cy.wait('@mockGetUpdatedCourse');
+
+        // View Project
+        cy.contains(`${project.title}`).click();
+
+        // Verify Project Details
+        cy.contains(`${project.title}`).should('be.visible');
+        cy.contains(`${project.description}`).should('be.visible');
+        cy.contains(`${project.team_name}`).should('be.visible');
+      });
+    });
+  });
+});  

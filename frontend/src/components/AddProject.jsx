@@ -10,7 +10,7 @@ export default function AddProject() {
   const token = location.state?.token;
 
   const [projects, setProjects] = useState([]);
-  const [newProject, setNewProject] = useState({ title: "", description: "", team:"" });
+  const [newProject, setNewProject] = useState({ title: "", description: "", team: "" });
   const [message, setMessage] = useState(null);
   const [isError, setIsError] = useState(false);
 
@@ -101,6 +101,7 @@ export default function AddProject() {
           >
             <input
               type="text"
+              data-testid="project-title"
               placeholder="Project Title"
               value={newProject.title}
               onChange={(e) =>
@@ -110,6 +111,7 @@ export default function AddProject() {
               required
             />
             <textarea
+              data-testid="project-description"
               placeholder="Project Description (optional)"
               value={newProject.description}
               onChange={(e) =>
@@ -119,6 +121,7 @@ export default function AddProject() {
             />
             <input
               type="text"
+              data-testid="project-teamname"
               placeholder="Team Name"
               value={newProject.team}
               onChange={(e) =>
@@ -129,6 +132,7 @@ export default function AddProject() {
             />
             <button
               type="submit"
+              data-testid="project-save"
               className={`${styles.button} flex justify-center items-center`}
             >
               Add Project-Team
