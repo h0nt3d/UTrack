@@ -158,6 +158,7 @@ const handleAddStudents = async () => {
 
         <ProjectStudentsTable
           projectStudents = {projectStudents}
+	  setProjectStudents = {setProjectStudents}
           token = {token}
           setSelectedStudentForChart = {setSelectedStudentForChart}
           setJoyFactorData = {setJoyFactorData}

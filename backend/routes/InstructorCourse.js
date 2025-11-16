@@ -210,4 +210,33 @@ router.post("/course/:courseNumber/remove-project", requireAuth, async (req, res
 });
 
 
+// REMOVE a student from a specific project
+router.post("/course/:courseNumber/project/:projectId/remove-student",
+  requireAuth,
+  async (req, res) => {
+    const { studentId } = req.body;
+    if (!studentId) return res.status(400).json({ message: "studentId is required" });
+
+    try {
+      const course = await Course.findOne({ courseNumber: req.params.courseNumber });
+      if (!course) return res.status(404).json({ message: "Course not found" });
+
+      const project = course.projects.id(req.params.projectId);
+      if (!project)
+        return res.status(404).json({ message: "Project not found" });
+
+      // Remove the studentId
+      project.students = project.students.filter((id) => id && id.toString() !== studentId);
+
+      await course.save();
+
+      res.json({ success: true, students: project.students });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
+
+
+
 module.exports = router;
