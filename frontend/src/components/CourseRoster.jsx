@@ -189,7 +189,8 @@ export default function CourseRoster() {
                         <td className="border border-gray-300 px-4 py-2">{s.email}</td>
                         <td className="border border-gray-300 px-4 py-2">
                           <button
-                            className={`${styles.button} px-2 py-1 text-sm bg-red-500 hover:bg-red-600`}
+			    className="px-2 py-1 text-sm bg-red-500 hover:bg-red-600 rounded"
+                            style={{ minWidth: "60px", width: "auto" }}
                             onClick={() => handleRemoveStudent(s.email)}
                           >
                             Remove
@@ -235,7 +236,8 @@ export default function CourseRoster() {
                       <strong>{p.title}-{p.team}</strong>
                     </button>
                     <button
-                      className={`${styles.button} px-2 py-1 text-sm bg-red-500 hover:bg-red-600`}
+		      className="px-2 py-1 text-sm bg-red-500 hover:bg-red-600 rounded"
+                      style={{ minWidth: "60px", width: "auto" }}
                       onClick={() => handleRemoveProject(p._id)}
                     >
                       Remove
