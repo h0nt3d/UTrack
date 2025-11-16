@@ -1,5 +1,7 @@
 ![alt text](https://github.com/h0nt3d/UTrack/blob/main/images/uTrack.png?raw=true)
 
+# Note: Current Working Node version: 25.1.0
+
 # Dependencies
 ### Backend:
 - prompt-sync
