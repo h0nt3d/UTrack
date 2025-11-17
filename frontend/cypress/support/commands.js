@@ -1,29 +1,4 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-// ***********************************************
+// A collection of Cypress commands.
 
 /**
  * A command for emulating the instructor sign-up process.
@@ -194,6 +169,46 @@ Cypress.Commands.add("CreateCourse", () => {
       cy.contains("My Courses").should("be.visible");
       cy.wait("@mockCreateCourse");
       cy.contains(`${course.number}: ${course.name}`).should("be.visible");
+    });
+  });
+});
+
+/**
+ * A command for simulating the process to add a single student to a course.
+ */
+Cypress.Commands.add("AddSingleStudent", () => {
+  const BASE_URL = "http://localhost:5000/api";
+  cy.fixture("TEST_INSTRUCTOR").then((TEST_INSTRUCTOR) => {
+    cy.fixture("TEST_COURSE").then((TEST_COURSE) => {
+      cy.fixture("TEST_SINGLE_STUDENT").then((TEST_STUDENT) => {
+        // Fixture Data
+        const instructor = TEST_INSTRUCTOR;
+        const course = TEST_COURSE;
+        const student = TEST_STUDENT;
+
+        // Course
+        cy.CreateCourse();
+
+        // Course Containing Student
+        cy.intercept('GET', `${BASE_URL}/auth/get-course/${course.number}`, {
+          statusCode: 200,
+          body: {
+            courseNumber: course.number,
+            courseName: course.name,
+            description: course.description || "",
+            students: [{ _id: "1", firstName: student.firstName, lastName: student.lastName, email: student.email }],
+            projects: [],
+            instructor: { firstName: instructor.firstName, lastName: instructor.lastName, email: instructor.email }
+          }
+        }).as('mockGetCourse');
+
+        cy.contains(`${course.number}: ${course.name}`).click();
+
+        cy.wait('@mockGetCourse');
+        cy.contains("Current Students in Course").should('be.visible');
+        cy.get('table thead th').eq(0).should('contain.text', "Name");
+        cy.get('table thead th').eq(1).should('contain.text', "Email");
+      });
     });
   });
 });
