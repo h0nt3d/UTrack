@@ -198,12 +198,11 @@ router.get(
       }
 
       // Verify student exists
-      const student = 
-         (await Student.findById(studentId))
+      const student = await Student.findById(studentId);
       if (!student) {
         return res.status(404).json({ message: "Student not found" });
       }
-      /*
+
       // Get all joy factor entries for this student in this project
       const joyFactors = await JoyFactor.find({
         project: projectId,
@@ -219,10 +218,6 @@ router.get(
         id: entry._id,
       }));
 
-      */
-
-      const testData = require("./JoyTestData.js");
-
       res.json({
         success: true,
         student: {
@@ -234,7 +229,7 @@ router.get(
         projectTitle: project.title,
         courseNumber: course.courseNumber,
         courseName: course.courseName,
-        joyFactors: testData, //formattedData
+        joyFactors: formattedData,
       });
 
     } catch (err) {

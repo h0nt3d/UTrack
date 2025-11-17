@@ -19,7 +19,7 @@ const joyFactorSchema = new mongoose.Schema(
       required: true,
       // No individual index - using compound index below
     },
-    // NOTE: studentEmail field is NOT used - only student ObjectId is used
+    // NOTE: only student ObjectId is used
     // This ensures each student has independent data per project per date
     date: {
       type: Date,

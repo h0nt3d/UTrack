@@ -93,8 +93,6 @@ export default function ProjectDetails() {
 const handleAddStudents = async () => {
   if (!selectedStudents.length) return;
 
-  console.log("Adding students:", selectedStudents);
-
   try {
     const res = await fetch(
       `http://localhost:5000/api/auth/course/${courseNumber}/project/${encodeURIComponent(projectTitle)}/add-students`,

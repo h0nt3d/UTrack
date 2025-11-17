@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, KeyRound, Mail, Lock } from "lucide-react";
 import logo from "../imagez/utrack-rbg.png";
+import EmailVerify from "./EmailVerify/EmailVerify.jsx";
 import { fetchSignup } from "./js/signupApi.js";
 
 const isValidEmailBasic = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
@@ -39,10 +40,12 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [pendingUserData, setPendingUserData] = useState(null);
 
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     setErrorMessage("");
 
     const fn = firstName.trim();
@@ -78,22 +81,26 @@ export default function Signup() {
       return;
     }
 
-    try {
-      const userData = { firstName: fn, lastName: ln, email: em, password: pw };
-      const result = await fetchSignup(userData);
+    setPendingUserData({ firstName: fn, lastName: ln, email: em, password: pw });
+    setShowEmailModal(true);
+  };
 
-      if (result.success) {
-        const signedEmail = result.data?.user?.email || em;
-        localStorage.setItem("email", signedEmail);
-        localStorage.setItem("token", result.data?.token || "");
-        navigate("/login", { state: { email: signedEmail } });
-      } else {
-        setErrorMessage(result.error || "Signup failed.");
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMessage("Unexpected error during signup.");
+  const handleEmailVerificationConfirmed = async (verifiedUser) => {
+    const result = await fetchSignup(verifiedUser);
+    if (result.success) {
+      const signedEmail = result.data?.user?.email || verifiedUser.email;
+      localStorage.setItem("email", signedEmail);
+      localStorage.setItem("token", result.data?.token || "");
+      navigate("/login", { state: { email: signedEmail } });
+      
+    } else {
+      setErrorMessage(result.error || "Signup failed.");
     }
+  };
+
+  const handleCloseEmailModal = () => {
+    setShowEmailModal(false);
+    setPendingUserData(null);
   };
 
   return (
@@ -153,6 +160,13 @@ export default function Signup() {
           )}
         </form>
       </div>
+
+      <EmailVerify
+        isOpen={showEmailModal}
+        onClose={handleCloseEmailModal}
+        onConfirm={handleEmailVerificationConfirmed}
+        userData={pendingUserData}
+      />
     </div>
   );
 }
