@@ -3,6 +3,7 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import styles from "../../css_folder/Mycourses.module.css";
 import Logout from "../../subcomponents/Logout.jsx";
 import QuickAddJoyFactorModal from "../studentjoyfactor/QuickAddJoyFactorModal.jsx";
+import AddBusFactorModal from "../AddBusFactorModal.jsx";
 
 export default function CourseDetails() {
   const { courseNumber } = useParams();
@@ -22,6 +23,7 @@ export default function CourseDetails() {
   const [instructor, setInstructor] = useState(null);
   const [selectedProject, setSelectedProject] = useState(null);
   const [showJoyFactorModal, setShowJoyFactorModal] = useState(false);
+  const [showBusFactorModal, setShowBusFactorModal] = useState(false);
   const [studentId, setStudentId] = useState(null);
 
   useEffect(() => {
@@ -188,7 +190,7 @@ export default function CourseDetails() {
                       <th className="border border-gray-300 px-4 py-2">Project Title</th>
                       <th className="border border-gray-300 px-4 py-2">Team</th>
                       <th className="border border-gray-300 px-4 py-2">Description</th>
-                      <th className="border border-gray-300 px-4 py-2 text-center">Action</th>
+                      <th className="border border-gray-300 px-4 py-2 text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -204,16 +206,27 @@ export default function CourseDetails() {
                         <td className="border border-gray-300 px-4 py-2">
                           {p.description || "-"}
                         </td>
-                        <td className="border border-gray-300 px-4 py-2 text-center">
-                          <button
-                            onClick={() => {
-                              setSelectedProject(p);
-                              setShowJoyFactorModal(true);
-                            }}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                          >
-                            Add Joy Factor
-                          </button>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <div className="flex flex-col gap-2 items-center">
+                            <button
+                              onClick={() => {
+                                setSelectedProject(p);
+                                setShowJoyFactorModal(true);
+                              }}
+                              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm w-full"
+                            >
+                              Add Joy Factor
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedProject(p);
+                                setShowBusFactorModal(true);
+                              }}
+                              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm w-full"
+                            >
+                              Record Bus Factor
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -239,6 +252,25 @@ export default function CourseDetails() {
             }}
             courseNumber={courseNumber}
             projectId={selectedProject._id}
+          />
+        )}
+
+        {/* Bus Factor Modal */}
+        {showBusFactorModal && selectedProject && studentId && (
+          <AddBusFactorModal
+            student={{ _id: studentId }}
+            isOpen={showBusFactorModal}
+            onClose={() => {
+              setShowBusFactorModal(false);
+              setSelectedProject(null);
+            }}
+            onSuccess={() => {
+              setShowBusFactorModal(false);
+              setSelectedProject(null);
+            }}
+            courseNumber={courseNumber}
+            projectId={selectedProject._id}
+            teamSize={selectedProject.students?.length || 1}
           />
         )}
       </div>

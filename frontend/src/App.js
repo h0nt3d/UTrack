@@ -14,6 +14,7 @@ import CardC from "./components/CardC";
 import FirstLogin from "./components/FirstLogin";
 import StudentDashboard from "./components/StudentDashboard";
 import CourseDetails from "./components/NotUsed/CourseDetails";
+import StudentMetrics from "./components/StudentMetrics";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 
@@ -33,6 +34,7 @@ export default function App() {
 				<Route path = "/course/:courseId/add-students-file" element = {<CSVExcelAdd />} />
 				<Route path="/course/:courseId/add-project" element={<AddProject />} />
 				<Route path="/course/:courseNumber/project/:projectId" element={<ProjectDetails />} />
+				<Route path="/course/:courseNumber/project/:projectId/student-metrics" element={<StudentMetrics />} />
 				<Route path="/student-metrics/:studId" element={<CardC />} />
 				<Route path="/first-login" element={<FirstLogin />} />
 				<Route path="/student-dashboard" element={<StudentDashboard />} />

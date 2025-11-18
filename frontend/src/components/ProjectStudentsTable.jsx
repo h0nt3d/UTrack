@@ -64,38 +64,6 @@ export default function ProjectStudentsTable({
                 <td className="border border-gray-300 px-4 py-2">{s.email}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   <div className="flex gap-2 justify-center">
-                    {/* View Joy Button */}
-                    <button
-                      onClick={async () => {
-                        const studentId = s._id || s.id;
-                        setSelectedStudentForChart({ 
-                          _id: studentId, 
-                          firstName: s.firstName, 
-                          lastName: s.lastName, 
-                          email: s.email 
-                        });
-                        setShowChartModal(true);
-                        setLoadingChart(true);
-                        
-                        try {
-                          const res = await fetch(
-                            `http://localhost:5000/api/course/${courseNumber}/project/${projectId}/student/${studentId}/joy-factor`,
-                            { headers: { "Content-Type": "application/json", authtoken: token } }
-                          );
-                          const data = await res.json();
-                          setJoyFactorData(data.joyFactors || []);
-                        } catch (err) {
-                          console.error(err);
-                          setJoyFactorData([]);
-                        } finally {
-                          setLoadingChart(false);
-                        }
-                      }}
-                      className="px-3 py-1 text-black rounded bg-yellow-400 hover:bg-yellow-500 text-sm"
-                    >
-                      View Joy
-                    </button>
-
                     {/* Remove Student Button */}
                     <button
                       onClick={() => handleRemoveStudent(s._id)}
