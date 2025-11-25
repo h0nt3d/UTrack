@@ -25,7 +25,7 @@ ChartJS.register(
   TimeScale
 )
 
-export default function TeamLineChart ({allStuds = [], num}) {
+export default function TeamLineChart ({allStuds = [], num, metricLabel = "Average Joy"}) {
 
     const [displayChart, setDisplayChart] = React.useState(true)
 
@@ -68,7 +68,7 @@ console.log("firstDay:", firstDay, "today:", today)
                 data ={{
                     datasets: [
                         {
-                            label: 'Average Joy',
+                            label: metricLabel,
                             data: filterData,
                             borderColor: '#8EEAFF',
                             pointBackgroundColor: "#FFB74D",
@@ -89,7 +89,8 @@ console.log("firstDay:", firstDay, "today:", today)
                                     return `${context[0].raw.x}`
                                 },
                                 label: function (context) {  
-                                    return  `Day: ${context.raw.x}, Avg Joy: ${context.raw.y}, Count: ${context.raw.count}`
+                                    const labelName = metricLabel.replace("Average ", "");
+                                    return  `Day: ${context.raw.x}, Avg ${labelName}: ${context.raw.y}, Count: ${context.raw.count}`
                                 },
                             }
                         }

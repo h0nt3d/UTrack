@@ -38,10 +38,6 @@ export default function ProjectDetails() {
   const [teamJoyData, setTeamJoyData] = useState([]);
   const [loadingTeamChart, setLoadingTeamChart] = useState(false);
 
-  // Bus Factor for students (project-level average)
-  const [busFactorData, setBusFactorData] = useState([]);
-  const [loadingBusFactor, setLoadingBusFactor] = useState(false);
-
   // Fetch project students
   useEffect(() => {
     if (!token) return;
@@ -93,33 +89,6 @@ export default function ProjectDetails() {
 
     fetchCourseStudents();
   }, [courseNumber, token]);
-
-  // Fetch bus factor average for students
-  useEffect(() => {
-    if (!token || !projectId || !courseNumber) return;
-
-    async function fetchBusFactorAverage() {
-      try {
-        setLoadingBusFactor(true);
-        const res = await fetch(
-          `http://localhost:5000/api/course/${courseNumber}/project/${projectId}/bus-factor-average`,
-          {
-            headers: { "Content-Type": "application/json", authtoken: token },
-          }
-        );
-        const data = await res.json();
-        if (res.ok && data.busFactorAverage) {
-          setBusFactorData(data.busFactorAverage);
-        }
-      } catch (err) {
-        console.error("Error fetching bus factor average:", err);
-      } finally {
-        setLoadingBusFactor(false);
-      }
-    }
-
-    fetchBusFactorAverage();
-  }, [token, courseNumber, projectId]);
 
 const handleAddStudents = async () => {
   if (!selectedStudents.length) return;
@@ -233,20 +202,6 @@ const handleAddStudents = async () => {
         setTeamJoyData={setTeamJoyData}
         loadingTeamChart={loadingTeamChart}
       />}
-
-      {/* BUS FACTOR CHART FOR STUDENTS (Project-level daily average) */}
-      {busFactorData.length > 0 && (
-        <div className={`${styles.all_courses} mt-6`}>
-          <h2 className="text-xl font-semibold mb-4 text-center">Project Bus Factor (Daily Average)</h2>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <TeamCardC 
-              allStuds={busFactorData} 
-              num={90} 
-              team={`${projectTitle} - Bus Factor Average`} 
-            />
-          </div>
-        </div>
-      )}
     
         
     </div>

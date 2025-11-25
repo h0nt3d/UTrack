@@ -8,7 +8,7 @@ import React from "react";
 
 import { useLocation } from "react-router-dom";
 
-export default function CardC ({stud, num, studentName}) {
+export default function CardC ({stud, num, studentName, metricLabel = "Joy"}) {
 
     const [day, setDay] = React.useState(num || 14);
 
@@ -25,11 +25,24 @@ export default function CardC ({stud, num, studentName}) {
         }
     }, [num]);
 
+    // Determine title based on metric type
+    const getTitle = () => {
+      if (!studentName) {
+        return metricLabel === "Joy" ? "Student Joy" : `Student ${metricLabel}`;
+      }
+      // For joy factor, add "'s Joy" suffix
+      if (metricLabel === "Joy") {
+        return `${studentName}'s Joy`;
+      }
+      // For other metrics (like Bus Factor), use the name as-is
+      return studentName;
+    };
+
     return (
         <Card sx={{ maxWidth: 700, margin: 2, boxShadow: 3}}>
-            <CardHeader title={studentName ? `${studentName}'s Joy` : 'Student Joy'} sx={{ textAlign: "center" }} />
+            <CardHeader title={studentName || `Student ${metricLabel}`} sx={{ textAlign: "center" }} />
             <CardContent>
-                <LineChart num={day} stud={dataSource}/>
+                <LineChart num={day} stud={dataSource} metricLabel={metricLabel}/>
             </CardContent>
             <CardActions sx={{ textAlign: "center" }} >
                 <Button onClick={() => changeDays(14)} variant="outlined">Last 14 days</Button>

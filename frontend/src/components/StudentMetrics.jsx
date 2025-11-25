@@ -21,10 +21,12 @@ export default function StudentMetrics() {
 
   const [teamJoyData, setTeamJoyData] = useState([]);
   const [individualJoyData, setIndividualJoyData] = useState([]);
+  const [teamBusFactorData, setTeamBusFactorData] = useState([]);
   const [individualBusFactorData, setIndividualBusFactorData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedMetric, setSelectedMetric] = useState("joy");
   const [joyViewType, setJoyViewType] = useState("team"); // "team" or "individual"
+  const [busFactorViewType, setBusFactorViewType] = useState("team"); // "team" or "individual"
   const [selectedStudentEmail, setSelectedStudentEmail] = useState(null);
   const [selectedStudentEmailForBusFactor, setSelectedStudentEmailForBusFactor] = useState(null);
 
@@ -126,6 +128,12 @@ export default function StudentMetrics() {
           const busFactorResults = await Promise.all(
             projectStudents.map(fetchStudentBusFactor)
           );
+          
+          // Calculate team bus factor (average) using rightFormat
+          const teamBusFactorResults = rightFormat(busFactorResults);
+          setTeamBusFactorData(teamBusFactorResults);
+          
+          // Store individual student bus factor data
           const busFactorData = projectStudents.map((student, index) => ({
             student: student,
             busFactorData: busFactorResults[index] || []
@@ -140,6 +148,7 @@ export default function StudentMetrics() {
         console.error("Error fetching team joy data:", err);
         setTeamJoyData([]);
         setIndividualJoyData([]);
+        setTeamBusFactorData([]);
         setIndividualBusFactorData([]);
       } finally {
         setLoading(false);
@@ -223,6 +232,32 @@ export default function StudentMetrics() {
             </div>
           )}
 
+          {/* Filter for Individual vs Team Bus Factor (only show when Bus Factor is selected) */}
+          {selectedMetric === "bus" && !loading && (
+            <div className="mb-4 flex gap-2">
+              <button
+                onClick={() => setBusFactorViewType("team")}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  busFactorViewType === "team"
+                    ? "bg-sky-400 text-white shadow-md"
+                    : "bg-white text-gray-700 hover:bg-sky-100"
+                }`}
+              >
+                Team Bus Factor
+              </button>
+              <button
+                onClick={() => setBusFactorViewType("individual")}
+                className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                  busFactorViewType === "individual"
+                    ? "bg-sky-400 text-white shadow-md"
+                    : "bg-white text-gray-700 hover:bg-sky-100"
+                }`}
+              >
+                Individual Bus Factor
+              </button>
+            </div>
+          )}
+
           <div className="mt-6">
             {loading ? (
               <div className="bg-white rounded-lg shadow-md p-8 text-center">
@@ -292,57 +327,72 @@ export default function StudentMetrics() {
                   </>
                 )}
                 {selectedMetric === "bus" && (
-                  individualBusFactorData.length === 0 ? (
-                    <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                      <p className="text-gray-600">No bus factor data available for this project yet.</p>
-                    </div>
-                  ) : (
-                    <div>
-                      {/* Student Selector for Bus Factor */}
-                      <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Select Student:
-                        </label>
-                        <select
-                          value={selectedStudentEmailForBusFactor || ""}
-                          onChange={(e) => setSelectedStudentEmailForBusFactor(e.target.value)}
-                          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
-                        >
-                          {individualBusFactorData.map((item, index) => {
-                            const studentEmail = item.student.email;
-                            const studentName = `${item.student.firstName} ${item.student.lastName}`;
-                            return (
-                              <option key={index} value={studentEmail}>
-                                {studentName} ({studentEmail})
-                              </option>
-                            );
-                          })}
-                        </select>
-                      </div>
+                  <>
+                    {busFactorViewType === "team" ? (
+                      teamBusFactorData.length === 0 ? (
+                        <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                          <p className="text-gray-600">No bus factor data available for this project yet.</p>
+                        </div>
+                      ) : (
+                        <div className="bg-white rounded-lg shadow-md p-6">
+                          <TeamCardC allStuds={teamBusFactorData} num={90} team={team ? `${team} - Bus Factor` : "Bus Factor"} metricLabel="Average Bus Factor" />
+                        </div>
+                      )
+                    ) : (
+                      individualBusFactorData.length === 0 ? (
+                        <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                          <p className="text-gray-600">No individual bus factor data available for this project yet.</p>
+                        </div>
+                      ) : (
+                        <div>
+                          {/* Student Selector for Bus Factor */}
+                          <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Select Student:
+                            </label>
+                            <select
+                              value={selectedStudentEmailForBusFactor || ""}
+                              onChange={(e) => setSelectedStudentEmailForBusFactor(e.target.value)}
+                              className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
+                            >
+                              {individualBusFactorData.map((item, index) => {
+                                const studentEmail = item.student.email;
+                                const studentName = `${item.student.firstName} ${item.student.lastName}`;
+                                return (
+                                  <option key={index} value={studentEmail}>
+                                    {studentName} ({studentEmail})
+                                  </option>
+                                );
+                              })}
+                            </select>
+                          </div>
 
-                      {/* Selected Student's Bus Factor Chart */}
-                      {selectedStudentEmailForBusFactor && (() => {
-                        const selectedStudentData = individualBusFactorData.find(
-                          (item) => item.student.email === selectedStudentEmailForBusFactor
-                        );
-                        return selectedStudentData ? (
-                          selectedStudentData.busFactorData.length === 0 ? (
-                            <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                              <p className="text-gray-600">No bus factor data available for this student yet.</p>
-                            </div>
-                          ) : (
-                            <div className="bg-white rounded-lg shadow-md p-6">
-                              <CardC
-                                stud={selectedStudentData.busFactorData}
-                                num={90}
-                                studentName={`${selectedStudentData.student.firstName} ${selectedStudentData.student.lastName} - Bus Factor`}
-                              />
-                            </div>
-                          )
-                        ) : null;
-                      })()}
-                    </div>
-                  )
+                          {/* Selected Student's Bus Factor Chart */}
+                          {selectedStudentEmailForBusFactor && (() => {
+                            const selectedStudentData = individualBusFactorData.find(
+                              (item) => item.student.email === selectedStudentEmailForBusFactor
+                            );
+                            return selectedStudentData ? (
+                              selectedStudentData.busFactorData.length === 0 ? (
+                                <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                                  <p className="text-gray-600">No bus factor data available for this student yet.</p>
+                                </div>
+                              ) : (
+                                <div className="bg-white rounded-lg shadow-md p-6">
+                                  <CardC
+                                    stud={selectedStudentData.busFactorData}
+                                    num={90}
+                                    studentName={`${selectedStudentData.student.firstName} ${selectedStudentData.student.lastName} - Bus Factor`}
+                                    metricLabel="Bus Factor"
+                                  />
+                                </div>
+                              )
+                            ) : null;
+                          })()}
+                        </div>
+                      )
+                    )}
+                  </>
                 )}
               </div>
             )}
