@@ -24,6 +24,7 @@ export default function CourseDetails() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [showJoyFactorModal, setShowJoyFactorModal] = useState(false);
   const [showBusFactorModal, setShowBusFactorModal] = useState(false);
+  const [projectEvents, setProjectEvents] = useState({}); // projectId -> event data
   const [studentId, setStudentId] = useState(null);
 
   useEffect(() => {
@@ -92,6 +93,47 @@ export default function CourseDetails() {
 
     fetchCourseData();
   }, [courseNumber, token]);
+
+  // Fetch open events for all student projects
+  useEffect(() => {
+    if (!token || !studentProjects.length || !studentId) return;
+
+    async function fetchOpenEvents() {
+      const eventsMap = {};
+      for (const project of studentProjects) {
+        try {
+          const res = await fetch(
+            `http://localhost:5000/api/course/${courseNumber}/project/${project._id}/points/events/open`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                authtoken: token,
+              },
+            }
+          );
+          const data = await res.json();
+          if (res.ok && data.event && data.event.status !== "Closed") {
+            eventsMap[project._id] = data;
+          }
+        } catch (err) {
+          console.error(`Error fetching event for project ${project._id}:`, err);
+        }
+      }
+      setProjectEvents(eventsMap);
+    }
+
+    fetchOpenEvents();
+    
+    // Refresh events when component is focused (user returns from submission)
+    const handleFocus = () => {
+      fetchOpenEvents();
+    };
+    window.addEventListener('focus', handleFocus);
+    
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [token, courseNumber, studentProjects, studentId]);
 
   const goBack = () => navigate(-1);
 
@@ -183,55 +225,129 @@ export default function CourseDetails() {
                 You are not assigned to any projects in this course.
               </p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300 text-left">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="border border-gray-300 px-4 py-2">Project Title</th>
-                      <th className="border border-gray-300 px-4 py-2">Team</th>
-                      <th className="border border-gray-300 px-4 py-2">Description</th>
-                      <th className="border border-gray-300 px-4 py-2 text-center">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {studentProjects.map((p, idx) => (
-                      <tr
-                        key={idx}
-                        className="hover:bg-gray-50 transition-colors duration-150"
-                      >
-                        <td className="border border-gray-300 px-4 py-2">
-                          <strong>{p.title}</strong>
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">{p.team || "-"}</td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          {p.description || "-"}
-                        </td>
-                        <td className="border border-gray-300 px-4 py-2">
-                          <div className="flex flex-col gap-2 items-center">
-                            <button
-                              onClick={() => {
-                                setSelectedProject(p);
-                                setShowJoyFactorModal(true);
-                              }}
-                              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm w-full"
-                            >
-                              Add Joy Factor
-                            </button>
-                            <button
-                              onClick={() => {
-                                setSelectedProject(p);
-                                setShowBusFactorModal(true);
-                              }}
-                              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm w-full"
-                            >
-                              Record Bus Factor
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="space-y-6">
+                {studentProjects.map((p, idx) => (
+                  <div key={idx} className="bg-white rounded-lg shadow-md p-4">
+                    <div className="overflow-x-auto mt-4">
+                      <table className="w-full border-collapse border border-gray-300 text-left">
+                        <thead className="bg-gray-100">
+                          <tr>
+                            <th className="border border-gray-300 px-4 py-2">Project Title</th>
+                            <th className="border border-gray-300 px-4 py-2">Team</th>
+                            <th className="border border-gray-300 px-4 py-2">Description</th>
+                            <th className="border border-gray-300 px-4 py-2 text-center">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="hover:bg-gray-50 transition-colors duration-150">
+                            <td className="border border-gray-300 px-4 py-2">
+                              <strong>{p.title}</strong>
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">{p.team || "-"}</td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              {p.description || "-"}
+                            </td>
+                            <td className="border border-gray-300 px-4 py-2">
+                              <div className="flex flex-col gap-2 items-center">
+                                <button
+                                  onClick={() => {
+                                    setSelectedProject(p);
+                                    setShowJoyFactorModal(true);
+                                  }}
+                                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm w-full"
+                                >
+                                  Add Joy Factor
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setSelectedProject(p);
+                                    setShowBusFactorModal(true);
+                                  }}
+                                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm w-full"
+                                >
+                                  Record Bus Factor
+                                </button>
+                                {/* Team Points Distribution Button */}
+                                {projectEvents[p._id] && projectEvents[p._id].hasSubmitted ? (
+                                  <button
+                                    disabled
+                                    className="px-4 py-2 bg-gray-400 text-white rounded text-sm w-full cursor-not-allowed"
+                                  >
+                                    ✓ Submitted
+                                  </button>
+                                ) : projectEvents[p._id] && projectEvents[p._id].event ? (
+                                  <button
+                                    onClick={() => {
+                                      navigate("/teampage", {
+                                        state: {
+                                          courseNumber,
+                                          projectId: p._id,
+                                          token,
+                                          hasSubmitted: projectEvents[p._id].hasSubmitted,
+                                        },
+                                      });
+                                    }}
+                                    className={`px-4 py-2 text-white rounded text-sm w-full ${
+                                      projectEvents[p._id].event.status === "Past Due"
+                                        ? "bg-red-600 hover:bg-red-700"
+                                        : "bg-green-600 hover:bg-green-700"
+                                    }`}
+                                  >
+                                    {projectEvents[p._id].event.status === "Past Due"
+                                      ? "⚠ Team Points (Past Due)"
+                                      : "📋 Team Points Distribution"}
+                                  </button>
+                                ) : (
+                                  <button
+                                    onClick={async () => {
+                                      // Fetch event on click and navigate if exists
+                                      try {
+                                        const res = await fetch(
+                                          `http://localhost:5000/api/course/${courseNumber}/project/${p._id}/points/events/open`,
+                                          {
+                                            headers: {
+                                              "Content-Type": "application/json",
+                                              authtoken: token,
+                                            },
+                                          }
+                                        );
+                                        const data = await res.json();
+                                        if (res.ok && data.event && data.event.status !== "Closed") {
+                                          setProjectEvents((prev) => ({
+                                            ...prev,
+                                            [p._id]: data,
+                                          }));
+                                          navigate("/teampage", {
+                                            state: {
+                                              courseNumber,
+                                              projectId: p._id,
+                                              token,
+                                              hasSubmitted: data.hasSubmitted,
+                                            },
+                                          });
+                                        } else if (res.ok && !data.event) {
+                                          alert("No Team Points Distribution event has been created for this project yet. Please ask your instructor to launch an event.");
+                                        } else {
+                                          alert("Unable to load Team Points Distribution. Please try again later.");
+                                        }
+                                      } catch (err) {
+                                        console.error("Error fetching event:", err);
+                                        alert("Error loading Team Points Distribution. Please try again.");
+                                      }
+                                    }}
+                                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm w-full"
+                                  >
+                                    📋 Team Points Distribution
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
@@ -273,6 +389,7 @@ export default function CourseDetails() {
             teamSize={selectedProject.students?.length || 1}
           />
         )}
+
       </div>
     </div>
   );

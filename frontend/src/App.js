@@ -15,6 +15,8 @@ import FirstLogin from "./components/FirstLogin";
 import StudentDashboard from "./components/StudentDashboard";
 import CourseDetails from "./components/NotUsed/CourseDetails";
 import StudentMetrics from "./components/StudentMetrics";
+import Event from "./components/TeamPointDistribution/Event";
+import CardTable from "./components/TeamPointDistribution/CardTable";
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom";
 
 
@@ -39,6 +41,8 @@ export default function App() {
 				<Route path="/first-login" element={<FirstLogin />} />
 				<Route path="/student-dashboard" element={<StudentDashboard />} />
 				<Route path="/student/course/:courseNumber" element={<CourseDetails />} />
+				<Route path="/teampage" element={<Event />} />
+				<Route path="/teampage/form" element={<CardTable />} />
 			</Routes>
 		</Router>
 	);

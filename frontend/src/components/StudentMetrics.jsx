@@ -4,6 +4,7 @@ import styles from "../css_folder/Mycourses.module.css";
 import Logout from "../subcomponents/Logout.jsx";
 import TeamCardC from "./TeamCardC.jsx";
 import CardC from "./CardC.jsx";
+import ScalingFactorBarChart from "./ScalingFactorBarChart.jsx";
 
 export default function StudentMetrics() {
   const { courseNumber, projectId } = useParams();
@@ -29,6 +30,9 @@ export default function StudentMetrics() {
   const [busFactorViewType, setBusFactorViewType] = useState("team"); // "team" or "individual"
   const [selectedStudentEmail, setSelectedStudentEmail] = useState(null);
   const [selectedStudentEmailForBusFactor, setSelectedStudentEmailForBusFactor] = useState(null);
+  const [selectedStudentEmailForTeamPoints, setSelectedStudentEmailForTeamPoints] = useState(null);
+  const [teamPointsScalingData, setTeamPointsScalingData] = useState([]);
+  const [loadingTeamPoints, setLoadingTeamPoints] = useState(false);
 
   function rightFormat(results) {
     const flattendArray = results.flat();
@@ -144,6 +148,61 @@ export default function StudentMetrics() {
             setSelectedStudentEmailForBusFactor(busFactorData[0].student.email);
           }
         }
+
+        // Fetch team points scaling factors for instructors
+        if (projectStudents && projectStudents.length > 0) {
+          try {
+            setLoadingTeamPoints(true);
+            const res = await fetch(
+              `http://localhost:5000/api/course/${courseNumber}/project/${projectId}/points/scaling-factors`,
+              {
+                headers: { "Content-Type": "application/json", authtoken: token },
+              }
+            );
+            const data = await res.json();
+            if (res.ok && data.scalingFactorsByEvent) {
+              // Transform data to be per-student
+              const studentScalingData = projectStudents.map((student) => {
+                const studentFactors = [];
+                data.scalingFactorsByEvent.forEach((eventData) => {
+                  const factor = eventData.scalingFactors.find(
+                    (f) => f.studentId.toString() === (student._id || student.id).toString()
+                  );
+                  if (factor) {
+                    studentFactors.push({
+                      eventId: eventData.eventId,
+                      eventCreatedAt: eventData.eventCreatedAt,
+                      eventClosedAt: eventData.eventClosedAt,
+                      scalingFactor: factor.scalingFactor,
+                      totalReceived: factor.totalReceived,
+                      teamSize: factor.teamSize,
+                      computedAt: factor.computedAt,
+                    });
+                  }
+                });
+                // Sort by event closed date (most recent first)
+                studentFactors.sort((a, b) => {
+                  const dateA = new Date(a.eventClosedAt || a.eventCreatedAt);
+                  const dateB = new Date(b.eventClosedAt || b.eventCreatedAt);
+                  return dateB - dateA; // Descending order (newest first)
+                });
+                return {
+                  student: student,
+                  scalingFactors: studentFactors,
+                };
+              });
+              setTeamPointsScalingData(studentScalingData);
+              
+              if (studentScalingData.length > 0 && !selectedStudentEmailForTeamPoints) {
+                setSelectedStudentEmailForTeamPoints(studentScalingData[0].student.email);
+              }
+            }
+          } catch (err) {
+            console.error("Error fetching team points scaling factors:", err);
+          } finally {
+            setLoadingTeamPoints(false);
+          }
+        }
       } catch (err) {
         console.error("Error fetching team joy data:", err);
         setTeamJoyData([]);
@@ -193,6 +252,17 @@ export default function StudentMetrics() {
               }`}
             >
               Bus Factor
+            </button>
+            
+            <button
+              onClick={() => setSelectedMetric("teamPoints")}
+              className={`w-full py-3 px-4 rounded-lg font-medium transition-all text-left ${
+                selectedMetric === "teamPoints"
+                  ? "bg-sky-400 text-white shadow-md"
+                  : "bg-transparent text-gray-700 hover:bg-sky-300 hover:text-gray-900"
+              }`}
+            >
+              Team Points Distribution
             </button>
           </div>
         </div>
@@ -393,6 +463,143 @@ export default function StudentMetrics() {
                       )
                     )}
                   </>
+                )}
+                {selectedMetric === "teamPoints" && (
+                  teamPointsScalingData.length === 0 ? (
+                    <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                      <p className="text-gray-600">No team points distribution data available for this project yet.</p>
+                    </div>
+                  ) : (
+                    <div>
+                      {/* Student Selector for Team Points Scaling Factors */}
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Select Student:
+                        </label>
+                        <select
+                          value={selectedStudentEmailForTeamPoints || ""}
+                          onChange={(e) => setSelectedStudentEmailForTeamPoints(e.target.value)}
+                          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
+                        >
+                          {teamPointsScalingData.map((item, index) => {
+                            const studentEmail = item.student.email;
+                            const studentName = `${item.student.firstName} ${item.student.lastName}`;
+                            return (
+                              <option key={index} value={studentEmail}>
+                                {studentName} ({studentEmail})
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </div>
+
+                      {/* Selected Student's Scaling Factors */}
+                      {selectedStudentEmailForTeamPoints && (() => {
+                        const selectedStudentData = teamPointsScalingData.find(
+                          (item) => item.student.email === selectedStudentEmailForTeamPoints
+                        );
+                        return selectedStudentData ? (
+                          selectedStudentData.scalingFactors.length === 0 ? (
+                            <div className="bg-white rounded-lg shadow-md p-8 text-center">
+                              <p className="text-gray-600">No scaling factors available for this student yet.</p>
+                            </div>
+                          ) : (
+                            <div className="bg-white rounded-lg shadow-md p-6">
+                              <h3 className="text-xl font-semibold mb-4">
+                                Team Point Scaling Factors for {selectedStudentData.student.firstName} {selectedStudentData.student.lastName}
+                              </h3>
+                              
+                              {/* Bar Chart for Scaling Factors */}
+                              <div className="mb-6 p-3 bg-white border border-gray-200 rounded-lg">
+                                <h4 className="text-sm font-semibold mb-2 text-gray-700">Scaling Factors Visualization</h4>
+                                <ScalingFactorBarChart scalingFactors={selectedStudentData.scalingFactors} />
+                              </div>
+
+                              {/* Latest Event Card */}
+                              {selectedStudentData.scalingFactors.length > 0 && selectedStudentData.scalingFactors[0] && (
+                                <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <h4 className="text-lg font-semibold text-blue-900">Latest Event</h4>
+                                    <span className="px-2 py-1 bg-blue-200 text-blue-800 text-xs font-semibold rounded">
+                                      Most Recent
+                                    </span>
+                                  </div>
+                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-3">
+                                    <div>
+                                      <p className="text-xs text-gray-600 mb-1">Event Date</p>
+                                      <p className="font-semibold text-gray-800">
+                                        {new Date(selectedStudentData.scalingFactors[0].eventClosedAt || selectedStudentData.scalingFactors[0].eventCreatedAt).toLocaleDateString()}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray-600 mb-1">Total Received</p>
+                                      <p className="font-semibold text-gray-800">{selectedStudentData.scalingFactors[0].totalReceived}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray-600 mb-1">Team Size</p>
+                                      <p className="font-semibold text-gray-800">{selectedStudentData.scalingFactors[0].teamSize}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray-600 mb-1">Scaling Factor</p>
+                                      <p className="font-bold text-blue-700 text-lg">
+                                        {selectedStudentData.scalingFactors[0].scalingFactor.toFixed(3)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* All Events History Table */}
+                              <div className="mt-4">
+                                <h4 className="text-md font-semibold mb-3 text-gray-700">Event History Table</h4>
+                                <div className="overflow-x-auto">
+                                  <table className="w-full border-collapse border border-gray-300">
+                                    <thead>
+                                      <tr className="bg-gray-100">
+                                        <th className="border border-gray-300 px-4 py-2 text-left">Event Date</th>
+                                        <th className="border border-gray-300 px-4 py-2 text-center">Total Received</th>
+                                        <th className="border border-gray-300 px-4 py-2 text-center">Team Size</th>
+                                        <th className="border border-gray-300 px-4 py-2 text-center">Scaling Factor</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {selectedStudentData.scalingFactors.map((factor, index) => (
+                                        <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                                          <td className="border border-gray-300 px-4 py-2">
+                                            {new Date(factor.eventClosedAt || factor.eventCreatedAt).toLocaleDateString()}
+                                          </td>
+                                          <td className="border border-gray-300 px-4 py-2 text-center">
+                                            {factor.totalReceived}
+                                          </td>
+                                          <td className="border border-gray-300 px-4 py-2 text-center">
+                                            {factor.teamSize}
+                                          </td>
+                                          <td className="border border-gray-300 px-4 py-2 text-center font-semibold">
+                                            {factor.scalingFactor.toFixed(3)}
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+
+                              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                                <p className="text-sm text-gray-700">
+                                  <strong>Scaling Factor:</strong> (sum of points received) / (team size × 10)
+                                  <br />
+                                  <span className="text-xs text-gray-600">
+                                    A factor of 1.0 means the student received exactly 10 points per rater on average. 
+                                    Factors below 1.0 indicate below-average peer ratings; above 1.0 indicates above-average ratings.
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
+                          )
+                        ) : null;
+                      })()}
+                    </div>
+                  )
                 )}
               </div>
             )}

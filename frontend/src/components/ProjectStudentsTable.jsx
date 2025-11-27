@@ -58,7 +58,7 @@ export default function ProjectStudentsTable({
           </thead>
           <tbody>
             {projectStudents.map((s, idx) => (
-              <tr key={idx} className="hover:bg-gray-50">
+              <tr data-testid = "added-students" key={idx} className="hover:bg-gray-50">
                 <td className="border border-gray-300 px-4 py-2">{s.firstName}</td>
                 <td className="border border-gray-300 px-4 py-2">{s.lastName}</td>
                 <td className="border border-gray-300 px-4 py-2">{s.email}</td>

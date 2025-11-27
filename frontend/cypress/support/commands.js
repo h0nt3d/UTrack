@@ -190,24 +190,35 @@ Cypress.Commands.add("AddSingleStudent", () => {
         cy.CreateCourse();
 
         // Course Containing Student
-        cy.intercept('GET', `${BASE_URL}/auth/get-course/${course.number}`, {
+        cy.intercept("GET", `${BASE_URL}/auth/get-course/${course.number}`, {
           statusCode: 200,
           body: {
             courseNumber: course.number,
             courseName: course.name,
             description: course.description || "",
-            students: [{ _id: "1", firstName: student.firstName, lastName: student.lastName, email: student.email }],
+            students: [
+              {
+                _id: "1",
+                firstName: student.firstName,
+                lastName: student.lastName,
+                email: student.email,
+              },
+            ],
             projects: [],
-            instructor: { firstName: instructor.firstName, lastName: instructor.lastName, email: instructor.email }
-          }
-        }).as('mockGetCourse');
+            instructor: {
+              firstName: instructor.firstName,
+              lastName: instructor.lastName,
+              email: instructor.email,
+            },
+          },
+        }).as("mockGetCourse");
 
         cy.contains(`${course.number}: ${course.name}`).click();
 
-        cy.wait('@mockGetCourse');
-        cy.contains("Current Students in Course").should('be.visible');
-        cy.get('table thead th').eq(0).should('contain.text', "Name");
-        cy.get('table thead th').eq(1).should('contain.text', "Email");
+        cy.wait("@mockGetCourse");
+        cy.contains("Current Students in Course").should("be.visible");
+        cy.get("table thead th").eq(0).should("contain.text", "Name");
+        cy.get("table thead th").eq(1).should("contain.text", "Email");
       });
     });
   });
@@ -280,7 +291,7 @@ Cypress.Commands.add("AddStudents", () => {
   });
 });
 
-Cypress.Commands.add("CreateProject", () => {
+Cypress.Commands.add("CreateStudentandProject", () => {
   const BASE_URL = "http://localhost:5000/api";
 
   cy.fixture("TEST_INSTRUCTOR").then((TEST_INSTRUCTOR) => {
@@ -365,7 +376,7 @@ Cypress.Commands.add("CreateProject", () => {
 
 /**
  * A command for simulating the process to add a project-team to a course.
- * 
+ *
  * This command first utilizes the create course command to then add project-teams.
  */
 Cypress.Commands.add("CreateProjectTeam", () => {
@@ -385,13 +396,13 @@ Cypress.Commands.add("CreateProjectTeam", () => {
 
         // Verify Details
         cy.contains(`${TEST_COURSE.number}: ${TEST_COURSE.name}`).click();
-        cy.contains(TEST_COURSE.name).should('be.visible');
+        cy.contains(TEST_COURSE.name).should("be.visible");
 
         // Responses
         // ====================================================================================================
 
         // Course Information Fetch
-        cy.intercept('GET', `${BASE_URL}/auth/get-course/${COURSE_ID}`, {
+        cy.intercept("GET", `${BASE_URL}/auth/get-course/${COURSE_ID}`, {
           statusCode: 200,
           times: 1,
           body: {
@@ -400,23 +411,38 @@ Cypress.Commands.add("CreateProjectTeam", () => {
             description: course.description,
             students: [],
             projects: [],
-            instructor: { firstName: instructor.firstName, lastName: instructor.lastName, email: instructor.email }
-          }
-        }).as('mockGetCourse');
+            instructor: {
+              firstName: instructor.firstName,
+              lastName: instructor.lastName,
+              email: instructor.email,
+            },
+          },
+        }).as("mockGetCourse");
 
         // Project Creation Response
-        cy.intercept('POST', `${BASE_URL}/auth/course/${TEST_COURSE.number}/add-project`, {
-          statusCode: 200,
-          body: {
-            projects: [{ _id: '1', title: project.title, description: project.description, team: project.team_name }]
+        cy.intercept(
+          "POST",
+          `${BASE_URL}/auth/course/${TEST_COURSE.number}/add-project`,
+          {
+            statusCode: 200,
+            body: {
+              projects: [
+                {
+                  _id: "1",
+                  title: project.title,
+                  description: project.description,
+                  team: project.team_name,
+                },
+              ],
+            },
           }
-        }).as('mockAddProject');
+        ).as("mockAddProject");
 
         // ====================================================================================================
 
         // Add New Project
         cy.contains("Add Project-Team").click();
-        cy.wait('@mockGetCourse');
+        cy.wait("@mockGetCourse");
 
         // Project Information
         cy.get('[data-testid="project-title"]').type(project.title);
@@ -425,33 +451,199 @@ Cypress.Commands.add("CreateProjectTeam", () => {
 
         // Create
         cy.get('[data-testid="project-save"]').click();
-        cy.wait('@mockAddProject');
+        cy.wait("@mockAddProject");
 
         // Updated Course Information Fetch
-        cy.intercept('GET', `${BASE_URL}/auth/get-course/${COURSE_ID}`, {
+        cy.intercept("GET", `${BASE_URL}/auth/get-course/${COURSE_ID}`, {
           statusCode: 200,
           body: {
             courseNumber: course.number,
             courseName: course.name,
             description: course.description,
             students: [],
-            projects: [{ _id: '1', title: project.title, description: project.description, team: project.team_name }],
-            instructor: { firstName: instructor.firstName, lastName: instructor.lastName, email: instructor.email }
-          }
-        }).as('mockGetUpdatedCourse');
+            projects: [
+              {
+                _id: "1",
+                title: project.title,
+                description: project.description,
+                team: project.team_name,
+              },
+            ],
+            instructor: {
+              firstName: instructor.firstName,
+              lastName: instructor.lastName,
+              email: instructor.email,
+            },
+          },
+        }).as("mockGetUpdatedCourse");
 
         // Verify Updated Course Details
         cy.contains("Back").click();
-        cy.wait('@mockGetUpdatedCourse');
+        cy.wait("@mockGetUpdatedCourse");
 
         // View Project
         cy.contains(`${project.title}`).click();
 
         // Verify Project Details
-        cy.contains(`${project.title}`).should('be.visible');
-        cy.contains(`${project.description}`).should('be.visible');
-        cy.contains(`${project.team_name}`).should('be.visible');
+        cy.contains(`${project.title}`).should("be.visible");
+        cy.contains(`${project.description}`).should("be.visible");
+        cy.contains(`${project.team_name}`).should("be.visible");
       });
     });
   });
-});  
+});
+
+Cypress.Commands.add("CreateProjectTeamWithStudents", () => {
+  const BASE_URL = "http://localhost:5000/api";
+
+  cy.fixture("TEST_INSTRUCTOR").then((TEST_INSTRUCTOR) => {
+    cy.fixture("TEST_COURSE").then((TEST_COURSE) => {
+      cy.fixture("TEST_PROJECT").then((TEST_PROJECT) => {
+        cy.fixture("TEST_STUDENT").then((TEST_STUDENT) => {
+          const instructor = TEST_INSTRUCTOR;
+          const course = TEST_COURSE;
+          const project = TEST_PROJECT;
+          const students = TEST_STUDENT;
+
+          // Ensure instructor, course and students exist
+          cy.AddStudents();
+
+          // Intercept project creation (project-team)
+          cy.intercept(
+            "POST",
+            `${BASE_URL}/auth/course/${TEST_COURSE.number}/add-project`,
+            {
+              statusCode: 200,
+              body: {
+                projects: [
+                  {
+                    _id: "1",
+                    title: project.title,
+                    description: project.description,
+                    team: project.team_name,
+                  },
+                ],
+              },
+            }
+          ).as("mockAddProjectTeam");
+
+          // Return course including students and the new project after creation
+          cy.intercept(
+            "GET",
+            `${BASE_URL}/auth/get-course/${TEST_COURSE.number}`,
+            {
+              statusCode: 200,
+              body: {
+                courseNumber: course.number,
+                courseName: course.name,
+                description: course.description || "",
+                students: students,
+                projects: [
+                  {
+                    _id: "1",
+                    title: project.title,
+                    description: project.description,
+                    team: project.team_name,
+                  },
+                ],
+                instructor: {
+                  firstName: instructor.firstName,
+                  lastName: instructor.lastName,
+                  email: instructor.email,
+                },
+              },
+            }
+          ).as("mockGetCourseAfterTeam");
+
+          // Mock profile/user load
+          cy.intercept("GET", `http://localhost:5000/user/john.doe%40unb.ca`, {
+            statusCode: 200,
+            body: {
+              firstName: TEST_INSTRUCTOR.firstName,
+              lastName: TEST_INSTRUCTOR.lastName,
+              email: TEST_INSTRUCTOR.email,
+            },
+          }).as("loadUser");
+
+          // Navigate to Add Project-Team
+          cy.contains("Add Project-Team").click();
+
+          // Fill project-team form using data-testid fields
+          cy.get('[data-testid="project-title"]').type(project.title);
+          cy.get('[data-testid="project-description"]').type(
+            project.description
+          );
+          cy.get('[data-testid="project-teamname"]').type(project.team_name);
+
+          // Submit
+          cy.get('[data-testid="project-save"]').click();
+
+          // Wait for post and updated course fetch
+          cy.wait("@mockAddProjectTeam");
+          cy.contains("Back").click();
+          cy.wait("@mockGetCourseAfterTeam");
+
+          // Verify project visible
+          cy.contains(project.title).should("be.visible");
+
+          // Verify at least one student email is visible
+          if (Array.isArray(students) && students.length > 0) {
+            cy.contains(students[0].email).should("be.visible");
+          }
+
+          // Open the created project details to add students to the team
+          cy.contains(project.title).click();
+
+          // Ensure ProjectDetails has loaded course students (uses same GET mock)
+          cy.wait("@mockGetCourseAfterTeam");
+
+          // Prepare students with _id and intercept the POST used by ProjectDetails to add students
+          const studentsWithIds = students.map((s, i) => ({
+            ...s,
+            _id: `${i + 1}`,
+          }));
+          cy.intercept(
+            "POST",
+            `${BASE_URL}/auth/course/${
+              TEST_COURSE.number
+            }/project/${encodeURIComponent(project.title)}/add-students`,
+            {
+              statusCode: 200,
+              body: {
+                students: studentsWithIds.slice(0, 5),
+              },
+            }
+          ).as("mockAddStudentsToProject");
+
+          // Open Add Students panel in ProjectDetails
+          cy.contains("Add Students").click();
+
+          // Select the first five students (or fewer if there aren't five)
+          cy.get("table tbody tr").then(($rows) => {
+            const count = Math.min(5, $rows.length);
+            for (let i = 0; i < count; i++) {
+              cy.wrap($rows.eq(i))
+                .find('input[type="checkbox"]')
+                .check({ force: true });
+            }
+          });
+
+          // Submit selection
+          cy.contains("Add Selected Students").click();
+
+          // Wait for the add-students POST to complete
+          cy.wait("@mockAddStudentsToProject");
+
+          // Verify the first 5 students were added to the project (by email)
+          // Check specifically in the bottom-most table on the page (project members table)
+
+          studentsWithIds.slice(0, 5).forEach((s) => {
+            cy.get('[data-testid = "added-students"]')
+              .contains(s.email)
+              .should("be.visible");
+          });
+        });
+      });
+    });
+  });
+});
