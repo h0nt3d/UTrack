@@ -20,13 +20,13 @@ return (
               
               {loadingChart ? (
                 <div className="text-center py-8">
-                  <p className="text-gray-600">Loading joy factor data...</p>
+                  <p className="text-gray-600">Loading Joy Factor data...</p>
                 </div>
               ) : (
                 <div>
                   {joyFactorData.length === 0 ? (
                     <p className="text-center text-gray-600 py-8">
-                      No joy factor data available for this student yet.
+                      No Joy Factor data available for this student yet.
                     </p>
                   ) : (
                     <CardC 

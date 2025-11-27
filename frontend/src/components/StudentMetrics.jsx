@@ -305,7 +305,7 @@ export default function StudentMetrics() {
                     {joyViewType === "team" ? (
                       teamJoyData.length === 0 ? (
                         <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                          <p className="text-gray-600">No joy factor data available for this project yet.</p>
+                          <p className="text-gray-600">No Joy Factor data available for this project yet.</p>
                         </div>
                       ) : (
                         <div className="bg-white rounded-lg shadow-md p-6">
@@ -315,7 +315,7 @@ export default function StudentMetrics() {
                     ) : (
                       individualJoyData.length === 0 ? (
                         <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                          <p className="text-gray-600">No individual joy factor data available for this project yet.</p>
+                          <p className="text-gray-600">No individual Joy Factor data available for this project yet.</p>
                         </div>
                       ) : (
                         <div>
@@ -364,7 +364,7 @@ export default function StudentMetrics() {
                 {selectedMetric === "bus" && (
                   individualBusFactorData.length === 0 ? (
                     <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                      <p className="text-gray-600">No bus factor data available for this project yet.</p>
+                      <p className="text-gray-600">No Bus Factor data available for this project yet.</p>
                     </div>
                   ) : (
                     <div>
@@ -398,7 +398,7 @@ export default function StudentMetrics() {
                         return selectedStudentData ? (
                           selectedStudentData.busFactorData.length === 0 ? (
                             <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                              <p className="text-gray-600">No bus factor data available for this student yet.</p>
+                              <p className="text-gray-600">No Bus Factor data available for this student yet.</p>
                             </div>
                           ) : (
                             <div className="bg-white rounded-lg shadow-md p-6">
@@ -417,11 +417,11 @@ export default function StudentMetrics() {
                 {selectedMetric === "teamPoints" && (
                   teamPointsScalingData.length === 0 ? (
                     <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                      <p className="text-gray-600">No team points distribution data available for this project yet.</p>
+                      <p className="text-gray-600">No Team Points Distribution data available for this project yet.</p>
                     </div>
                   ) : (
                     <div>
-                      {/* Student Selector for Team Points Scaling Factors */}
+                      {/* Student Selector for Team Points Distribution Scaling Factors */}
                       <div className="mb-4">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Select Student:
@@ -456,7 +456,7 @@ export default function StudentMetrics() {
                           ) : (
                             <div className="bg-white rounded-lg shadow-md p-6">
                               <h3 className="text-xl font-semibold mb-4">
-                                Team Point Scaling Factors for {selectedStudentData.student.firstName} {selectedStudentData.student.lastName}
+                                Team Points Distribution Scaling Factors for {selectedStudentData.student.firstName} {selectedStudentData.student.lastName}
                               </h3>
                               
                               {/* Bar Chart for Scaling Factors */}

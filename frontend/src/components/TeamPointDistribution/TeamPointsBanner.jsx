@@ -106,7 +106,7 @@ export default function TeamPointsBanner({
               hasSubmitted ? "text-green-700" : isPastDue ? "text-red-700" : "text-yellow-700"
             }`}>
               {hasSubmitted
-                ? "You have successfully submitted your team points distribution."
+                ? "You have successfully submitted your Team Points Distribution."
                 : isPastDue
                 ? "The due date has passed. Please contact your instructor."
                 : "Please allocate 10 points per team member (including yourself)."}

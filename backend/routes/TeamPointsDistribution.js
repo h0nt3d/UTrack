@@ -39,7 +39,7 @@ router.post(
       // Verify user is an instructor
       const instructor = await Instructor.findById(req.user.id);
       if (!instructor) {
-        return res.status(403).json({ message: "Only instructors can create events" });
+        return res.status(403).json({ message: "Only instructors can create Team Points Distribution events" });
       }
 
       // Verify course ownership
@@ -137,7 +137,7 @@ router.post(
       });
     } catch (err) {
       console.error("Error creating event:", err);
-      res.status(500).json({ message: "Error creating event: " + err.message });
+      res.status(500).json({ message: "Error creating Team Points Distribution event: " + err.message });
     }
   }
 );
@@ -153,7 +153,7 @@ router.patch(
       // Verify user is an instructor
       const instructor = await Instructor.findById(req.user.id);
       if (!instructor) {
-        return res.status(403).json({ message: "Only instructors can close events" });
+        return res.status(403).json({ message: "Only instructors can close Team Points Distribution events" });
       }
 
       // Verify course ownership
@@ -196,7 +196,7 @@ router.patch(
 
       res.json({
         success: true,
-        message: "Event closed and scaling factors computed",
+        message: "Team Points Distribution event closed and scaling factors computed",
         event: {
           id: event._id,
           status: event.status,
@@ -205,7 +205,7 @@ router.patch(
       });
     } catch (err) {
       console.error("Error closing event:", err);
-      res.status(500).json({ message: "Error closing event: " + err.message });
+      res.status(500).json({ message: "Error closing Team Points Distribution event: " + err.message });
     }
   }
 );
@@ -273,7 +273,7 @@ router.get(
       });
     } catch (err) {
       console.error("Error fetching open event:", err);
-      res.status(500).json({ message: "Error fetching open event: " + err.message });
+      res.status(500).json({ message: "Error fetching open Team Points Distribution event: " + err.message });
     }
   }
 );
@@ -289,7 +289,7 @@ router.get(
       // Verify user is an instructor
       const instructor = await Instructor.findById(req.user.id);
       if (!instructor) {
-        return res.status(403).json({ message: "Only instructors can view events" });
+        return res.status(403).json({ message: "Only instructors can view Team Points Distribution events" });
       }
 
       // Verify course ownership
@@ -352,7 +352,7 @@ router.get(
       });
     } catch (err) {
       console.error("Error fetching events:", err);
-      res.status(500).json({ message: "Error fetching events: " + err.message });
+      res.status(500).json({ message: "Error fetching Team Points Distribution events: " + err.message });
     }
   }
 );
@@ -420,7 +420,7 @@ router.post(
       });
 
       if (existingSubmission) {
-        return res.status(409).json({ message: "You have already submitted for this event" });
+        return res.status(409).json({ message: "You have already submitted for this Team Points Distribution event" });
       }
 
       // Verify student is in roster
@@ -428,7 +428,7 @@ router.post(
         (r) => r.studentId.toString() === req.user.id.toString()
       );
       if (!isInRoster) {
-        return res.status(403).json({ message: "You are not part of this event roster" });
+        return res.status(403).json({ message: "You are not part of this Team Points Distribution event roster" });
       }
 
       // Validate ratings match roster
@@ -483,7 +483,7 @@ router.post(
 
       res.json({
         success: true,
-        message: "Points submitted successfully",
+        message: "Team Points Distribution submitted successfully",
         submission: {
           id: submission._id,
           eventId: submission.eventId,
@@ -496,7 +496,7 @@ router.post(
       if (err.code === 11000) {
         return res.status(409).json({ message: "You have already submitted for this event" });
       }
-      res.status(500).json({ message: "Error submitting points: " + err.message });
+      res.status(500).json({ message: "Error submitting Team Points Distribution: " + err.message });
     }
   }
 );
@@ -512,7 +512,7 @@ router.get(
       // Verify user is an instructor
       const instructor = await Instructor.findById(req.user.id);
       if (!instructor) {
-        return res.status(403).json({ message: "Only instructors can view scaling factors" });
+        return res.status(403).json({ message: "Only instructors can view Team Points Distribution scaling factors" });
       }
 
       // Verify course ownership
@@ -577,7 +577,7 @@ router.get(
       });
     } catch (err) {
       console.error("Error fetching scaling factors:", err);
-      res.status(500).json({ message: "Error fetching scaling factors: " + err.message });
+      res.status(500).json({ message: "Error fetching Team Points Distribution scaling factors: " + err.message });
     }
   }
 );
@@ -593,7 +593,7 @@ router.get(
       // Verify user is an instructor
       const instructor = await Instructor.findById(req.user.id);
       if (!instructor) {
-        return res.status(403).json({ message: "Only instructors can view scaling factors" });
+        return res.status(403).json({ message: "Only instructors can view Team Points Distribution scaling factors" });
       }
 
       // Verify course ownership
@@ -670,7 +670,7 @@ router.get(
       });
     } catch (err) {
       console.error("Error fetching student scaling factors:", err);
-      res.status(500).json({ message: "Error fetching student scaling factors: " + err.message });
+      res.status(500).json({ message: "Error fetching student Team Points Distribution scaling factors: " + err.message });
     }
   }
 );

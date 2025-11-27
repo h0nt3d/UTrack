@@ -71,7 +71,7 @@ export default function QuickAddJoyFactorModal({
       }
 
       setIsError(false);
-      setMessage("Joy factor added successfully!");
+      setMessage("Joy Factor added successfully!");
       
       // Reset form
       setFormData({
@@ -87,7 +87,7 @@ export default function QuickAddJoyFactorModal({
     } catch (err) {
       console.error("Error adding joy factor:", err);
       setIsError(true);
-      setMessage(err.message || "Error adding joy factor");
+      setMessage(err.message || "Error adding Joy Factor");
       setTimeout(() => setMessage(null), 3000);
     } finally {
       setIsLoading(false);

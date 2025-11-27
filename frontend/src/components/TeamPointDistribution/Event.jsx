@@ -112,7 +112,7 @@ export default function Event() {
           >
             ✓ Submitted
           </button>
-          <p className="text-green-600 text-sm">You have already submitted your team points.</p>
+          <p className="text-green-600 text-sm">You have already submitted your Team Points Distribution.</p>
         </div>
       ) : eventExists ? (
         <button
@@ -120,7 +120,7 @@ export default function Event() {
                       hover:bg-green-700 hover:scale-[1.02]"
           onClick={handleNavigate}
         >
-          Fill Team Points Form
+          Fill Team Points Distribution Form
         </button>
       ) : (
         <p className="text-gray-600">

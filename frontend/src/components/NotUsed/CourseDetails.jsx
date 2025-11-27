@@ -294,7 +294,7 @@ export default function CourseDetails() {
                                     }`}
                                   >
                                     {projectEvents[p._id].event.status === "Past Due"
-                                      ? "⚠ Team Points (Past Due)"
+                                      ? "⚠ Team Points Distribution (Past Due)"
                                       : "📋 Team Points Distribution"}
                                   </button>
                                 ) : (

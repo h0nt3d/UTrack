@@ -84,7 +84,7 @@ export default function AddBusFactorModal({
       }
 
       setIsError(false);
-      setMessage("Bus factor added successfully!");
+      setMessage("Bus Factor added successfully!");
       
       // Reset form
       setFormData({
@@ -100,7 +100,7 @@ export default function AddBusFactorModal({
     } catch (err) {
       console.error("Error adding bus factor:", err);
       setIsError(true);
-      setMessage(err.message || "Error adding bus factor");
+      setMessage(err.message || "Error adding Bus Factor");
       setTimeout(() => setMessage(null), 5000);
     } finally {
       setIsLoading(false);

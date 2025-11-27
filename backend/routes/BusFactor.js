@@ -68,9 +68,9 @@ router.post(
           instructor: req.user.id,
         });
       } else {
-        // Student: verify they're adding their own bus factor
+        // Student: verify they're adding their own Bus Factor
         if (req.user.id !== studentObjectId.toString()) {
-          return res.status(403).json({ message: "Students can only add their own bus factor" });
+          return res.status(403).json({ message: "Students can only add their own Bus Factor" });
         }
         
         course = await Course.findOne({ courseNumber });
@@ -141,7 +141,7 @@ router.post(
       if (recentEntry && recentEntry.date.getTime() !== normalizedDate.getTime()) {
         const daysSince = Math.floor((normalizedDate - recentEntry.date) / (1000 * 60 * 60 * 24));
         return res.status(400).json({ 
-          message: `You can only record bus factor once every couple days. Last recorded ${daysSince} day(s) ago.` 
+          message: `You can only record Bus Factor once every couple days. Last recorded ${daysSince} day(s) ago.` 
         });
       }
 
@@ -170,15 +170,15 @@ router.post(
 
       res.json({
         success: true,
-        message: "Bus factor entry added/updated successfully",
+        message: "Bus Factor entry added/updated successfully",
         busFactor: busFactorEntry,
       });
     } catch (err) {
       console.error("Error adding bus factor:", err);
       if (err.code === 11000) {
-        return res.status(409).json({ message: "Bus factor entry already exists for this date" });
+        return res.status(409).json({ message: "Bus Factor entry already exists for this date" });
       }
-      res.status(500).json({ message: "Error adding bus factor: " + err.message });
+      res.status(500).json({ message: "Error adding Bus Factor: " + err.message });
     }
   }
 );
@@ -243,7 +243,7 @@ router.get(
       });
     } catch (err) {
       console.error("Error fetching bus factor:", err);
-      res.status(500).json({ message: "Error fetching bus factor: " + err.message });
+      res.status(500).json({ message: "Error fetching Bus Factor: " + err.message });
     }
   }
 );
@@ -302,7 +302,7 @@ router.get(
       });
     } catch (err) {
       console.error("Error fetching bus factor average:", err);
-      res.status(500).json({ message: "Error fetching bus factor average: " + err.message });
+      res.status(500).json({ message: "Error fetching Bus Factor average: " + err.message });
     }
   }
 );

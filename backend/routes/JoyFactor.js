@@ -70,9 +70,9 @@ router.post(
           instructor: req.user.id,
         });
       } else {
-        // Student: verify they're enrolled in the course and adding their own joy factor
+        // Student: verify they're enrolled in the course and adding their own Joy Factor
         if (req.user.id !== studentObjectId.toString()) {
-          return res.status(403).json({ message: "Students can only add their own joy factor" });
+          return res.status(403).json({ message: "Students can only add their own Joy Factor" });
         }
         
         // Check if student is enrolled in the course
@@ -156,7 +156,7 @@ router.post(
 
       res.json({
         success: true,
-        message: "Joy factor entry added/updated successfully",
+        message: "Joy Factor entry added/updated successfully",
         joyFactor: joyFactorEntry,
       });
     } catch (err) {
@@ -165,9 +165,9 @@ router.post(
         // Duplicate key error
         return res
           .status(409)
-          .json({ message: "Joy factor entry already exists for this date" });
+          .json({ message: "Joy Factor entry already exists for this date" });
       }
-      res.status(500).json({ message: "Error adding joy factor: " + err.message });
+      res.status(500).json({ message: "Error adding Joy Factor: " + err.message });
     }
   }
 );
@@ -234,7 +234,7 @@ router.get(
 
     } catch (err) {
       console.error("Error fetching joy factor:", err);
-      res.status(500).json({ message: "Error fetching joy factor: " + err.message });
+      res.status(500).json({ message: "Error fetching Joy Factor: " + err.message });
     }
 
   }
@@ -303,7 +303,7 @@ router.get(
       });
     } catch (err) {
       console.error("Error fetching joy factors:", err);
-      res.status(500).json({ message: "Error fetching joy factors: " + err.message });
+      res.status(500).json({ message: "Error fetching Joy Factors: " + err.message });
     }
   }
 );
@@ -368,17 +368,17 @@ router.put(
       );
 
       if (!updatedJoyFactor) {
-        return res.status(404).json({ message: "Joy factor entry not found" });
+        return res.status(404).json({ message: "Joy Factor entry not found" });
       }
 
       res.json({
         success: true,
-        message: "Joy factor updated successfully",
+        message: "Joy Factor updated successfully",
         joyFactor: updatedJoyFactor,
       });
     } catch (err) {
       console.error("Error updating joy factor:", err);
-      res.status(500).json({ message: "Error updating joy factor: " + err.message });
+      res.status(500).json({ message: "Error updating Joy Factor: " + err.message });
     }
   }
 );
@@ -414,16 +414,16 @@ router.delete(
       });
 
       if (!joyFactor) {
-        return res.status(404).json({ message: "Joy factor entry not found" });
+        return res.status(404).json({ message: "Joy Factor entry not found" });
       }
 
       res.json({
         success: true,
-        message: "Joy factor entry deleted successfully",
+        message: "Joy Factor entry deleted successfully",
       });
     } catch (err) {
       console.error("Error deleting joy factor:", err);
-      res.status(500).json({ message: "Error deleting joy factor: " + err.message });
+      res.status(500).json({ message: "Error deleting Joy Factor: " + err.message });
     }
   }
 );

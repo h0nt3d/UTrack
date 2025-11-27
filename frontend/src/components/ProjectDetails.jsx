@@ -384,7 +384,7 @@ const handleAddStudents = async () => {
         loadingTeamChart={loadingTeamChart}
       />}
 
-      {/* BUS FACTOR CHART FOR STUDENTS (Project-level daily average) */}
+      {/* Bus Factor Chart for Students (Project-level daily average) */}
       {busFactorData.length > 0 && (
         <div className={`${styles.all_courses} mt-6`}>
           <h2 className="text-xl font-semibold mb-4 text-center">Project Bus Factor (Daily Average)</h2>
