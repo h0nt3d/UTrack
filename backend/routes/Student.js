@@ -145,5 +145,35 @@ router.post("/course/:courseNumber/add-multiple", requireAuth, async (req, res) 
 });
 
 
+// ---------- Remove a student from a course ----------
+router.post("/course/:courseNumber/remove-student", requireAuth, async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ message: "Email is required" });
+
+  try {
+    const student = await Student.findOne({ email: email.toLowerCase() });
+    if (!student) return res.status(404).json({ message: "Student not found" });
+
+    const course = await Course.findOne({ courseNumber: req.params.courseNumber });
+    if (!course) return res.status(404).json({ message: "Course not found" });
+
+    // Remove student email from course.students
+    course.students = course.students.filter((e) => e !== student.email);
+    await course.save();
+
+    // Remove courseNumber from student.courses
+    student.courses = student.courses.filter((c) => c !== course.courseNumber);
+    await student.save();
+
+    // Return updated students
+    const students = await Student.find({ email: { $in: course.students } });
+    res.json({ success: true, students });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+
 module.exports = router;
 

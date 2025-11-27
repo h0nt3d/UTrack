@@ -1,137 +1,40 @@
 /**
- * This file contains all cypress acceptance tests related to the Create Students epic.
- * 
- * System Flow:
- *   Sign-Up -> Profile -> Course Details -> Add Students
+ * This file contains all cypress acceptance tests for adding a single student to a course.
  * 
  * For these test cases, the add student file (src/components/AddStudent.jsx) was updated to include test IDs.
  * 
- * Note: These test cases will carry over to the next sprint.
+ * Note: To-Update - Single Student Upload Functionality
  */
 
-// Test Data
-// **************************************************
+// Data
 
-// Instructor
-const TEST_INSTRUCTOR = {
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@unb.ca",
-    password: "password123"
-};
+let TEST_INSTRUCTOR;
+let TEST_COURSE;
+let TEST_STUDENT;
 
-// Token
-const TEST_TOKEN = "token1";
+const BASE_URL = 'http://localhost:5000/api';
+const SPECIAL_TOKEN = 'test-token';
 
-// Course
-const TEST_COURSE = {
-    number: "SWE4103",
-    name: "Software Quality and Project Management",
-    description: "This course emphasizes software testing, verification, and validation, and project tracking, planning, and scheduling."
-};
-
-// Student
-const TEST_STUDENT = {
-    firstName: "Jane",
-    lastName: "Smith",
-    email: "jane.smith@unb.ca"
-}
-
-// Tests
-// **************************************************
-
+// Test Suite
 describe("Create Students", () => {
 
-    // Setup Environment
-    beforeEach(() => {
-
-        // Responses
-        // **************************************************
-
-        // Instructor Sign-Up
-        cy.intercept('POST', 'http://localhost:5000/api/auth/instructor-signup', {
-            statusCode: 200,
-            body: {
-                message: "User created successfully.",
-                user: { email: TEST_INSTRUCTOR.email },
-                token: TEST_TOKEN
-            }
-        }).as('mockSignup');
-
-        // Create Course
-        cy.intercept('POST', 'http://localhost:5000/api/auth/createCourses', {
-            statusCode: 200,
-            body: {
-                course: { _id: '1', courseNumber: TEST_COURSE.number, courseName: TEST_COURSE.name }
-            }
-        }).as('mockCreateCourse');
-
-        // Get Course Details
-        cy.intercept('GET', 'http://localhost:5000/api/auth/get-course/SWE4103', {
-            statusCode: 200,
-            body: {
-                courseNumber: TEST_COURSE.number,
-                courseName: TEST_COURSE.name,
-                description: TEST_COURSE.description,
-                students: []
-            }
-        }).as('mockGetCourse');
-
-        // System Flow
-        // **************************************************
-
-        // Sign-Up Page
-        cy.visit('http://localhost:3000/signup');
-
-        // Instructor Information
-        cy.get('input[data-testid="signup-firstName"]').type(TEST_INSTRUCTOR.firstName);
-        cy.get('input[data-testid="signup-lastName"]').type(TEST_INSTRUCTOR.lastName);
-        cy.get('input[data-testid="signup-email"]').type(TEST_INSTRUCTOR.email);
-        cy.get('input[data-testid="signup-password"]').type(TEST_INSTRUCTOR.password);
-        cy.get('input[data-testid="signup-confirmPassword"]').type(TEST_INSTRUCTOR.password);
-
-        // Create Account
-        cy.get('button').contains("Create Account").click();
-        cy.wait('@mockSignup');
-
-        // Storage
-        cy.window().then(win => {
-            win.localStorage.setItem('email', TEST_INSTRUCTOR.email);
-            win.localStorage.setItem('authToken', TEST_TOKEN);
+    // Environment
+    // **************************************************
+    before(() => {
+        // Instructor
+        cy.fixture('TEST_INSTRUCTOR').then((data) => {
+            TEST_INSTRUCTOR = data;
         });
 
-        // Visit Profile
-        cy.visit('http://localhost:3000/profile', {
-            // Simulate Instructor
-            onBeforeLoad(win) {
-                win.localStorage.setItem('email', TEST_INSTRUCTOR.email);
-                win.localStorage.setItem('authToken', TEST_TOKEN);
-            }
+        // Course
+        cy.fixture('TEST_COURSE').then((data) => {
+            TEST_COURSE = data;
         });
 
-        // Add Courses View
-        cy.contains('Add course').click();
-
-        // Course Information
-        cy.get('input[data-testid="course-number"]').type(TEST_COURSE.number);
-        cy.get('input[data-testid="course-name"]').type(TEST_COURSE.name);
-        cy.get('[data-testid="course-description"]').type(TEST_COURSE.description);
-
-        // Create
-        cy.get('[data-testid="course-save"]').click();
-        cy.wait('@mockCreateCourse');
-
-        // Visit Course
-        cy.visit('http://localhost:3000/course/SWE4103', {
-            // Simulate Instructor
-            onBeforeLoad(win) {
-                win.localStorage.setItem('email', TEST_INSTRUCTOR.email);
-                win.localStorage.setItem('authToken', TEST_TOKEN);
-            }
+        // Student
+        cy.fixture('TEST_SINGLE_STUDENT').then((data) => {
+            TEST_STUDENT = data;
         });
-
-        // cy.wait('@mockGetCourse');
-        // Note: Only call in individual tests so that it can be re-used.
     });
 
     // Clean Storage
@@ -139,52 +42,56 @@ describe("Create Students", () => {
         cy.clearLocalStorage();
     });
 
+    // Tests
+    // **************************************************
+
     // Add Student Page
     it("Displays the add students page.", () => {
-        // Get Course
-        cy.wait('@mockGetCourse');
+        // Course Environment
+        cy.CreateCourse();
+        cy.contains(`${TEST_COURSE.number}: ${TEST_COURSE.name}`).click();
+        cy.contains(TEST_COURSE.name).should('be.visible');
 
         // Navigate
-        cy.contains('Add Students').click();
+        cy.contains('Add Student').click();
 
         // Verify URL
         cy.url().should('include', '/course/SWE4103/add-students');
 
         // Confirm Fields
         cy.contains(`Add Students to ${TEST_COURSE.number}`).should('be.visible');
-        cy.contains("Create New Student").should('be.visible');
+        cy.contains("Add Student").should('be.visible');
     });
 
     // Add Student
     it("Adds a student to the course roster.", () => {
+        // Course Environment
+        cy.CreateCourse();
+        cy.contains(`${TEST_COURSE.number}: ${TEST_COURSE.name}`).click();
+        cy.contains(TEST_COURSE.name).should('be.visible');
+
         // Student Creation Response
         cy.intercept('POST', 'http://localhost:5000/api/students/create', {
             statusCode: 200,
             body: {
-                success: true,
                 student: { firstName: TEST_STUDENT.firstName, lastName: TEST_STUDENT.lastName, email: TEST_STUDENT.email }
             }
         }).as('mockCreateStudent');
-        
+
         // Add Student Response
         cy.intercept('POST', 'http://localhost:5000/api/students/course/SWE4103/add-student', {
             statusCode: 200,
             body: {
                 success: true,
-                students: [ { _id: "1", firstName: TEST_STUDENT.firstName, lastName: TEST_STUDENT.lastName, email: TEST_STUDENT.email } ]
+                students: [{ _id: "1", firstName: TEST_STUDENT.firstName, lastName: TEST_STUDENT.lastName, email: TEST_STUDENT.email }]
             }
         }).as('mockAddStudent');
 
-        // Get Course
-        cy.wait('@mockGetCourse');
-
         // Navigate
-        cy.contains('Add Students').click();
+        cy.contains('Add Student').click();
 
         // Student Information
-        cy.get('input[data-testid="student-firstName"]').type(TEST_STUDENT.firstName);
-        cy.get('input[data-testid="student-lastName"]').type(TEST_STUDENT.lastName);
-        cy.get('input[data-testid="student-email"]').type(TEST_STUDENT.email);
+        cy.get('[data-testid="email"]').type(TEST_STUDENT.email);
 
         // Submit
         cy.get('button').contains("Add Student").click();
@@ -192,115 +99,135 @@ describe("Create Students", () => {
         cy.wait('@mockCreateStudent');
         cy.wait('@mockAddStudent');
 
-        cy.contains(`${TEST_STUDENT.firstName} ${TEST_STUDENT.lastName} (${TEST_STUDENT.email})`).should('be.visible');
+        cy.contains(`Student added successfully!`).should('be.visible');
     });
 
     // Students Enrolled
     it("Displays the number of enrolled students after an update.", () => {
         // Add Student
-        // **************************************************
+        cy.AddSingleStudent();
 
-        // Student Creation Response
-        cy.intercept('POST', 'http://localhost:5000/api/students/create', {
-            statusCode: 200,
-            body: {
-                success: true,
-                student: { firstName: TEST_STUDENT.firstName, lastName: TEST_STUDENT.lastName, email: TEST_STUDENT.email }
-            }
-        }).as('mockCreateStudent');
-        
-        // Add Student Response
-        cy.intercept('POST', 'http://localhost:5000/api/students/course/SWE4103/add-student', {
-            statusCode: 200,
-            body: {
-                success: true,
-                students: [ { _id: "1", firstName: TEST_STUDENT.firstName, lastName: TEST_STUDENT.lastName, email: TEST_STUDENT.email } ]
-            }
-        }).as('mockAddStudent');
-
-        // Get Course
-        cy.wait('@mockGetCourse');
-
-        // Navigate
-        cy.contains('Add Students').click();
-
-        // Student Information
-        cy.get('input[data-testid="student-firstName"]').type(TEST_STUDENT.firstName);
-        cy.get('input[data-testid="student-lastName"]').type(TEST_STUDENT.lastName);
-        cy.get('input[data-testid="student-email"]').type(TEST_STUDENT.email);
-
-        // Submit
-        cy.get('button').contains("Add Student").click();
-
-        cy.wait('@mockCreateStudent');
-        cy.wait('@mockAddStudent');
-
-        cy.contains(`${TEST_STUDENT.firstName} ${TEST_STUDENT.lastName} (${TEST_STUDENT.email})`).should('be.visible');
-
-        // View Course Page
-        // **************************************************
-
-        // Backend Response
-        cy.intercept('GET', 'http://localhost:5000/api/auth/get-course/SWE4103', {
-            statusCode: 200,
-            body: {
-                courseNumber: TEST_COURSE.number,
-                courseName: TEST_COURSE.name,
-                description: TEST_COURSE.description,
-                students: [ { _id: "1", firstName: TEST_STUDENT.firstName, lastName: TEST_STUDENT.lastName, email: TEST_STUDENT.email } ]
-            }
-        }).as('mockUpdatedCourse');
-
-        // Course Page
-        cy.contains('Back').click();
-        cy.wait('@mockUpdatedCourse');
-
-        // Verify Enrollment
-        cy.contains(/Students Enrolled: 1/i).should('be.visible');
-    });
-
-    // ****************************************************************************************************
-    // Test Cases for Sprint 3
-    // ****************************************************************************************************
-
-    // Registers Student
-    it("Adds a student to a course when the student account already exists.", () => {
-        //
+        // Verify Enrolled Student
+        cy.contains(TEST_STUDENT.firstName).should('be.visible');
+        cy.contains(TEST_STUDENT.lastName).should('be.visible');
+        cy.contains(TEST_STUDENT.email).should('be.visible');
     });
 
     // Empty Fields Validation
-    // All fields are listed as required in frontend. The form will not submit without them.
-    // The backend also contains a safety check, just in case.
-    it("Displays an error when adding a student without all required fields.", () => {
-        //
-    });
+    it("Displays an error when submitting the form without filling in an email.", () => {
+        // Course Environment
+        cy.CreateCourse();
+        cy.contains(`${TEST_COURSE.number}: ${TEST_COURSE.name}`).click();
+        cy.contains(TEST_COURSE.name).should('be.visible');
+        cy.get('button').contains('Add Student').click();
 
-    // Duplicate Students
-    // Currently, the error is only console logged. We could provide interactive feedback.
-    it("Displays an error when a student is already enrolled in a course.", () => {
-        //
+        // Responses
+        cy.intercept('POST', `${BASE_URL}/students/create`).as('mockCreateStudent');
+        cy.intercept('POST', `${BASE_URL}/students/course/${TEST_COURSE.number}/add-student`).as('mockSubmission');
+
+        // Empty Fields Submission
+        cy.get('[data-testid="add-student-btn"]').click();
+
+        // Required Field
+        cy.get('[data-testid="email"]').should('have.prop', 'validity').then(v => {
+            expect(v.valueMissing, 'valueMissing should be true').to.be.true;
+            expect(v.valid, 'field should be invalid').to.be.false;
+        });
+
+        // Blocked Submission
+        cy.get('@mockCreateStudent.all').should('have.length', 0);
+        cy.get('@mockSubmission.all').should('have.length', 0);
     });
 
     // Invalid Student Email Validation
-    // Currently, the there is only a check that the email is syntactically valid, not that it's a unb email.
     it("Displays an error when adding a student with an invalid email.", () => {
-        //
-    });    
+        // Course Environment
+        cy.CreateCourse();
+        cy.contains(`${TEST_COURSE.number}: ${TEST_COURSE.name}`).click();
+        cy.contains(TEST_COURSE.name).should('be.visible');
+        cy.get('button').contains('Add Student').click();
 
-    // Bulk Upload
-    it("Adds a group of students given a csv or xlsx file.", () => {
-        //
+        // Responses
+        cy.intercept('POST', `${BASE_URL}/students/create`).as('mockCreateStudent');
+        cy.intercept('POST', `${BASE_URL}/students/course/${TEST_COURSE.number}/add-student`).as('mockSubmission');
+
+        // Invalid Email Submission
+        cy.get('[data-testid=email]').clear().type('not-an-email');
+        cy.get('[data-testid=add-student-btn]').click();
+
+        // Invalid Email
+        cy.get('[data-testid="email"]').should('have.prop', 'validity').then(v => {
+            expect(v.typeMismatch, 'email format should be invalid').to.be.true;
+            expect(v.valid, 'field should be overall invalid').to.be.false;
+        });
+
+        // Blocked Submission
+        cy.get('@mockCreateStudent.all').should('have.length', 0);
+        cy.get('@mockSubmission.all').should('have.length', 0);
     });
 
-    // Empty File
-    it("Displays an error when giving an empty csv or xlsx file to the bulk upload.", () => {
-        //
+    // Duplicate Students
+    it("Displays an error when a student is already enrolled in a course.", () => {
+        // Add Student
+        cy.AddSingleStudent();
+
+        // Add Duplicate
+        cy.get('button').contains('Add Student').click();
+        cy.get('[data-testid=email]').type(TEST_STUDENT.email);
+        cy.get('button').contains('Add Student').click();
+
+        // Create Response
+        cy.intercept('POST', `${BASE_URL}/students/create`, {
+            statusCode: 200,
+            body: {
+                success: true,
+                student: { email: TEST_STUDENT.email }
+            }
+        }).as('mockCreateStudent');
+
+        // Submission Response
+        cy.intercept('POST', `${BASE_URL}/students/course/${TEST_COURSE.number}/add-student`, {
+            statusCode: 409,
+            body: { message: "Student is already enrolled in this course" }
+        }).as('mockDuplicate');
+
+        // Duplicate Information
+        cy.get('[data-testid="email"]').clear().type(TEST_STUDENT.email);
+        cy.get('[data-testid="add-student-btn"]').click();
+
+        cy.wait('@mockCreateStudent');
+        cy.wait('@mockDuplicate');
+
+        // Verify Error
+        cy.contains("Student is already enrolled in this course").should('be.visible');
     });
 
-    // Invalid File Type
-    it("Displays an error when giving a non csv or xlsx file to the bulk upload.", () => {
-        //
-    });
+    // Registers Student
+    // Note: This test does not currently pass. If the student already exists in a different course, they will not be enrolled.
+    it("Adds a student to a course when the student account already exists.", () => {
+        // Course Environment
+        cy.CreateCourse();
+        cy.contains(`${TEST_COURSE.number}: ${TEST_COURSE.name}`).click();
+        cy.contains(TEST_COURSE.name).should('be.visible');
+        cy.get('button').contains('Add Student').click();
 
+        // Submission Response
+        cy.intercept('POST', `${BASE_URL}/students/course/${TEST_COURSE.number}/add-student`, {
+            statusCode: 409,
+            body: { message: "Student is already enrolled in this course" }
+        }).as('mockDuplicate');
+
+        // Adds Student
+        cy.intercept('POST', `${BASE_URL}/students/course/${TEST_COURSE.number}/add-student`, {
+            statusCode: 200,
+            body: { students: [{ firstName: TEST_STUDENT.firstName, lastName: TEST_STUDENT.lastName, email: TEST_STUDENT.email }] }
+        }).as('mockCourseRegister');
+
+        cy.get('[data-testid="email"]').clear().type(TEST_STUDENT.email);
+        cy.get('[data-testid="add-student-btn"]').click();
+
+        cy.wait('@mockDuplicate');
+        cy.wait('@mockCourseRegister');
+    });
 
 });

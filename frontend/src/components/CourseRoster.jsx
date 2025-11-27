@@ -58,6 +58,46 @@ export default function CourseRoster() {
     fetchCourseData();
   }, [courseNumber, token]);
 
+  const handleRemoveStudent = async (email) => {
+    if (!window.confirm("Remove this student?")) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/students/course/${courseInfo.number}/remove-student`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", authtoken: token },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      const data = await res.json();
+      if (data.success) setStudents(data.students);
+    } catch (err) {
+      console.error("Error removing student:", err);
+    }
+  };
+
+  const handleRemoveProject = async (projectId) => {
+    if (!window.confirm("Remove this project-team?")) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/auth/course/${courseInfo.number}/remove-project`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", authtoken: token },
+          body: JSON.stringify({ projectId }),
+        }
+      );
+
+      const data = await res.json();
+      if (data.success) setProjects(data.projects);
+    } catch (err) {
+      console.error("Error removing project:", err);
+    }
+  };
+
   return (
     <div className={styles.my_courses}>
       <Logout styl={styles} />
@@ -86,7 +126,7 @@ export default function CourseRoster() {
         {/* Action Buttons */}
         <div className="flex justify-center gap-4 mt-4">
           <button
-            data-testid = "add-student-btn"
+            data-testid="add-student-btn"
             className={`${styles.button} flex justify-center items-center`}
             style={{ minWidth: "150px" }}
             onClick={() =>
@@ -116,10 +156,10 @@ export default function CourseRoster() {
             Add Project-Team
           </button>
         </div>
-        
-        <div className="flex justify-center">
+
+        <div className="flex justify-center mt-6 gap-10">
           {/* Students Table */}
-          <div className={"flex flex-col items-center w-full max-w-[700px] mx-auto p-4 rounded-lg"}>
+          <div className="flex flex-col items-center w-full max-w-[700px] mx-auto p-4 rounded-lg">
             <h2 className="text-xl font-semibold mb-4 text-center">
               Current Students in Course:
             </h2>
@@ -134,6 +174,7 @@ export default function CourseRoster() {
                     <tr>
                       <th className="border border-gray-300 px-4 py-2">Name</th>
                       <th className="border border-gray-300 px-4 py-2">Email</th>
+                      <th className="border border-gray-300 px-4 py-2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -146,6 +187,15 @@ export default function CourseRoster() {
                           {s.firstName} {s.lastName}
                         </td>
                         <td className="border border-gray-300 px-4 py-2">{s.email}</td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          <button
+			    className="px-2 py-1 text-sm bg-red-500 hover:bg-red-600 rounded"
+                            style={{ minWidth: "60px", width: "auto" }}
+                            onClick={() => handleRemoveStudent(s.email)}
+                          >
+                            Remove
+                          </button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -155,7 +205,7 @@ export default function CourseRoster() {
           </div>
 
           {/* Projects List */}
-          <div className={" flex flex-col items-center p-4 rounded-lg mx-auto"}>
+          <div className="flex flex-col items-center p-4 rounded-lg mx-auto">
             <h2 className="text-xl font-semibold mb-4 text-center">
               Current Project-Teams:
             </h2>
@@ -167,24 +217,32 @@ export default function CourseRoster() {
             ) : (
               <div className="flex flex-col gap-2">
                 {projects.map((p, idx) => (
-                  <button
-                    key={idx}
-                    className={`${styles.button} w-max px-4 py-2 text-left`}
-                    onClick={() =>
-                      navigate(`/course/${courseInfo.number}/project/${p._id}`, {
-                        state: {
-                          token,
-                          projectTitle: p.title,
-                          projectDescription: p.description,
-                          courseName: courseInfo.name,
-                          courseNumber: courseInfo.number,
-                          team: p.team
-                        },
-                      })
-                    }
-                  >
-                    <strong>{p.title}-{p.team}</strong>
-                  </button>
+                  <div key={idx} className="flex items-center gap-2">
+                    <button
+                      className={`${styles.button} w-max px-4 py-2 text-left`}
+                      onClick={() =>
+                        navigate(`/course/${courseInfo.number}/project/${p._id}`, {
+                          state: {
+                            token,
+                            projectTitle: p.title,
+                            projectDescription: p.description,
+                            courseName: courseInfo.name,
+                            courseNumber: courseInfo.number,
+                            team: p.team,
+                          },
+                        })
+                      }
+                    >
+                      <strong>{p.title}-{p.team}</strong>
+                    </button>
+                    <button
+		      className="px-2 py-1 text-sm bg-red-500 hover:bg-red-600 rounded"
+                      style={{ minWidth: "60px", width: "auto" }}
+                      onClick={() => handleRemoveProject(p._id)}
+                    >
+                      Remove
+                    </button>
+                  </div>
                 ))}
               </div>
             )}
@@ -194,3 +252,4 @@ export default function CourseRoster() {
     </div>
   );
 }
+

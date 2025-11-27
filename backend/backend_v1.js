@@ -46,6 +46,12 @@ app.use("/api/students", studentRouter);
 const joyFactorRouter = require("./routes/JoyFactor");
 app.use("/api", joyFactorRouter);
 
+const busFactorRouter = require("./routes/BusFactor");
+app.use("/api", busFactorRouter);
+
+const teamPointsDistributionRouter = require("./routes/TeamPointsDistribution");
+app.use("/api", teamPointsDistributionRouter);
+
 const studentAuthRouter = require("./routes/studentAuth");
 app.use("/api/student-auth", studentAuthRouter);
 

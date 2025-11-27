@@ -3,86 +3,37 @@
  *
  * For these test cases, the course modal file (src/subcomponents/CourseModal.jsx) was updated to include test IDs.
  *
- * Note: All tests pass. (10/22)
+ * These test cases have been updated to match the refactored functionality.
  */
 
-// Test Data
-// **************************************************
+// Data
+let TEST_INSTRUCTOR;
+let TEST_COURSE;
 
-// Instructor
-const TEST_INSTRUCTOR = {
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@unb.ca",
-  password: "password123",
-};
+const BASE_URL = 'http://localhost:5000/api';
+const SPECIAL_TOKEN = 'test-token';
 
-// Token
-const TEST_TOKEN = "token1";
-
-// Course
-const TEST_COURSE = {
-  number: "SWE4103",
-  name: "Software Quality and Project Management",
-  description:
-    "This course emphasizes software testing, verification, and validation, and project tracking, planning, and scheduling.",
-};
-
-// Tests
-// **************************************************
-
+// Test Suite
 describe("Manage Courses", () => {
-  // Instructor Sign-Up
-  beforeEach(() => {
-    // Mock Response
-    cy.intercept("POST", "http://localhost:5000/api/auth/signup", {
-      statusCode: 200,
-      body: {
-        message: "User created successfully.",
-        user: { email: TEST_INSTRUCTOR.email },
-        token: TEST_TOKEN,
-      },
-    }).as("mockSignup");
 
-    cy.intercept("GET", `http://localhost:5000/api/auth/get-courses`, {
-      statusCode: 200,
-      body: { courses: [] },
-    }).as("getCoursesEmpty");
+  // Environment
+  // **************************************************
 
-    // Sign-Up Page
-    cy.visit("http://localhost:3000/instructor-signup");
-
-    // Instructor Information
-    cy.get('input[data-testid="signup-firstName"]').type(
-      TEST_INSTRUCTOR.firstName
-    );
-    cy.get('input[data-testid="signup-lastName"]').type(
-      TEST_INSTRUCTOR.lastName
-    );
-    cy.get('input[data-testid="signup-email"]').type(TEST_INSTRUCTOR.email);
-    cy.get('input[data-testid="signup-password"]').type(
-      TEST_INSTRUCTOR.password
-    );
-    cy.get('input[data-testid="signup-confirmPassword"]').type(
-      TEST_INSTRUCTOR.password
-    );
-
-    // Create Account
-    cy.get("button").contains("Create Account").click();
-    // Email form
-    cy.contains("Email Verification");
-    cy.contains("Code sent!").should("be.visible");
-    cy.get('input[data-testid = "verify-email-form"]').clear().type("000000");
-    cy.get('[data-testid="email-verify-confirm"]', { timeout: 10000 })
-      .should("be.visible")
-      .click();
-    cy.wait("@mockSignup", { timeout: 10000 });
-
-    // Storage
-    cy.window().then((win) => {
-      win.localStorage.setItem("email", TEST_INSTRUCTOR.email);
-      win.localStorage.setItem("authToken", TEST_TOKEN);
+  before(() => {
+    // Instructor
+    cy.fixture('TEST_INSTRUCTOR').then((data) => {
+      TEST_INSTRUCTOR = data;
     });
+
+    // Course
+    cy.fixture('TEST_COURSE').then((data) => {
+      TEST_COURSE = data;
+    });
+  });
+
+  beforeEach(() => {
+    // Instructor Sign-Up
+    cy.InstructorSignUp();
 
     // Visit Profile
     cy.visit("http://localhost:3000/profile", {
@@ -98,6 +49,9 @@ describe("Manage Courses", () => {
   after(() => {
     cy.clearLocalStorage();
   });
+
+  // Tests
+  // **************************************************
 
   // Courses Page
   it("Displays active courses and an add course button.", () => {
@@ -116,7 +70,7 @@ describe("Manage Courses", () => {
   // Add Course
   it("Adds a course when given a course code, name, and description.", () => {
     // Backend Response
-    cy.intercept("POST", `http://localhost:5000/api/auth/create-courses`, {
+    cy.intercept("POST", `${BASE_URL}/auth/createCourses`, {
       statusCode: 200,
       body: {
         course: {
@@ -131,8 +85,8 @@ describe("Manage Courses", () => {
     cy.contains("Add course").click();
 
     // Course Information
-    cy.get('input[data-testid="course-number"]').type(TEST_COURSE.number);
-    cy.get('input[data-testid="course-name"]').type(TEST_COURSE.name);
+    cy.get('[data-testid="course-number"]').type(TEST_COURSE.number);
+    cy.get('[data-testid="course-name"]').type(TEST_COURSE.name);
     cy.get('[data-testid="course-description"]').type(TEST_COURSE.description);
 
     // Create
@@ -149,7 +103,7 @@ describe("Manage Courses", () => {
   // Empty Fields
   it("Displays an error when an instructor attempts to create a course with missing fields.", () => {
     // Backend Response
-    cy.intercept("POST", "http://localhost:5000/api/auth/createCourses", {
+    cy.intercept("POST", `${BASE_URL}/auth/createCourses`, {
       statusCode: 400,
       body: { message: "courseNumber required, courseName required" },
     }).as("missingFields");
@@ -178,7 +132,7 @@ describe("Manage Courses", () => {
     // **************************************************
 
     // Backend Response
-    cy.intercept("POST", "http://localhost:5000/api/auth/createCourses", {
+    cy.intercept("POST", `${BASE_URL}/auth/createCourses`, {
       statusCode: 200,
       body: {
         course: {
@@ -209,7 +163,7 @@ describe("Manage Courses", () => {
     // **************************************************
 
     // Backend Response
-    cy.intercept("POST", "http://localhost:5000/api/auth/createCourses", {
+    cy.intercept("POST", `${BASE_URL}/auth/createCourses`, {
       statusCode: 409,
       body: { message: "courseNumber already exists" },
     }).as("duplicateCourse");
@@ -240,7 +194,7 @@ describe("Manage Courses", () => {
   // Cancel Adding Course
   it("Closes the add course view when the cancel button is clicked.", () => {
     // Response
-    cy.intercept("POST", "http://localhost:5000/api/auth/createCourses").as(
+    cy.intercept("POST", `${BASE_URL}/auth/createCourses`).as(
       "createCourseAttempt"
     );
 
@@ -272,7 +226,7 @@ describe("Manage Courses", () => {
     // **************************************************
 
     // Backend Response
-    cy.intercept("POST", "http://localhost:5000/api/auth/createCourses", {
+    cy.intercept("POST", `${BASE_URL}/auth/createCourses`, {
       statusCode: 200,
       body: {
         course: {
@@ -295,36 +249,8 @@ describe("Manage Courses", () => {
     cy.get('[data-testid="course-save"]').click();
     cy.wait("@mockCreateCourse");
 
-    cy.contains(`${TEST_COURSE.number}: ${TEST_COURSE.name}`).should(
-      "be.visible"
-    );
-
-    // Test Details
-    // **************************************************
-    cy.intercept("GET", "http://localhost:5000/api/auth/get-course/SWE4103", {
-      statusCode: 200,
-      body: {
-        courseNumber: TEST_COURSE.number,
-        courseName: TEST_COURSE.name,
-        description: TEST_COURSE.description,
-        students: [],
-      },
-    }).as("mockGetCourse");
-
-    // Visit Course
-    cy.visit("http://localhost:3000/course/SWE4103", {
-      // Simulate Instructor
-      onBeforeLoad(win) {
-        win.localStorage.setItem("email", TEST_INSTRUCTOR.email);
-        win.localStorage.setItem("authToken", TEST_TOKEN);
-      },
-    });
-
-    cy.wait("@mockGetCourse");
-
-    // View Details
-    cy.contains(TEST_COURSE.number).should("be.visible");
-    cy.contains(TEST_COURSE.name).should("be.visible");
-    cy.contains(TEST_COURSE.description).should("be.visible");
+    // Course Page
+    cy.contains(`${TEST_COURSE.number}: ${TEST_COURSE.name}`).click();
+    cy.contains(TEST_COURSE.name).should('be.visible');
   });
 });

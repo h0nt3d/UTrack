@@ -25,7 +25,7 @@ ChartJS.register(
   TimeScale
 )
 
-export default function LineChart ({stud, num}) {
+export default function LineChart ({stud, num, metricLabel = "Joy"}) {
 
     const [displayChart, setDisplayChart] = React.useState(true)
 
@@ -65,7 +65,7 @@ export default function LineChart ({stud, num}) {
                 data ={{
                     datasets: [
                         {
-                            label: 'Joy',
+                            label: metricLabel,
                             data: filterData,
                             borderColor: '#8EEAFF',
                             pointBackgroundColor: "#FFB74D",
@@ -86,7 +86,7 @@ export default function LineChart ({stud, num}) {
                                     return `${context[0].raw.x}`
                                 },
                                 label: function (context) {  
-                                    return  `Day: ${context.raw.x}, Joy: ${context.raw.y}`
+                                    return  `Day: ${context.raw.x}, ${metricLabel}: ${context.raw.y}`
                                 },
                             }
                         }

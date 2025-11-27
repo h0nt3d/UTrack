@@ -27,6 +27,19 @@
 ## Launching React on port 3000
 `npm start`
 
+# Running Cypress Tests
+1. Navigate to the Frontend Folder
+2. Install Dependencies - `npm install`
+3. Run Cypress in Interactive Mode with `npx cypress open`
+4. A window will appear. Select E2E Testing, choose your browser, and click on any test to run it.
+
+## If Cypress fails to open or tests fail to run, try the following:
+- Ensure you are inside the frontend folder
+- Reinstall dependencies:
+    `rm -rf node_modules`
+    `npm install`
+- Ensure you are using a supported Node version
+- Restart your terminal / editor
 
 
 

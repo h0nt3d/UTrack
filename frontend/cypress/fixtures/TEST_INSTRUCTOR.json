@@ -2,6 +2,7 @@
   "firstName": "John",
   "lastName": "Doe",
   "email": "john.doe@unb.ca",
-  "personalToken": "test-token",
-  "password": "password123"
+  "personalToken": "INSTRUCTOR_NEW_2025",
+  "password": "password123",
+  "authToken": "authToken"
 }
