@@ -281,7 +281,7 @@ Cypress.Commands.add("AddStudents", () => {
         cy.get('[data-testid="bulk-upload-input"]')
           .should("exist")
           .selectFile(
-            "C:/Users/USER/OneDrive - University of New Brunswick/Desktop/SWE4103/UTrack/frontend/cypress/fixtures/TEST_STUDENT.csv",
+            "cypress/fixtures/TEST_STUDENT.csv",
             { force: true }
           );
         cy.contains("Add All Students").click();
