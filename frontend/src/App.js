@@ -1,7 +1,6 @@
 import React from "react";
 import Signup from "./components/signup";
 import Mycourses from "./components/Mycourses";
-import Coursepage from "./components/NotUsed/Coursepage";
 import SigninInst from "./components/SignInInstructor/Login";
 import Landingpage from "./components/Landingpage";
 import AddStudent from "./components/AddStudent";
