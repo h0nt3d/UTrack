@@ -1,4 +1,4 @@
-![alt text](https://github.com/h0nt3d/UTrack/blob/main/images/uTrack.png?raw=true)
+<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/uTrack-logo.png?raw=true" alt="image1" width="400" height="300">
 
 # Dependencies
 ### Backend:
@@ -60,6 +60,7 @@
     `npm install`
 - Ensure you are using a supported Node version
 - Restart your terminal / editor
+
 
 
 
