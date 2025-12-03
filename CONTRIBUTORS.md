@@ -1,0 +1,13 @@
+# Contributors
+- [Michael Akano - h0nt3d](https://github.com/h0nt3d)
+- [Somtochukwu Nwachukwu - Somtonyy](https://github.com/Somtonyy)
+- [Charles Robinson - cr-robinson](https://github.com/cr-robinson)
+- [Ekenedilichukwu Unaigwe - U-Ekene](https://github.com/U-Ekene)
+- [Alex Piroozfar - Alex37378](https://github.com/Alex37378)
+- [Paramveer Sidhu - Param21Sidhu](https://github.com/Param21Sidhu)
+- [Devansh Prabhakar - dev090](https://github.com/dev090)
+- [Uchechi Okoronkwo - Bolu-tec](https://github.com/Bolu-tec)
+- [Kamren Gregory - kmgregory](https://github.com/kmgregory)
+- [Shahrzad Sarrafizadeh Rafsanjani - ShSarrafi](https://github.com/ShSarrafi)
+- [Darrel Mathew - DARRELMATHEW](https://github.com/DARRELMATHEW)
+- [Benedict MacGillivray - bmacgill87](https://github.com/bmacgill87)
