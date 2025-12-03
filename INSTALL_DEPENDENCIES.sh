@@ -1,6 +1,6 @@
 #!/bin/bash
 cd backend
-npm install prompt-sync bcrypt mongoose cors express dotenv
+npm install prompt-sync bcrypt mongoose cors express express-validator dotenv jsonwebtoken
 
 sleep 2
 
