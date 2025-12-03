@@ -1,6 +1,5 @@
 # UTrack
-<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/uTrack2.png?raw=true" alt="image1" width="300" height="300">
-<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/uTrack1.png?raw=true" alt="image1" width="300" height="300">
+<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/uTrack2.png?raw=true" alt="image1" width="300" height="300"> <img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/uTrack1.png?raw=true" alt="image1" width="300" height="300">
 
 UTrack is system designed for instructors to simulate the productivity of students inside a project using 3 metric evaluations:
 - Team Point Distribution: Team points given every member by each member of the team.
@@ -69,6 +68,7 @@ UTrack is system designed for instructors to simulate the productivity of studen
     `npm install`
 - Ensure you are using a supported Node version
 - Restart your terminal / editor
+
 
 
 
