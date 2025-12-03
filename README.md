@@ -7,25 +7,45 @@
 - mongoose
 - cors
 - express
+- express-validator
 - dotenv
+- jsonwebtoken
 
 ### Frontend:
-- cypress
-- jest
-- tailwind
-- postcss
-- autoprefixer
+- react-scripts
+- emailjs
+- emotion/react
+- emotion/styled
+- mui/material
+- react-login-page/page9
+- testing-library/dom
+- testing-library/jest-dom
+- testing-library/react
+- testing-library/user-event
+- ajv
+- chart.js
+- chartjs-adapter-date-fns
+- cookie
+- date-fns
+- lucide-react
+- react
+- react-chartjs-2
+- react-dom
 - react-router-dom
+- react-scripts
+- set-cookie-parser
+- web-vitals
 - xlsx
 
+### Testing
+- cypress
+
 ## Insatlling Dependencies
-- For Windows, inside UTrack Folder, run <br>
+### Inside the UTrack directory
+- For Windows, run <br>
 `INSTALL_DEPENDENCIES.bat`
 - For Linux and MacOS, run <br>
 `INSTALL_DEPENDENCIES.sh`
-
-## Launching React on port 3000
-`npm start`
 
 # Running Cypress Tests
 1. Navigate to the Frontend Folder
@@ -40,12 +60,6 @@
     `npm install`
 - Ensure you are using a supported Node version
 - Restart your terminal / editor
-
-
-
-
-
-
 
 
 
