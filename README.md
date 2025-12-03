@@ -40,7 +40,7 @@
 ### Testing
 - cypress
 
-## Insatlling Dependencies
+## Installing Dependencies
 ### Inside the UTrack directory
 - For Windows, run <br>
 `INSTALL_DEPENDENCIES.bat`
@@ -60,6 +60,7 @@
     `npm install`
 - Ensure you are using a supported Node version
 - Restart your terminal / editor
+
 
 
 
