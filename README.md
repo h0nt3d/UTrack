@@ -1,7 +1,7 @@
-<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/uTrack2.png?raw=true" alt="image1" width="200" height="200">
-<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/uTrack1.png?raw=true" alt="image1" width="200" height="200">
-<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/Metrics1.png?raw=true" alt="image1" width="200" height="200">
-<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/Metrics2.png?raw=true" alt="image1" width="200" height="200">
+<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/uTrack2.png?raw=true" alt="image1" width="300" height="300">
+<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/uTrack1.png?raw=true" alt="image1" width="300" height="300">
+<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/Metrics1.png?raw=true" alt="image1" width="300" height="300">
+<img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/Metrics2.png?raw=true" alt="image1" width="300" height="300">
 
 # Dependencies
 ### Backend:
@@ -63,6 +63,7 @@
     `npm install`
 - Ensure you are using a supported Node version
 - Restart your terminal / editor
+
 
 
 
