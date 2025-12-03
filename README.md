@@ -5,6 +5,7 @@ UTrack is system designed for instructors to simulate the productivity of studen
 - Team Point Distribution: Team points given every member by each member of the team.
 - Bus Factor: The calculated minimum number of team members that if removed will cause the project to fail.
 - Joy Factor: The current satisfaction or happiness of a team member.
+
 <img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/Metrics1.png?raw=true" alt="image1" width="350" height="350"> <img src="https://github.com/h0nt3d/UTrack/blob/refactoring/images/Metrics2.png?raw=true" alt="image1" width="350" height="350">
 
 # Dependencies
@@ -67,6 +68,7 @@ UTrack is system designed for instructors to simulate the productivity of studen
     `npm install`
 - Ensure you are using a supported Node version
 - Restart your terminal / editor
+
 
 
 
