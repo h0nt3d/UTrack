@@ -1,9 +1,7 @@
 // A collection of Cypress commands.
 
 /**
- * A command for emulating the instructor sign-up process.
- *
- * Note that the data must also be defined in the specific test file to re-use it at a later point in time.
+ * A command for simulating the instructor sign-up process.
  */
 Cypress.Commands.add("InstructorSignUp", function () {
   // Data
@@ -100,7 +98,128 @@ Cypress.Commands.add("InstructorSignUp", function () {
 });
 
 /**
- * A command for emulating the process to add a course.
+ * A command for simulating the student sign-up process.
+ */
+Cypress.Commands.add("StudentLoginToProject", () => {
+  const TOKEN = "student-token";
+  cy.fixture("TEST_SINGLE_STUDENT").then((STUDENT) => {
+    cy.fixture("TEST_COURSE").then((COURSE) => {
+      cy.fixture("TEST_PROJECT").then((PROJECT) => {
+        // Student ID
+        const STUD_ID = "s1";
+
+        // Login Response
+        cy.intercept("POST", `**/api/student-auth/login*`, {
+          statusCode: 200,
+          body: {
+            success: true,
+            message: "Login successful",
+            data: {
+              token: TOKEN,
+              user: { email: STUDENT.email, firstName: STUDENT.firstName, lastName: STUDENT.lastName }
+            }
+          }
+        }).as('mockStudentSignIn');
+
+        // Course Response
+        cy.intercept("GET", `**/api/student-auth/get-courses*`, {
+          statusCode: 200,
+          body: {
+            courses: [{ _id: 1, courseNumber: COURSE.number, courseName: COURSE.name, description: COURSE.description }]
+          }
+        }).as('mockGetStudentCourses');
+
+        cy.intercept(
+          "GET",
+          `**/api/student-auth/get-student/${encodeURIComponent(
+            STUDENT.email.toLowerCase()
+          )}`,
+          {
+            statusCode: 200,
+            body: {
+              _id: STUD_ID,
+              firstName: STUDENT.firstName,
+              lastName: STUDENT.lastName,
+              email: STUDENT.email,
+            },
+          }
+        ).as("mockGetStudentByEmail");
+
+        // Students
+        const STUDENTS = [
+          { firstName: STUDENT.firstName, lastName: STUDENT.lastName, email: STUDENT.email },
+          { firstName: "STUDENT", lastName: "TWO", email: "student.two@unb.ca" },
+          { firstName: "STUDENT", lastName: "THREE", email: "student.three@unb.ca" },
+          { firstName: "STUDENT", lastName: "FOUR", email: "student.four@unb.ca" }
+        ]
+
+        // Course Details
+        cy.intercept("GET", `**/api/student-auth/get-course/${COURSE.number}`, {
+          statusCode: 200,
+          body: {
+            courseName: COURSE.name,
+            courseNumber: COURSE.number,
+            description: COURSE.description || "",
+            students: STUDENTS,
+            projects: [{ _id: "p1", title: PROJECT.title, team: PROJECT.team_name, description: PROJECT.description, students: [STUDENT.email, "student.two@unb.ca, student.three@unb.ca", "student.four@unb.ca"] }],
+            instructor: { firstName: "Test", lastName: "Instructor", email: "instructor@unb.ca" },
+          },
+        }).as("mockStudentCourseDetails");
+
+        // Login Page
+        cy.visit(`http://localhost:3000/login`);
+
+        // Student Information
+        cy.get("select").select("student");
+        cy.get('input[name="username"]').type(STUDENT.email);
+        cy.get('input[name="password"]').type("p@ssw0rd");
+        cy.contains("Sign in").click();
+
+        cy.wait('@mockStudentSignIn');
+
+        // Dashboard
+        cy.location("pathname").should("eq", "/student-dashboard");
+        cy.wait("@mockGetStudentCourses");
+
+        // Storage
+        cy.window().then((win) => {
+          win.localStorage.setItem("email", STUDENT.email);
+          win.localStorage.setItem("token", TOKEN);
+          win.localStorage.setItem(
+            "user",
+            JSON.stringify({
+              email: STUDENT.email,
+              firstName: STUDENT.firstName,
+              lastName: STUDENT.lastName,
+            })
+          );
+          win.localStorage.setItem("firstName", STUDENT.firstName);
+          win.localStorage.setItem("lastName", STUDENT.lastName);
+          win.localStorage.setItem("role", "student");
+
+          const href = win.location.href;
+          win.history.replaceState({ token: TOKEN }, "", href);
+        });
+
+        // Course Page
+        cy.contains(`${COURSE.number}: ${COURSE.name}`).click();
+        cy.wait('@mockGetStudentByEmail');
+        cy.wait('@mockStudentCourseDetails');
+
+        // Current Students
+        cy.get("table tbody tr").should("have.length", STUDENTS.length + 1);
+
+        // Project
+        cy.contains("My Projects").should('be.visible');
+        cy.contains(`${PROJECT.title}`).should("be.visible");
+
+      });
+    });
+  });
+});
+
+/**
+ * A command for simulating the process to add a course.
  *
  * This command first utilizes the instructor sign-up command to then add courses.
  */
@@ -604,8 +723,7 @@ Cypress.Commands.add("CreateProjectTeamWithStudents", () => {
           }));
           cy.intercept(
             "POST",
-            `${BASE_URL}/auth/course/${
-              TEST_COURSE.number
+            `${BASE_URL}/auth/course/${TEST_COURSE.number
             }/project/${encodeURIComponent(project.title)}/add-students`,
             {
               statusCode: 200,

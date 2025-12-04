@@ -1,5 +1,5 @@
 /**
- * This file contains all acceptance tests for uploading a collection of students.
+ * Student Upload Acceptance Tests.
  * 
  * The input file should be formatted as follows: first name, last name, email.
  */

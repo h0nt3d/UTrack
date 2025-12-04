@@ -1,9 +1,8 @@
 /**
- * This file contains all cypress acceptance tests for adding a single student to a course.
+ * Create Students Acceptance Tests.
  * 
- * For these test cases, the add student file (src/components/AddStudent.jsx) was updated to include test IDs.
- * 
- * Note: To-Update - Single Student Upload Functionality
+ * Files Updated:
+ *  - src/components/AddStudent.jsx
  */
 
 // Data
@@ -203,7 +202,6 @@ describe("Create Students", () => {
     });
 
     // Registers Student
-    // Note: This test does not currently pass. If the student already exists in a different course, they will not be enrolled.
     it("Adds a student to a course when the student account already exists.", () => {
         // Course Environment
         cy.CreateCourse();

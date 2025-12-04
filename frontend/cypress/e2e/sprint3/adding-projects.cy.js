@@ -1,9 +1,8 @@
 /**
- * This file contains all acceptance tests for adding projects to courses.
+ * Adding Projects Acceptance Tests.
  * 
- * Note: The 'AddProject.jsx' component was modified to include test-ids.
- * 
- * Our current system allows duplicate project titles.
+ * Files Updated:
+ *  - AddProject.jsx
  */
 
 // Test Data
@@ -184,7 +183,6 @@ describe("Manage Projects", () => {
     });
 
     // Duplicate Project
-    // Note: Our application allows duplicate project titles.
     it("Displays an error message when attempting to add a project with a name that already exists.", () => {
         // Course ID
         const COURSE_ID = TEST_COURSE.number;
@@ -214,7 +212,7 @@ describe("Manage Projects", () => {
             body: { message: "A project with that title already exists." }
         }).as('mockAddDuplicateProject');
 
-        throw new Error("There is no backend verification for duplicate project titles, therefore, this test fails.");
+        throw new Error("Our system allows duplicate project titles.");
     });
 
     // Cancel Adding Project

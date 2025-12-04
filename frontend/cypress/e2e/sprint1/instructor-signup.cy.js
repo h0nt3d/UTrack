@@ -1,7 +1,8 @@
 /**
- * This file contains all acceptance tests related to instructor sign-up.
+ * Instructor Sign-Up Acceptance Tests.
  *
- * For these test cases, the signup file (src/components/signup.jsx) was updated to include test IDs.
+ * Files Updated:
+ *  - src/components/signup.jsx
  */
 
 describe("Instructor Sign-Up", () => {
@@ -65,7 +66,6 @@ describe("Instructor Sign-Up", () => {
   });
 
   // Empty Fields
-  // Note: This test will not pass under the current conditions. (10/08)
   it("Shows a validation error when there are empty fields.", () => {
     // Mock Response
     cy.intercept("POST", "http://localhost:5000/api/auth/signup").as(
@@ -101,7 +101,6 @@ describe("Instructor Sign-Up", () => {
   });
 
   // Invalid Email
-  // Note: This test will not pass under the current conditions. (10/08)
   it("Shows a validation error when an email input is incorrectly formatted.", () => {
     // Form
     cy.get('input[data-testid="signup-firstName"]').type("John");
@@ -120,7 +119,6 @@ describe("Instructor Sign-Up", () => {
   });
 
   // Duplicate Emails
-  // Note: This test will not pass under the current conditions. (10/08)
   it("Shows a validation error for a duplicate email.", () => {
     // Mock Response
     cy.intercept("POST", "http://localhost:5000/api/auth/signup", {
